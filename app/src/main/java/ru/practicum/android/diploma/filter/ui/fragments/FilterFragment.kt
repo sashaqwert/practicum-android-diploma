@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.Filter.ui.fragments
+package ru.practicum.android.diploma.filter.ui.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -14,10 +14,10 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [IndustriesFragment.newInstance] factory method to
+ * Use the [FilterFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class IndustriesFragment : Fragment() {
+class FilterFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -35,7 +35,7 @@ class IndustriesFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_industries, container, false)
+        return inflater.inflate(R.layout.fragment_filter, container, false)
     }
 
     companion object {
@@ -45,12 +45,12 @@ class IndustriesFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment OtraslFragment.
+         * @return A new instance of fragment FilterFragment.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            IndustriesFragment().apply {
+            FilterFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)
