@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.Favorite.ui.fragment
+package ru.practicum.android.diploma.favorite.ui.fragment
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
