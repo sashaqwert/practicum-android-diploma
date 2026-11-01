@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.Search.ui.fragment
+package ru.practicum.android.diploma.search.ui.fragment
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
