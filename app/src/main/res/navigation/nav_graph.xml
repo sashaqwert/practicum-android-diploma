@@ -50,7 +50,7 @@
     </fragment>
     <fragment
         android:id="@+id/locationFragmengt"
-        android:name="ru.practicum.android.diploma.Filter.ui.fragments.LocationFragmengt"
+        android:name="ru.practicum.android.diploma.Filter.ui.fragments.LocationFragment"
         android:label="fragment_location"
         tools:layout="@layout/fragment_location" >
         <action
@@ -72,7 +72,7 @@
         tools:layout="@layout/fragment_country" />
     <fragment
         android:id="@+id/otraslFragment"
-        android:name="ru.practicum.android.diploma.Filter.ui.fragments.OtraslFragment"
+        android:name="ru.practicum.android.diploma.Filter.ui.fragments.IndustriesFragment"
         android:label="fragment_otrasl"
-        tools:layout="@layout/fragment_otrasl" />
+        tools:layout="@layout/fragment_industries" />
 </navigation>
