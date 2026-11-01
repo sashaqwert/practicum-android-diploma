@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import ru.practicum.android.diploma.R
 
-
 /**
  * A simple [Fragment] subclass.
  * Use the [DevelopersFragment.newInstance] factory method to
