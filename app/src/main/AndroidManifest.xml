@@ -14,7 +14,7 @@
         android:theme="@style/Theme.PracticumAndroidDiploma"
         tools:targetApi="31">
         <activity
-            android:name=".Search.ui.activity.RootActivity"
+            android:name=".root_activity.RootActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
