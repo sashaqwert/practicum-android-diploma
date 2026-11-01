@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.Filter.data.dto.areas
+package ru.practicum.android.diploma.Common.data.dto.areas
 
 import ru.practicum.android.diploma.Common.data.dto.vacancies.Response
 
