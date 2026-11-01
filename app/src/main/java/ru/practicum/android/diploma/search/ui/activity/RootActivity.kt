@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.Search.ui.activity
+package ru.practicum.android.diploma.search.ui.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
