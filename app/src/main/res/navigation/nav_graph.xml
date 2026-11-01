@@ -46,7 +46,7 @@
             app:destination="@id/locationFragmengt" />
         <action
             android:id="@+id/action_filterFragment_to_otraslFragment"
-            app:destination="@id/otraslFragment" />
+            app:destination="@id/industriesFragment" />
     </fragment>
     <fragment
         android:id="@+id/locationFragmengt"
@@ -71,7 +71,7 @@
         android:label="fragment_country"
         tools:layout="@layout/fragment_country" />
     <fragment
-        android:id="@+id/otraslFragment"
+        android:id="@+id/industriesFragment"
         android:name="ru.practicum.android.diploma.Filter.ui.fragments.IndustriesFragment"
         android:label="fragment_otrasl"
         tools:layout="@layout/fragment_industries" />
