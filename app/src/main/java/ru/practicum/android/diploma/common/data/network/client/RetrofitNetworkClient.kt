@@ -12,24 +12,23 @@ class RetrofitNetworkClient(private val vacanciesApi: VacanciesApi) : NetworkCli
         isConnected: Boolean
     ): Response =
         withContext(Dispatchers.IO) {
-        if (!isConnected) {
-            Response().apply { code = NO_INTERNET }
-        }
-        else {
-            try {
-                val response = when (intent) {
-                    is RequestIntent.GetAreas -> vacanciesApi.getAreas()
-                    is RequestIntent.GetFilteredVacancies -> vacanciesApi.getFilteredVacancies(intent.options)
-                    is RequestIntent.GetIndustries -> vacanciesApi.getIndustries()
-                    is RequestIntent.GetVacancyById -> vacanciesApi.getVacancyById(intent.id)
-                }
+            if (!isConnected) {
+                Response().apply { code = NO_INTERNET }
+            } else {
+                try {
+                    val response = when (intent) {
+                        is RequestIntent.GetAreas -> vacanciesApi.getAreas()
+                        is RequestIntent.GetFilteredVacancies -> vacanciesApi.getFilteredVacancies(intent.options)
+                        is RequestIntent.GetIndustries -> vacanciesApi.getIndustries()
+                        is RequestIntent.GetVacancyById -> vacanciesApi.getVacancyById(intent.id)
+                    }
 
-                response.apply { code = HTTP_OK }
-            } catch (e: HttpException) {
-                Response().apply { code = e.code() }
+                    response.apply { code = HTTP_OK }
+                } catch (e: HttpException) {
+                    Response().apply { code = e.code() }
+                }
             }
         }
-    }
 
     companion object {
         private const val HTTP_OK = 200
