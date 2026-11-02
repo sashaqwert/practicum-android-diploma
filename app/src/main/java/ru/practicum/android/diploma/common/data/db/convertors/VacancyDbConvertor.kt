@@ -1,8 +1,8 @@
-package ru.practicum.android.diploma.common.data.convertors
+package ru.practicum.android.diploma.common.data.db.convertors
 
 import com.google.gson.Gson
-import ru.practicum.android.diploma.common.data.dto.details.VacancyDetailResponse
-import ru.practicum.android.diploma.common.data.entities.VacancyEntity
+import ru.practicum.android.diploma.common.data.network.dto.details.VacancyDetailResponse
+import ru.practicum.android.diploma.common.data.db.entities.VacancyEntity
 
 class VacancyDbConvertor(private val gson: Gson) {
     fun map(vacancy: VacancyDetailResponse): VacancyEntity =

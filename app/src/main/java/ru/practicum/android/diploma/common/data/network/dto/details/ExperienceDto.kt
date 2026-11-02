@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.common.data.dto.details
+package ru.practicum.android.diploma.common.data.network.dto.details
 
 data class ExperienceDto(
     val id: String,

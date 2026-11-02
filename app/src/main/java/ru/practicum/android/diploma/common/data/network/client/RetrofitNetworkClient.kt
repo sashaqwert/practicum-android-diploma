@@ -1,8 +1,8 @@
-package ru.practicum.android.diploma.common.data.client
+package ru.practicum.android.diploma.common.data.network.client
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import ru.practicum.android.diploma.common.data.dto.vacancies.Response
+import ru.practicum.android.diploma.common.data.network.dto.vacancies.Response
 import ru.practicum.android.diploma.common.data.network.VacanciesApi
 
 class RetrofitNetworkClient(private val vacanciesApi: VacanciesApi) : NetworkClient {

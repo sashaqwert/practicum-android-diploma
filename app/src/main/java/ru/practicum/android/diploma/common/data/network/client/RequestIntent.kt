@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.common.data.client
+package ru.practicum.android.diploma.common.data.network.client
 
 sealed interface RequestIntent {
     data object GetAreas : RequestIntent

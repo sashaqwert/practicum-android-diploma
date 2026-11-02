@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.common.data.dto.vacancies
+package ru.practicum.android.diploma.common.data.network.dto.vacancies
 
 data class VacancyCardDto(
     val city: String,
