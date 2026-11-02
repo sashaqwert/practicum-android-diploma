@@ -1,25 +1,25 @@
 package ru.practicum.android.diploma.common.data.db.convertors
 
 import com.google.gson.Gson
-import ru.practicum.android.diploma.common.data.network.dto.details.VacancyDetailResponse
 import ru.practicum.android.diploma.common.data.db.entities.VacancyEntity
+import ru.practicum.android.diploma.common.data.network.dto.details.VacancyDetailResponse
 
 class VacancyDbConvertor(private val gson: Gson) {
     fun map(vacancy: VacancyDetailResponse): VacancyEntity =
         VacancyEntity(
             id = vacancy.id,
-            address = gson.toJson((vacancy.address)),
-            area = gson.toJson((vacancy.area)),
-            contacts = gson.toJson((vacancy.contacts)),
+            address = gson.toJson(vacancy.address),
+            area = gson.toJson(vacancy.area),
+            contacts = gson.toJson(vacancy.contacts),
             description = vacancy.description,
-            employer = gson.toJson((vacancy.employer)),
-            employment = gson.toJson((vacancy.employment)),
-            experience = gson.toJson((vacancy.experience)),
-            industry = gson.toJson((vacancy.industry)),
+            employer = gson.toJson(vacancy.employer),
+            employment = gson.toJson(vacancy.employment),
+            experience = gson.toJson(vacancy.experience),
+            industry = gson.toJson(vacancy.industry),
             name = vacancy.name,
-            salary = gson.toJson((vacancy.salary)),
-            schedule = gson.toJson((vacancy.schedule)),
-            skills = gson.toJson((vacancy.skills)),
+            salary = gson.toJson(vacancy.salary),
+            schedule = gson.toJson(vacancy.schedule),
+            skills = gson.toJson(vacancy.skills),
             url = vacancy.url
         )
 

@@ -1,8 +1,8 @@
 package ru.practicum.android.diploma.common.data.network.dto.details
 
 import ru.practicum.android.diploma.common.data.network.dto.areas.FilterAreaDto
-import ru.practicum.android.diploma.common.data.network.dto.vacancies.Response
 import ru.practicum.android.diploma.common.data.network.dto.industries.FilterIndustryDto
+import ru.practicum.android.diploma.common.data.network.dto.vacancies.Response
 import ru.practicum.android.diploma.common.data.network.dto.vacancies.VacancyCardSalaryDto
 
 data class VacancyDetailResponse(
