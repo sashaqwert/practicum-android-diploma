@@ -7,9 +7,15 @@ import ru.practicum.android.diploma.common.data.network.VacanciesApi
 import ru.practicum.android.diploma.common.data.network.dto.vacancies.Response
 
 class RetrofitNetworkClient(private val vacanciesApi: VacanciesApi) : NetworkClient {
-    override suspend fun doRequest(intent: RequestIntent, isConnected: Boolean): Response = withContext(Dispatchers.IO) {
-        if (!isConnected) Response().apply { code = NO_INTERNET }
-        else{
+    override suspend fun doRequest(
+        intent: RequestIntent,
+        isConnected: Boolean
+    ): Response =
+        withContext(Dispatchers.IO) {
+        if (!isConnected) {
+            Response().apply { code = NO_INTERNET }
+        }
+        else {
             try {
                 val response = when (intent) {
                     is RequestIntent.GetAreas -> vacanciesApi.getAreas()
