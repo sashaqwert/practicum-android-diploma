@@ -33,7 +33,7 @@
         tools:layout="@layout/fragment_developers" />
     <fragment
         android:id="@+id/detailsFragment"
-        android:name="ru.practicum.android.diploma.Details.ui.fragment.DetailsFragment"
+        android:name="ru.practicum.android.diploma.details.ui.fragment.DetailsFragment"
         android:label="fragment_details"
         tools:layout="@layout/fragment_details" />
     <fragment
