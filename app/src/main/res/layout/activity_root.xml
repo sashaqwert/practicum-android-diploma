@@ -37,6 +37,9 @@
         app:itemIconTint="@color/for_navigation"
         app:itemTextColor="@color/for_navigation"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:itemTextAppearanceActive = "@style/Text.Regular12"
+        app:itemTextAppearanceInactive = "@style/Text.Regular12"
+        app:itemTextAppearanceActiveBoldEnabled="false"
 
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
