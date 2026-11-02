@@ -1,14 +1,19 @@
-package ru.practicum.android.diploma.Search.ui.activity
+package ru.practicum.android.diploma.root_activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import ru.practicum.android.diploma.BuildConfig
-import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.databinding.ActivityRootBinding
 
 class RootActivity : AppCompatActivity() {
+
+    private lateinit var viewBinding: ActivityRootBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_root)
+
+        viewBinding = ActivityRootBinding.inflate(layoutInflater)
+        setContentView(viewBinding.root)
 
         // Пример использования access token для HeadHunter API
         networkRequestExample(accessToken = BuildConfig.API_ACCESS_TOKEN)
