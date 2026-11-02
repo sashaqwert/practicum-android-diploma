@@ -1,12 +1,12 @@
-package ru.practicum.android.diploma.Common.data.network
+package ru.practicum.android.diploma.common.data.network
 
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.QueryMap
-import ru.practicum.android.diploma.Common.data.dto.areas.AreaResponse
-import ru.practicum.android.diploma.Common.data.dto.details.VacancyDetailResponse
-import ru.practicum.android.diploma.Common.data.dto.industries.IndustryResponse
-import ru.practicum.android.diploma.Common.data.dto.vacancies.VacancyResponse
+import ru.practicum.android.diploma.common.data.dto.areas.AreaResponse
+import ru.practicum.android.diploma.common.data.dto.details.VacancyDetailResponse
+import ru.practicum.android.diploma.common.data.dto.industries.IndustryResponse
+import ru.practicum.android.diploma.common.data.dto.vacancies.VacancyResponse
 
 interface VacanciesApi {
     @GET("/areas")
