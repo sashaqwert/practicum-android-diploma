@@ -1,4 +1,6 @@
-package ru.practicum.android.diploma.common.data.network.dto.details
+package ru.practicum.android.diploma.details.data.dto
+
+import ru.practicum.android.diploma.details.data.dto.PhoneDto
 
 data class ContactsDto(
     val email: String,

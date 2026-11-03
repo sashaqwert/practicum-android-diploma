@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.common.data.db.dao
+package ru.practicum.android.diploma.favorite.data.db.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
-import ru.practicum.android.diploma.common.data.db.entities.VacancyEntity
+import ru.practicum.android.diploma.favorite.data.db.entities.VacancyEntity
 
 @Dao
 interface VacancyDao {
