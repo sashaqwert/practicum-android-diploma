@@ -18,12 +18,12 @@
             app:destination="@id/filterFragment" />
     </fragment>
     <fragment
-        android:id="@+id/favoriteFragmant"
+        android:id="@+id/favoriteFragment"
         android:name="ru.practicum.android.diploma.favorite.ui.fragment.FavoriteFragment"
         android:label="fragment_favorite"
         tools:layout="@layout/fragment_favorite" >
         <action
-            android:id="@+id/action_favoriteFragmant_to_detailsFragment"
+            android:id="@+id/action_favoriteFragment_to_detailsFragment"
             app:destination="@id/detailsFragment" />
     </fragment>
     <fragment
@@ -42,22 +42,22 @@
         android:label="fragment_filter"
         tools:layout="@layout/fragment_filter" >
         <action
-            android:id="@+id/action_filterFragment_to_locationFragmengt"
-            app:destination="@id/locationFragmengt" />
+            android:id="@+id/action_filterFragment_to_locationFragment"
+            app:destination="@id/locationFragment" />
         <action
-            android:id="@+id/action_filterFragment_to_otraslFragment"
+            android:id="@+id/action_filterFragment_to_industryFragment"
             app:destination="@id/industriesFragment" />
     </fragment>
     <fragment
-        android:id="@+id/locationFragmengt"
+        android:id="@+id/locationFragment"
         android:name="ru.practicum.android.diploma.filter.ui.fragments.LocationFragment"
         android:label="fragment_location"
         tools:layout="@layout/fragment_location" >
         <action
-            android:id="@+id/action_locationFragmengt_to_countryFragment"
+            android:id="@+id/action_locationFragment_to_countryFragment"
             app:destination="@id/countryFragment" />
         <action
-            android:id="@+id/action_locationFragmengt_to_regionFragment"
+            android:id="@+id/action_locationFragment_to_regionFragment"
             app:destination="@id/regionFragment" />
     </fragment>
     <fragment
@@ -73,6 +73,6 @@
     <fragment
         android:id="@+id/industriesFragment"
         android:name="ru.practicum.android.diploma.filter.ui.fragments.IndustriesFragment"
-        android:label="fragment_otrasl"
+        android:label="fragment_industry"
         tools:layout="@layout/fragment_industries" />
 </navigation>
