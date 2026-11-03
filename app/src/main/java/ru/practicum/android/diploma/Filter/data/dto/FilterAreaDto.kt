@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.common.data.network.dto.areas
+package ru.practicum.android.diploma.Filter.data.dto
 
 data class FilterAreaDto(
     val id: String,
