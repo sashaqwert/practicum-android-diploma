@@ -12,6 +12,7 @@ import ru.practicum.android.diploma.favorite.di.ui.favoriteViewModelModuleDI
 import ru.practicum.android.diploma.filter.di.data.filterDataModule
 import ru.practicum.android.diploma.filter.di.ui.filterViewModelModule
 import ru.practicum.android.diploma.search.di.data.searchDataModule
+import ru.practicum.android.diploma.search.di.domain.searchDomainModule
 import ru.practicum.android.diploma.search.di.ui.searchViewModelModule
 
 class App : Application() {
@@ -23,7 +24,7 @@ class App : Application() {
             modules(detailsDataModule, detailsDomainModule, detailsViewModelModule,
                 favoriteDataModuleDI, favoriteDomainModuleDI, favoriteViewModelModuleDI,
                 filterDataModule, filterDataModule, filterViewModelModule,
-                searchDataModule, searchDataModule, searchViewModelModule
+                searchDataModule, searchDomainModule, searchViewModelModule
             )
         }
     }
