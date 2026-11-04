@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.search.data.dto
+package ru.practicum.android.diploma.common.data.dto
 
 data class VacancyCardSalaryDto(
     val currency: String?,

@@ -1,6 +1,6 @@
 package ru.practicum.android.diploma.search.data.dto
 
-import ru.practicum.android.diploma.search.data.dto.VacancyCardSalaryDto
+import ru.practicum.android.diploma.common.data.dto.VacancyCardSalaryDto
 
 data class VacancyCardDto(
     val city: String,

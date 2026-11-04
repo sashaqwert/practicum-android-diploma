@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.filter.data.dto
+package ru.practicum.android.diploma.common.data.dto
 
 data class FilterIndustryDto(
     val id: String,
