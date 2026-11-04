@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.util
+package ru.practicum.android.diploma.common.domain
 
 sealed interface Resource<out T> {
 
