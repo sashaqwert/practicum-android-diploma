@@ -7,4 +7,6 @@
     <string name="team">Команда</string>
     <string name="search">Поиск вакансий</string>
     <string name="request_input">Введите запрос</string>
+    <string name="no_internet">Нет интернета</string>
+    <string name="vacancy_error">Не удалось получить список вакансий</string>
 </resources>

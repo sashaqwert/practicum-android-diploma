@@ -4,7 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentSearchBinding
 
 private const val ARG_PARAM1 = "param1"
@@ -39,9 +42,76 @@ class SearchFragment : Fragment() {
         return viewBinding.root
     }
 
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?
+    ) {
+        super.onViewCreated(view, savedInstanceState)
+        default()
+
+        var searchText = ""
+        viewBinding.searchEditText.doOnTextChanged { s, _, _, _ ->
+            searchText = s.toString()
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _viewBinding = null
+    }
+
+    private fun loading() {
+        viewBinding.spaceForImgInSearch.isVisible = false
+        viewBinding.spaceForVacancyCount.isVisible = false
+        viewBinding.vacancyList.isVisible = false
+        viewBinding.progressBar.isVisible = true
+        viewBinding.textStateSpace.isVisible = false
+    }
+
+    private fun content() {
+        viewBinding.spaceForImgInSearch.isVisible = false
+        viewBinding.spaceForVacancyCount.isVisible = true
+        viewBinding.vacancyList.isVisible = true
+        viewBinding.progressBar.isVisible = false
+        viewBinding.textStateSpace.isVisible = false
+    }
+
+    private fun noInternet() {
+        viewBinding.spaceForVacancyCount.isVisible = false
+        viewBinding.vacancyList.isVisible = false
+        viewBinding.progressBar.isVisible = false
+        viewBinding.spaceForImgInSearch.apply {
+            setImageResource(R.drawable.img_not_internet_search_state_328)
+            isVisible = true
+        }
+        viewBinding.textStateSpace.apply {
+            setText(R.string.no_internet)
+            isVisible = true
+        }
+    }
+
+    private fun error() {
+        viewBinding.spaceForVacancyCount.isVisible = false
+        viewBinding.vacancyList.isVisible = false
+        viewBinding.progressBar.isVisible = false
+        viewBinding.spaceForImgInSearch.apply {
+            setImageResource(R.drawable.img_error_search_state_328)
+            isVisible = true
+        }
+        viewBinding.textStateSpace.apply {
+            setText(R.string.vacancy_error)
+            isVisible = true
+        }
+    }
+
+    private fun default() {
+        viewBinding.vacancyList.isVisible = false
+        viewBinding.progressBar.isVisible = false
+        viewBinding.textStateSpace.isVisible = false
+        viewBinding.spaceForImgInSearch.apply {
+            setImageResource(R.drawable.img_default_search_state_328)
+            isVisible = true
+        }
     }
 
     companion object {
