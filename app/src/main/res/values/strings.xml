@@ -10,4 +10,9 @@
     <string name="no_internet">Нет интернета</string>
     <string name="vacancy_error">Не удалось получить список вакансий</string>
     <string name="tools">Найдено ххх вакансий</string>
+    <string name="work">Над приложением работали</string>
+    <string name="dev_name1">Алина Садртдинова Разработка</string>
+    <string name="dev_name2">Касымбек Таласбек Разработка</string>
+    <string name="dev_name3">Александр Чиварзин Разработка</string>
+    <string name="dev_name4">Владимир Хрисанов Разработка</string>
 </resources>
