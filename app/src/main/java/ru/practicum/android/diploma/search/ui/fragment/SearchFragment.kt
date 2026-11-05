@@ -1,9 +1,11 @@
 package ru.practicum.android.diploma.search.ui.fragment
 
+import android.content.Context.INPUT_METHOD_SERVICE
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -48,10 +50,17 @@ class SearchFragment : Fragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
         default()
-
-        var searchText = ""
         viewBinding.searchEditText.doOnTextChanged { s, _, _, _ ->
-            searchText = s.toString()
+            viewBinding.clearButton.isVisible = !s.isNullOrEmpty()
+        }
+
+        viewBinding.clearButton.setOnClickListener {
+            viewBinding.searchEditText.setText("")
+            viewBinding.clearButton.isVisible = false
+            default()
+            val inputMethodManager =
+                requireContext().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, 0)
         }
     }
 
