@@ -23,4 +23,5 @@
     <dimen name="width_36">36dp</dimen>
     <dimen name="height_36">36dp</dimen>
     <dimen name="margin_70">70dp</dimen>
+    <dimen name="margin_24">24dp</dimen>
 </resources>
