@@ -4,7 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import ru.practicum.android.diploma.common.data.network.VacanciesApi
-import ru.practicum.android.diploma.common.data.network.dto.vacancies.Response
+import ru.practicum.android.diploma.common.data.network.client.Response
 
 class RetrofitNetworkClient(private val vacanciesApi: VacanciesApi) : NetworkClient {
     override suspend fun doRequest(
