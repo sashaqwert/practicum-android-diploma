@@ -5,4 +5,9 @@
     <string name="main">Главная</string>
     <string name="favorite">Избранное</string>
     <string name="team">Команда</string>
+    <string name="work">Над приложением работали</string>
+    <string name="dev_name1">Алина Садртдинова Разработка</string>
+    <string name="dev_name2">Касымбек Таласбек Разработка</string>
+    <string name="dev_name3">Александр Чиварзин Разработка</string>
+    <string name="dev_name4">Владимир Хрисанов Разработка</string>
 </resources>
