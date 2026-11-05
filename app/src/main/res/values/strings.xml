@@ -5,6 +5,11 @@
     <string name="main">Главная</string>
     <string name="favorite">Избранное</string>
     <string name="team">Команда</string>
+    <string name="search">Поиск вакансий</string>
+    <string name="request_input">Введите запрос</string>
+    <string name="no_internet">Нет интернета</string>
+    <string name="vacancy_error">Не удалось получить список вакансий</string>
+    <string name="tools">Найдено ххх вакансий</string>
     <string name="work">Над приложением работали</string>
     <string name="dev_name1">Алина Садртдинова Разработка</string>
     <string name="dev_name2">Касымбек Таласбек Разработка</string>
