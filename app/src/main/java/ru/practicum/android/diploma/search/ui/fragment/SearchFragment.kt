@@ -115,6 +115,7 @@ class SearchFragment : Fragment() {
 
     private fun default() {
         viewBinding.vacancyList.isVisible = false
+        viewBinding.spaceForVacancyCount.isVisible = false
         viewBinding.progressBar.isVisible = false
         viewBinding.textStateSpace.isVisible = false
         viewBinding.spaceForImgInSearch.apply {
