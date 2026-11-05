@@ -9,4 +9,5 @@
     <string name="request_input">Введите запрос</string>
     <string name="no_internet">Нет интернета</string>
     <string name="vacancy_error">Не удалось получить список вакансий</string>
+    <string name="tools">Найдено ххх вакансий</string>
 </resources>
