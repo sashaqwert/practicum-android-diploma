@@ -15,4 +15,7 @@
     <string name="dev_name2">Касымбек Таласбек Разработка</string>
     <string name="dev_name3">Александр Чиварзин Разработка</string>
     <string name="dev_name4">Владимир Хрисанов Разработка</string>
+    <string name="from">от</string>
+    <string name="to">до</string>
+    <string name="salary_not_set">Зарплата не указана</string>
 </resources>

@@ -39,6 +39,7 @@
         tools:text="Андроид-разработчик" />
 
     <TextView
+        android:id="@+id/salary"
         style="@style/Text.Regular16"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
