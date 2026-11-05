@@ -60,6 +60,7 @@ dependencies {
     testImplementation(libs.junit4)
     testImplementation(libs.androidx.arch.core.testing)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.okhttp.mockwebserver)
     androidTestImplementation(libs.junit.ext)
     androidTestImplementation(libs.espresso.core)
 
@@ -67,6 +68,7 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
+    implementation(libs.okhttp)
 
     // Lifecycle
     implementation(libs.androidx.lifecycle.viewmodel.ktx)

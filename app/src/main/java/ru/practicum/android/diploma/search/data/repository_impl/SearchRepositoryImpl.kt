@@ -7,37 +7,28 @@ import ru.practicum.android.diploma.common.domain.Resource
 import ru.practicum.android.diploma.common.domain.models.VacancyCard
 import ru.practicum.android.diploma.common.domain.models.VacancyCardSalary
 import ru.practicum.android.diploma.search.data.response.VacancyResponse
+import ru.practicum.android.diploma.search.domain.model.SearchResult
 import ru.practicum.android.diploma.search.domain.repository.SearchRepository
-import ru.practicum.android.diploma.util.NetworkConnectedCheck
+import java.io.IOException
 
 class SearchRepositoryImpl(
     private val networkClient: NetworkClient,
-    private val networkConnectedCheck: NetworkConnectedCheck
+    private val isConnected: () -> Boolean
 ) : SearchRepository {
-    override suspend fun searchVacancies(query: String): Resource<List<VacancyCard>> {
-        val isConnected = networkConnectedCheck.isConnected()
+    override suspend fun searchVacancies(query: String): Resource<SearchResult> {
+        val connected = isConnected()
         val options = mapOf("text" to query)
 
-        val response = networkClient.doRequest(RequestIntent.GetFilteredVacancies(options), isConnected)
+        val response = try {
+            networkClient.doRequest(RequestIntent.GetFilteredVacancies(options), connected)
+        } catch (_: IOException) {
+            return Resource.Error(if (isConnected()) SERVER_ERROR else NO_INTERNET)
+        }
 
-        when (response.code) {
-            HTTP_OK -> {
-                if ((response as VacancyResponse).found > 0) {
-                    return Resource.Success(
-                        convertVacancies(response)
-                    )
-                } else {
-                    return Resource.Success(listOf())
-                }
-            }
-
-            NO_INTERNET -> {
-                return Resource.Error(NO_INTERNET)
-            }
-
-            else -> {
-                return Resource.Error(response.code)
-            }
+        return if (response.code == HTTP_OK && response is VacancyResponse) {
+            Resource.Success(SearchResult(convertVacancies(response), response.found))
+        } else {
+            Resource.Error(if (response.code == HTTP_OK) SERVER_ERROR else response.code)
         }
     }
 
@@ -66,5 +57,6 @@ class SearchRepositoryImpl(
     companion object {
         private const val HTTP_OK = 200
         private const val NO_INTERNET = -1
+        private const val SERVER_ERROR = 500
     }
 }

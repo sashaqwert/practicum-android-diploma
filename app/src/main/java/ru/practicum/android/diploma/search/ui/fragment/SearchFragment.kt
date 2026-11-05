@@ -9,64 +9,93 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.common.domain.models.VacancyCard
+import ru.practicum.android.diploma.common.ui.adapters.VacancyAdapter
 import ru.practicum.android.diploma.databinding.FragmentSearchBinding
-
-private const val ARG_PARAM1 = "param1"
-
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [SearchFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+import ru.practicum.android.diploma.search.presentation.SearchState
+import ru.practicum.android.diploma.search.presentation.SearchViewModel
 
 class SearchFragment : Fragment() {
-    private var param1: String? = null
-
-    private var param2: String? = null
     private var _viewBinding: FragmentSearchBinding? = null
-
     private val viewBinding get() = _viewBinding!!
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
+    private val viewModel: SearchViewModel by viewModel()
+    private val vacancies = mutableListOf<VacancyCard>()
+    private val vacancyAdapter = VacancyAdapter(vacancies) { vacancy ->
+        val navController = findNavController()
+        if (navController.currentDestination?.id == R.id.searchFragment) {
+            navController.navigate(
+                R.id.action_searchFragment_to_detailsFragment,
+                Bundle().apply { putString("vacancyId", vacancy.id) }
+            )
         }
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _viewBinding = FragmentSearchBinding.inflate(inflater, container, false)
         return viewBinding.root
     }
 
-    override fun onViewCreated(
-        view: View,
-        savedInstanceState: Bundle?
-    ) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        default()
-        viewBinding.searchEditText.doOnTextChanged { s, _, _, _ ->
-            viewBinding.clearButton.isVisible = !s.isNullOrEmpty()
+        viewBinding.vacancyList.adapter = vacancyAdapter
+        viewBinding.searchEditText.doOnTextChanged { text, _, _, _ ->
+            viewBinding.clearButton.isVisible = !text.isNullOrEmpty()
+            viewModel.onQueryChanged(text?.toString().orEmpty())
         }
-
         viewBinding.clearButton.setOnClickListener {
             viewBinding.searchEditText.setText("")
-            viewBinding.clearButton.isVisible = false
-            default()
-            val inputMethodManager =
-                requireContext().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, 0)
+            val inputMethodManager = requireContext().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(viewBinding.searchEditText.windowToken, 0)
         }
+        viewBinding.filerButton.setOnClickListener {
+            val navController = findNavController()
+            if (navController.currentDestination?.id == R.id.searchFragment) {
+                navController.navigate(R.id.action_searchFragment_to_filterFragment)
+            }
+        }
+        viewModel.state.observe(viewLifecycleOwner, ::render)
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
+        viewBinding.vacancyList.adapter = null
         _viewBinding = null
+        super.onDestroyView()
+    }
+
+    private fun render(state: SearchState) {
+        when (state) {
+            SearchState.Default -> default()
+            SearchState.Typing -> typing()
+            SearchState.Loading -> loading()
+            is SearchState.Content -> {
+                vacancies.clear()
+                vacancies.addAll(state.vacancies)
+                vacancyAdapter.notifyDataSetChanged()
+                viewBinding.spaceForVacancyCount.text = resources.getQuantityString(
+                    R.plurals.vacancies_found, state.found, state.found
+                )
+                content()
+            }
+            is SearchState.Error -> when (state.type) {
+                SearchState.ErrorType.NO_INTERNET -> noInternet()
+                SearchState.ErrorType.SERVER -> error()
+            }
+        }
+    }
+
+    private fun typing() {
+        viewBinding.spaceForImgInSearch.isVisible = false
+        viewBinding.spaceForVacancyCount.isVisible = false
+        viewBinding.vacancyList.isVisible = false
+        viewBinding.progressBar.isVisible = false
+        viewBinding.textStateSpace.isVisible = false
     }
 
     private fun loading() {
@@ -124,20 +153,4 @@ class SearchFragment : Fragment() {
         }
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @return A new instance of fragment SearchFragment.
-         */
-        @JvmStatic
-        fun newInstance() =
-            SearchFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
 }

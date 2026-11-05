@@ -18,4 +18,10 @@
     <string name="from">от</string>
     <string name="to">до</string>
     <string name="salary_not_set">Зарплата не указана</string>
+    <plurals name="vacancies_found">
+        <item quantity="one">Найдена %d вакансия</item>
+        <item quantity="few">Найдено %d вакансии</item>
+        <item quantity="many">Найдено %d вакансий</item>
+        <item quantity="other">Найдено %d вакансий</item>
+    </plurals>
 </resources>

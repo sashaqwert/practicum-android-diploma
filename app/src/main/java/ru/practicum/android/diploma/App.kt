@@ -25,7 +25,7 @@ class App : Application() {
             modules(detailsDataModule, detailsDomainModule, detailsViewModelModule,
                 favoriteDataModuleDI, favoriteDomainModuleDI, favoriteViewModelModuleDI,
                 filterDataModule, filterDataModule, filterViewModelModule,
-                searchDataModule, searchDataModule, searchViewModelModule,
+                searchDataModule, searchDomainModule, searchViewModelModule,
                 appModule
             )
         }

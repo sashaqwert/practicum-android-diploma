@@ -25,6 +25,7 @@ detektTwitterComposeRules = "0.0.26"
 # Network
 gson = "2.10"
 retrofit = "2.9.0"
+okhttp = "3.14.9"
 
 # AndroidX (Activity, Fragment, Navigation, Lifecycle)
 activity = "1.6.1"
@@ -77,6 +78,8 @@ staticAnalysis-detektTwitterComposeRules = { module = "com.twitter.compose.rules
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 
 # Lifecycle
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
