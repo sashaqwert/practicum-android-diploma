@@ -12,7 +12,7 @@ import ru.practicum.android.diploma.search.domain.usecase.SearchInteractor
 import java.io.IOException
 
 class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewModel() {
-    private val mutableState = MutableLiveData<SearchState>(SearchState.Initial)
+    private val mutableState = MutableLiveData<SearchState>(SearchState.Default)
     val state: LiveData<SearchState> = mutableState
 
     private var currentQuery = ""
@@ -27,7 +27,7 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
 
         val searchQuery = query.trim()
         if (searchQuery.isEmpty()) {
-            mutableState.value = SearchState.Initial
+            mutableState.value = SearchState.Default
             return
         }
 

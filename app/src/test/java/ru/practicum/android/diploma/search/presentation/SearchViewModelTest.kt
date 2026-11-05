@@ -20,9 +20,9 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import ru.practicum.android.diploma.search.domain.model.Salary
+import ru.practicum.android.diploma.common.domain.models.VacancyCard
+import ru.practicum.android.diploma.common.domain.models.VacancyCardSalary
 import ru.practicum.android.diploma.search.domain.model.SearchResult
-import ru.practicum.android.diploma.search.domain.model.Vacancy
 import ru.practicum.android.diploma.search.domain.usecase.SearchInteractor
 import java.io.IOException
 
@@ -35,13 +35,13 @@ class SearchViewModelTest {
     private val viewModelStore = ViewModelStore()
     private lateinit var interactor: RecordingSearchInteractor
     private lateinit var viewModel: SearchViewModel
-    private val vacancy = Vacancy(
+    private val vacancy = VacancyCard(
         id = "123",
         name = "Android developer",
         company = "Company",
         city = "Moscow",
         logo = null,
-        salary = Salary(from = 100000, to = null, currency = "RUR")
+        salary = VacancyCardSalary(from = 100000, to = null, currency = "RUR")
     )
 
     @Before
@@ -59,10 +59,10 @@ class SearchViewModelTest {
     }
 
     @Test
-    fun startsWithInitialStateWithoutSearch() = runTest(dispatcher) {
+    fun startsWithDefaultStateWithoutSearch() = runTest(dispatcher) {
         advanceUntilIdle()
 
-        assertEquals(SearchState.Initial, viewModel.state.value)
+        assertEquals(SearchState.Default, viewModel.state.value)
         assertTrue(interactor.queries.isEmpty())
     }
 
@@ -128,7 +128,7 @@ class SearchViewModelTest {
         advanceUntilIdle()
 
         assertTrue(interactor.queries.isEmpty())
-        assertEquals(SearchState.Initial, viewModel.state.value)
+        assertEquals(SearchState.Default, viewModel.state.value)
     }
 
     @Test
@@ -141,7 +141,7 @@ class SearchViewModelTest {
         viewModel.onQueryChanged("   ")
         advanceUntilIdle()
 
-        assertEquals(SearchState.Initial, viewModel.state.value)
+        assertEquals(SearchState.Default, viewModel.state.value)
         assertEquals(listOf("kotlin"), interactor.queries)
     }
 
@@ -209,7 +209,7 @@ class SearchViewModelTest {
         response.complete(SearchResult(listOf(vacancy), 42))
         runCurrent()
 
-        assertEquals(SearchState.Initial, viewModel.state.value)
+        assertEquals(SearchState.Default, viewModel.state.value)
     }
 
     @Test
