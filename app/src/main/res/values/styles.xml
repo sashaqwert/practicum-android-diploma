@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Text">
-        <item name="android:color">?attr/colorOnPrimary</item>
+        <item name="android:textColor">?attr/colorOnPrimary</item>
         <item name="android:letterSpacing">0</item>
     </style>
 
-    <style name="Text.Bold32">
+    <style name="Text.Bold32" parent="Text">
         <item name="android:fontFamily">@font/ys_display_bold</item>
         <item name="android:fontWeight">700</item>
         <item name="android:textSize">@dimen/text_32</item>
         <item name="lineHeight">@dimen/text_36</item>
     </style>
 
-    <style name="Text.Medium22">
+    <style name="Text.Medium22" parent="Text">
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:fontWeight">500</item>
         <item name="android:textSize">@dimen/text_22</item>
