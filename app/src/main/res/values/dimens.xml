@@ -7,4 +7,7 @@
     <dimen name="text_19">19sp</dimen>
     <dimen name="text_16">16sp</dimen>
     <dimen name="text_12">12sp</dimen>
+    <dimen name="margin_19">19dp</dimen>
+    <dimen name="margin_24">24dp</dimen>
+    <dimen name="margin_16">16dp</dimen>
 </resources>
