@@ -58,7 +58,9 @@ class Converters() {
             id = contactsDto.id,
             name = contactsDto.name,
             phones = toPhones(contactsDto.phones)
-        ) else null
+        ) else {
+            null
+        }
     }
 
     private fun toPhones(phonesDto: List<PhoneDto>): List<Phone> {
@@ -82,14 +84,18 @@ class Converters() {
         return if (employmentDto != null) Employment(
             id = employmentDto.id,
             name = employmentDto.name
-        ) else null
+        ) else {
+            null
+        }
     }
 
     private fun toExperience(experienceDto: ExperienceDto?): Experience? {
         return if (experienceDto != null) Experience(
             id = experienceDto.id,
             name = experienceDto.name
-        ) else null
+        ) else {
+            null
+        }
     }
 
     private fun toFilterIndustry(industryDto: FilterIndustryDto): FilterIndustry {
@@ -104,7 +110,9 @@ class Converters() {
             from = salaryDto.from,
             to = salaryDto.to,
             currency = salaryDto.currency
-        ) else null
+        ) else {
+            null
+        }
     }
 
 
@@ -112,7 +120,9 @@ class Converters() {
         return if (scheduleDto != null) Schedule(
             id = scheduleDto.id,
             name = scheduleDto.name
-        ) else null
+        ) else {
+            null
+        }
     }
 
     fun toVacancyDetail(

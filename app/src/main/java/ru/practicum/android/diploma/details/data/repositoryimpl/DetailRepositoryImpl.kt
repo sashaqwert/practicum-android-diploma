@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.details.data.repositoryImpl
+package ru.practicum.android.diploma.details.data.repositoryimpl
 
 import ru.practicum.android.diploma.common.data.converters.Converters
 import ru.practicum.android.diploma.common.data.network.client.NetworkClient
