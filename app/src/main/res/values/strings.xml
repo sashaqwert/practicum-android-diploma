@@ -18,4 +18,5 @@
     <string name="from">от</string>
     <string name="to">до</string>
     <string name="salary_not_set">Зарплата не указана</string>
+    <string name="vacancy">Вакансия</string>
 </resources>
