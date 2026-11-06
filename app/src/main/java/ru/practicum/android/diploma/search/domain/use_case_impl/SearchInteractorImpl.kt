@@ -7,10 +7,11 @@ import ru.practicum.android.diploma.search.domain.usecase.SearchInteractor
 
 class SearchInteractorImpl(private val searchRepository: SearchRepository) : SearchInteractor {
     override suspend fun searchVacancies(query: String): SearchResult {
-        val response = searchRepository.searchVacancies(query) as Resource.Success
+        val response = searchRepository.searchVacancies(query) as SearchResult
+
         return SearchResult(
-            vacancies = response.data,
-            found = response.data.size
+            vacancies = response.vacancies,
+            found = response.found
         )
     }
 }
