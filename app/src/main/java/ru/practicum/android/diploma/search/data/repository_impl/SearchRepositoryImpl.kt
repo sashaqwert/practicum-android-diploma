@@ -7,6 +7,7 @@ import ru.practicum.android.diploma.common.domain.Resource
 import ru.practicum.android.diploma.common.domain.models.VacancyCard
 import ru.practicum.android.diploma.common.domain.models.VacancyCardSalary
 import ru.practicum.android.diploma.search.data.response.VacancyResponse
+import ru.practicum.android.diploma.search.domain.model.SearchResult
 import ru.practicum.android.diploma.search.domain.repository.SearchRepository
 import ru.practicum.android.diploma.util.NetworkConnectedCheck
 
@@ -14,7 +15,7 @@ class SearchRepositoryImpl(
     private val networkClient: NetworkClient,
     private val networkConnectedCheck: NetworkConnectedCheck
 ) : SearchRepository {
-    override suspend fun searchVacancies(query: String): Resource<List<VacancyCard>> {
+    override suspend fun searchVacancies(query: String): Resource<SearchResult> {
         val isConnected = networkConnectedCheck.isConnected()
         val options = mapOf("text" to query)
 
@@ -27,7 +28,12 @@ class SearchRepositoryImpl(
                         convertVacancies(response)
                     )
                 } else {
-                    return Resource.Success(listOf())
+                    return Resource.Success(
+                        SearchResult(
+                            vacancies = listOf(),
+                            found = 0
+                        )
+                    )
                 }
             }
 
@@ -41,8 +47,8 @@ class SearchRepositoryImpl(
         }
     }
 
-    private fun convertVacancies(vacancies: VacancyResponse): List<VacancyCard> {
-        return vacancies.vacancyCards.map {
+    private fun convertVacancies(vacancies: VacancyResponse): SearchResult {
+        val vacanciesMapped = vacancies.vacancyCards.map {
             VacancyCard(
                 id = it.id,
                 name = it.name,
@@ -52,6 +58,11 @@ class SearchRepositoryImpl(
                 logo = it.logo
             )
         }
+
+        return SearchResult(
+            vacancies = vacanciesMapped,
+            found = vacancies.found
+        )
     }
 
     private fun convertSalary(salary: VacancyCardSalaryDto?): VacancyCardSalary? {
