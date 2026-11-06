@@ -4,7 +4,7 @@ import android.app.Application
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
 import ru.practicum.android.diploma.common.di.appModule
-import ru.practicum.android.diploma.common.di.data.commonDataModuleDI
+import ru.practicum.android.diploma.common.di.data.commonDataModule
 import ru.practicum.android.diploma.details.di.data.detailsDataModule
 import ru.practicum.android.diploma.details.di.domain.detailsDomainModule
 import ru.practicum.android.diploma.details.di.ui.detailsViewModelModule
@@ -27,7 +27,7 @@ class App : Application() {
                 favoriteDataModuleDI, favoriteDomainModuleDI, favoriteViewModelModuleDI,
                 filterDataModule, filterDataModule, filterViewModelModule,
                 searchDataModule, searchDataModule, searchViewModelModule,
-                appModule, commonDataModuleDI
+                appModule, commonDataModule
             )
         }
     }
