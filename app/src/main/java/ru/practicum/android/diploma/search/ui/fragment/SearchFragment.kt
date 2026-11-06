@@ -9,8 +9,13 @@ import android.view.inputmethod.InputMethodManager
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.common.domain.models.VacancyCard
+import ru.practicum.android.diploma.common.ui.for_recycler_view.VacancyAdapter
 import ru.practicum.android.diploma.databinding.FragmentSearchBinding
+import ru.practicum.android.diploma.details.ui.fragment.DetailsFragment
+
 
 private const val ARG_PARAM1 = "param1"
 
@@ -27,6 +32,7 @@ class SearchFragment : Fragment() {
 
     private var param2: String? = null
     private var _viewBinding: FragmentSearchBinding? = null
+    private var vacancies: List<VacancyCard> = emptyList()
 
     private val viewBinding get() = _viewBinding!!
 
@@ -42,6 +48,12 @@ class SearchFragment : Fragment() {
     ): View? {
         _viewBinding = FragmentSearchBinding.inflate(inflater, container, false)
         return viewBinding.root
+
+        val adapter = VacancyAdapter(vacancies) { vacancy ->
+           findNavController().navigate(
+               R.id.action_searchFragment_to_detailsFragment,
+               DetailsFragment.putId(vacancy.id))
+        }
     }
 
     override fun onViewCreated(
