@@ -24,7 +24,7 @@ import ru.practicum.android.diploma.details.domain.model.Phone
 import ru.practicum.android.diploma.details.domain.model.Schedule
 import ru.practicum.android.diploma.details.domain.model.VacancyDetail
 
-class Converters() {
+class Converters {
     private fun toAddress(addressDto: AddressDto?): Address? {
         return if (addressDto != null) {
             Address(
@@ -144,7 +144,10 @@ class Converters() {
             address = toAddress(detailResponse.address),
             area = toFilterArea(detailResponse.area),
             contacts = toContacts(detailResponse.contacts),
-            description = HtmlCompat.fromHtml(detailResponse.description, HtmlCompat.FROM_HTML_MODE_LEGACY).toString(),
+            description = HtmlCompat.fromHtml(
+                detailResponse.description,
+                HtmlCompat.FROM_HTML_MODE_LEGACY
+            ).toString(),
             employer = toEmployer(detailResponse.employer),
             employment = toEmployment(detailResponse.employment),
             experience = toExperience(detailResponse.experience),

@@ -31,8 +31,9 @@ class DetailsRepositoryImpl(
             NO_INTERNET -> {
                 Resource.Error(NO_INTERNET)
             }
-            DELETED -> {
-                Resource.Error(DELETED)
+
+            NOT_FOUND -> {
+                Resource.Error(NOT_FOUND)
             }
 
             else -> Resource.Error(response.code)
@@ -43,7 +44,7 @@ class DetailsRepositoryImpl(
         private const val HTTP_OK = 200
         private const val NO_INTERNET = -1
         private const val NO_DETAIL_RESPONSE = -2
-        private const val DELETED = 404
+        private const val NOT_FOUND = 404
     }
 }
 
