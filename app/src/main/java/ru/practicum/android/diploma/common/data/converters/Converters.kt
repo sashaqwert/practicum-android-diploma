@@ -26,13 +26,15 @@ import ru.practicum.android.diploma.details.domain.model.VacancyDetail
 
 class Converters() {
     private fun toAddress(addressDto: AddressDto?): Address? {
-        return if (addressDto != null) Address(
-            building = addressDto.building,
-            city = addressDto.city,
-            id = addressDto.id,
-            raw = addressDto.raw,
-            street = addressDto.street
-        ) else {
+        return if (addressDto != null) {
+            Address(
+                building = addressDto.building,
+                city = addressDto.city,
+                id = addressDto.id,
+                raw = addressDto.raw,
+                street = addressDto.street
+            )
+        } else {
             null
         }
     }
@@ -53,12 +55,14 @@ class Converters() {
     }
 
     private fun toContacts(contactsDto: ContactsDto?): Contacts? {
-        return if (contactsDto != null) Contacts(
-            email = contactsDto.email,
-            id = contactsDto.id,
-            name = contactsDto.name,
-            phones = toPhones(contactsDto.phones)
-        ) else {
+        return if (contactsDto != null) {
+            Contacts(
+                email = contactsDto.email,
+                id = contactsDto.id,
+                name = contactsDto.name,
+                phones = toPhones(contactsDto.phones)
+            )
+        } else {
             null
         }
     }
@@ -81,19 +85,23 @@ class Converters() {
     }
 
     private fun toEmployment(employmentDto: EmploymentDto?): Employment? {
-        return if (employmentDto != null) Employment(
-            id = employmentDto.id,
-            name = employmentDto.name
-        ) else {
+        return if (employmentDto != null) {
+            Employment(
+                id = employmentDto.id,
+                name = employmentDto.name
+            )
+        } else {
             null
         }
     }
 
     private fun toExperience(experienceDto: ExperienceDto?): Experience? {
-        return if (experienceDto != null) Experience(
-            id = experienceDto.id,
-            name = experienceDto.name
-        ) else {
+        return if (experienceDto != null) {
+            Experience(
+                id = experienceDto.id,
+                name = experienceDto.name
+            )
+        } else {
             null
         }
     }
@@ -106,21 +114,25 @@ class Converters() {
     }
 
     private fun toSalary(salaryDto: VacancyCardSalaryDto?): VacancyCardSalary? {
-        return if (salaryDto != null) VacancyCardSalary(
-            from = salaryDto.from,
-            to = salaryDto.to,
-            currency = salaryDto.currency
-        ) else {
+        return if (salaryDto != null) {
+            VacancyCardSalary(
+                from = salaryDto.from,
+                to = salaryDto.to,
+                currency = salaryDto.currency
+            )
+        } else {
             null
         }
     }
 
 
     private fun toSchedule(scheduleDto: ScheduleDto?): Schedule? {
-        return if (scheduleDto != null) Schedule(
-            id = scheduleDto.id,
-            name = scheduleDto.name
-        ) else {
+        return if (scheduleDto != null) {
+            Schedule(
+                id = scheduleDto.id,
+                name = scheduleDto.name
+            )
+        } else {
             null
         }
     }
