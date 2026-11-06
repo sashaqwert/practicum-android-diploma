@@ -19,5 +19,5 @@ data class VacancyDetail(
     val schedule: Schedule?,
     val skills: List<String>,
     val url: String,
-    val isFavorite: Boolean
+    val isFavorite: Boolean = false
 )
