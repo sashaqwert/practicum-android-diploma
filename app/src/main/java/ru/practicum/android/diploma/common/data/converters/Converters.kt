@@ -157,7 +157,8 @@ class Converters {
             salary = toSalary(detailResponse.salary),
             schedule = toSchedule(detailResponse.schedule),
             skills = detailResponse.skills,
-            url = detailResponse.url
+            url = detailResponse.url,
+            isFavorite = false
         )
     }
 }
