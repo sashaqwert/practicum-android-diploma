@@ -20,6 +20,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import ru.practicum.android.diploma.common.domain.Resource
 import ru.practicum.android.diploma.common.domain.models.VacancyCard
 import ru.practicum.android.diploma.common.domain.models.VacancyCardSalary
 import ru.practicum.android.diploma.search.domain.model.SearchResult
@@ -133,7 +134,7 @@ class SearchViewModelTest {
 
     @Test
     fun blankTextClearsCompletedResultsWithoutAnotherSearch() = runTest(dispatcher) {
-        interactor.response = { SearchResult(listOf(vacancy), 42) }
+        interactor.response = { Resource.Success(SearchResult(listOf(vacancy), 42)) }
         viewModel.onQueryChanged("kotlin")
         advanceUntilIdle()
         assertEquals(SearchState.Content(listOf(vacancy), 42), viewModel.state.value)
@@ -148,7 +149,7 @@ class SearchViewModelTest {
     @Test
     fun showsLoadingThenVacanciesWithTotalFoundCount() = runTest(dispatcher) {
         val response = CompletableDeferred<SearchResult>()
-        interactor.response = { response.await() }
+        interactor.response = { Resource.Success(response.await()) }
         viewModel.onQueryChanged("kotlin")
         runCurrent()
         advanceTimeBy(2000)
@@ -175,9 +176,9 @@ class SearchViewModelTest {
         val oldResponse = CompletableDeferred<SearchResult>()
         interactor.response = { query ->
             if (query == "old") {
-                withContext(NonCancellable) { oldResponse.await() }
+                Resource.Success(withContext(NonCancellable) { oldResponse.await() })
             } else {
-                SearchResult(listOf(vacancy), 42)
+                Resource.Success(SearchResult(listOf(vacancy), 42))
             }
         }
         viewModel.onQueryChanged("old")
@@ -200,7 +201,7 @@ class SearchViewModelTest {
     @Test
     fun clearedSearchCannotRestoreResultsAfterLateResponse() = runTest(dispatcher) {
         val response = CompletableDeferred<SearchResult>()
-        interactor.response = { withContext(NonCancellable) { response.await() } }
+        interactor.response = { Resource.Success(withContext(NonCancellable) { response.await() }) }
         viewModel.onQueryChanged("kotlin")
         runCurrent()
         advanceTimeBy(2000)
@@ -218,9 +219,9 @@ class SearchViewModelTest {
         viewModel.onQueryChanged("old")
         advanceUntilIdle()
 
-        assertEquals(SearchState.Error, viewModel.state.value)
+        assertEquals(SearchState.Error(-1), viewModel.state.value)
 
-        interactor.response = { SearchResult(listOf(vacancy), 42) }
+        interactor.response = { Resource.Success(SearchResult(listOf(vacancy), 42)) }
         viewModel.onQueryChanged("new")
         advanceUntilIdle()
 
@@ -237,11 +238,43 @@ class SearchViewModelTest {
         assertTrue(interactor.queries.isEmpty())
     }
 
+    @Test
+    fun interactorErrorCodesArePreservedAndNewSearchCanRecover() = runTest(dispatcher) {
+        for (code in listOf(-1, -2, -3, 401, 404, 500)) {
+            interactor.response = { Resource.Error(code) }
+            viewModel.onQueryChanged("query$code")
+            advanceUntilIdle()
+
+            assertEquals(SearchState.Error(code), viewModel.state.value)
+        }
+
+        interactor.response = { Resource.Success(SearchResult(listOf(vacancy), 42)) }
+        viewModel.onQueryChanged("android")
+        advanceUntilIdle()
+
+        assertEquals(SearchState.Content(listOf(vacancy), 42), viewModel.state.value)
+    }
+
+    @Test
+    fun clearedSearchCannotRestoreLateError() = runTest(dispatcher) {
+        val response = CompletableDeferred<Resource<SearchResult>>()
+        interactor.response = { withContext(NonCancellable) { response.await() } }
+        viewModel.onQueryChanged("android")
+        runCurrent()
+        advanceTimeBy(2000)
+        runCurrent()
+        viewModel.onQueryChanged("")
+        response.complete(Resource.Error(500))
+        runCurrent()
+
+        assertEquals(SearchState.Default, viewModel.state.value)
+    }
+
     private class RecordingSearchInteractor : SearchInteractor {
         val queries = mutableListOf<String>()
-        var response: suspend (String) -> SearchResult = { SearchResult(emptyList(), 0) }
+        var response: suspend (String) -> Resource<SearchResult> = { Resource.Success(SearchResult(emptyList(), 0)) }
 
-        override suspend fun searchVacancies(query: String): SearchResult {
+        override suspend fun searchVacancies(query: String): Resource<SearchResult> {
             queries.add(query)
             return response(query)
         }

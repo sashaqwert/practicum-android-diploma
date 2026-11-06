@@ -8,6 +8,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.common.domain.Resource
 import ru.practicum.android.diploma.search.domain.usecase.SearchInteractor
 import java.io.IOException
 
@@ -37,15 +38,19 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
             try {
                 val result = searchInteractor.searchVacancies(searchQuery)
                 ensureActive()
-                mutableState.value = SearchState.Content(result.vacancies, result.found)
+                mutableState.value = when (result) {
+                    is Resource.Success -> SearchState.Content(result.data.vacancies, result.data.found)
+                    is Resource.Error -> SearchState.Error(result.code)
+                }
             } catch (_: IOException) {
                 ensureActive()
-                mutableState.value = SearchState.Error
+                mutableState.value = SearchState.Error(NO_INTERNET)
             }
         }
     }
 
     companion object {
         private const val SEARCH_DEBOUNCE_MILLIS = 2000L
+        private const val NO_INTERNET = -1
     }
 }

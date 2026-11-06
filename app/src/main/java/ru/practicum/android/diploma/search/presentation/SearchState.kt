@@ -9,5 +9,5 @@ sealed interface SearchState {
 
     data class Content(val vacancies: List<VacancyCard>, val found: Int) : SearchState
 
-    object Error : SearchState
+    data class Error(val code: Int) : SearchState
 }
