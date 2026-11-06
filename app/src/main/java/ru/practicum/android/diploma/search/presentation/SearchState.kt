@@ -7,7 +7,12 @@ sealed interface SearchState {
 
     object Loading : SearchState
 
-    data class Content(val vacancies: List<VacancyCard>, val found: Int) : SearchState
+    data class Content(
+        val vacancies: List<VacancyCard>,
+        val found: Int,
+        val isLoadingMore: Boolean = false,
+        val paginationErrorCode: Int? = null
+    ) : SearchState
 
     data class Error(val code: Int) : SearchState
 }

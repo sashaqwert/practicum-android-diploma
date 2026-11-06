@@ -274,7 +274,7 @@ class SearchViewModelTest {
         val queries = mutableListOf<String>()
         var response: suspend (String) -> Resource<SearchResult> = { Resource.Success(SearchResult(emptyList(), 0)) }
 
-        override suspend fun searchVacancies(query: String): Resource<SearchResult> {
+        override suspend fun searchVacancies(query: String, page: Int): Resource<SearchResult> {
             queries.add(query)
             return response(query)
         }
