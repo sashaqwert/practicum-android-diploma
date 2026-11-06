@@ -8,6 +8,7 @@ import ru.practicum.android.diploma.details.data.response.VacancyDetailResponse
 import ru.practicum.android.diploma.details.domain.model.VacancyDetail
 import ru.practicum.android.diploma.details.domain.repository.DetailsRepository
 import ru.practicum.android.diploma.util.NetworkConnectedCheck
+import java.io.IOException
 
 class DetailsRepositoryImpl(
     private val client: NetworkClient,
@@ -18,7 +19,13 @@ class DetailsRepositoryImpl(
     override suspend fun getDetailsInfo(vacancyId: String): Resource<VacancyDetail> {
         val isConnected = connectionCheck.isConnected()
 
-        val response = client.doRequest(RequestIntent.GetVacancyById(vacancyId), isConnected)
+        val response = try {
+            client.doRequest(RequestIntent.GetVacancyById(vacancyId), isConnected)
+        } catch (e: IOException) {
+            return Resource.Error(NO_INTERNET)
+        } catch (e: Exception) {
+            return Resource.Error(UNKNOWN_ERROR)
+        }
 
         return when (response.code) {
             HTTP_OK -> {
@@ -45,6 +52,7 @@ class DetailsRepositoryImpl(
         private const val NO_INTERNET = -1
         private const val NO_DETAIL_RESPONSE = -2
         private const val NOT_FOUND = 404
+        private const val UNKNOWN_ERROR = -3
     }
 }
 
