@@ -7,4 +7,6 @@
     <color name="gray">#AEAFB4</color>
     <color name="light_gray">#E6E8EB</color>
     <color name="background">#801A1B22</color>
+
+    <color name="for_hint">@color/gray</color>
 </resources>
