@@ -6,5 +6,5 @@ data class Contacts(
     val email: String,
     val id: String,
     val name: String,
-    val phones: List<PhoneDto>
+    val phones: List<Phone>
 )
