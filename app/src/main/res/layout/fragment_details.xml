@@ -230,19 +230,30 @@
             Следить за работоспособностью сервиса и устранять технический долг"/>
 
             <TextView
-                android:id="@+id/skills"
+                android:id="@+id/skillsTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                style="@style/Text.Regular16"
+                style="@style/Text.Medium22"
                 android:gravity="start"
+                android:text="@string/skills"
                 android:layout_marginTop="@dimen/margin_24"
-                android:layout_marginBottom="@dimen/margin_24"
                 app:layout_constraintTop_toBottomOf="@id/description"
                 app:layout_constraintStart_toEndOf="@id/startGuideline"
                 app:layout_constraintEnd_toStartOf="@id/endGuideline"
                 tools:text="Ключевые навыки"/>
 
-
+            <TextView
+                android:id="@+id/skillsList"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                style="@style/Text.Regular16"
+                android:gravity="start"
+                android:layout_marginTop="@dimen/margin_16"
+                android:layout_marginBottom="@dimen/margin_24"
+                app:layout_constraintTop_toBottomOf="@id/skillsTitle"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintEnd_toStartOf="@id/endGuideline"
+                tools:text="Ключевые навыки"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
