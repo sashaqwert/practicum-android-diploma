@@ -6,7 +6,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
-fun <T> debounce(
+fun <T> debounceFun(
     delayMillis: Long,
     coroutineScope: CoroutineScope,
     action: suspend (T) -> Unit
