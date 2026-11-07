@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -51,7 +52,9 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
         }
 
         val query = currentQuery.trim()
-        searchJob = viewModelScope.launch { searchPage(query, page, content) }
+        val job = viewModelScope.launch(start = CoroutineStart.LAZY) { searchPage(query, page, content) }
+        searchJob = job
+        job.start()
     }
 
     fun onPaginationErrorShown() {
