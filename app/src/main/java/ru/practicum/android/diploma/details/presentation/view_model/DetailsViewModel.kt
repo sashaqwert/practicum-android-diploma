@@ -10,11 +10,11 @@ class DetailsViewModel : ViewModel() {
     fun observeState(): LiveData<DetailsState> = stateLiveData
 
     fun fillData() {
-    stateLiveData.value = DetailsState.Loading
-    // FIXME: нет интерактора
+        stateLiveData.value = DetailsState.Loading
+        // FIXME: нет интерактора
     }
 
-    fun action_favorite_clicked() {
+    fun actionFavoriteClicked() {
         // FIXME: Нет интерактора
     }
 }
