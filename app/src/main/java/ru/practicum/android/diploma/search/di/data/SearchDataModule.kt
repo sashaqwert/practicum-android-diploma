@@ -13,14 +13,6 @@ import ru.practicum.android.diploma.search.domain.repository.SearchRepository
 import ru.practicum.android.diploma.util.NetworkConnectedCheck
 
 val searchDataModule = module {
-    single<VacanciesApi> {
-        Retrofit.Builder()
-            .baseUrl("https://android-diploma.education-services.ru")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(VacanciesApi::class.java)
-    }
-
     single<NetworkClient> {
         RetrofitNetworkClient(get())
     }
@@ -34,6 +26,6 @@ val searchDataModule = module {
     }
 
     single<SearchRepository> {
-        SearchRepositoryImpl(get(), get())
+        SearchRepositoryImpl(get(), get(), get())
     }
 }

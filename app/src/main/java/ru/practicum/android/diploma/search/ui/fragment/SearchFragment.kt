@@ -10,6 +10,8 @@ import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.domain.models.VacancyCard
 import ru.practicum.android.diploma.common.ui.for_recycler_view.VacancyAdapter
@@ -48,12 +50,6 @@ class SearchFragment : Fragment() {
     ): View? {
         _viewBinding = FragmentSearchBinding.inflate(inflater, container, false)
         return viewBinding.root
-
-        val adapter = VacancyAdapter(vacancies) { vacancy ->
-           findNavController().navigate(
-               R.id.action_searchFragment_to_detailsFragment,
-               DetailsFragment.putId(vacancy.id))
-        }
     }
 
     override fun onViewCreated(
@@ -61,10 +57,10 @@ class SearchFragment : Fragment() {
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
-        default()
         viewBinding.searchEditText.doOnTextChanged { s, _, _, _ ->
             viewBinding.clearButton.isVisible = !s.isNullOrEmpty()
         }
+
 
         viewBinding.clearButton.setOnClickListener {
             viewBinding.searchEditText.setText("")
@@ -74,6 +70,27 @@ class SearchFragment : Fragment() {
                 requireContext().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, 0)
         }
+
+        val adapter = VacancyAdapter(vacancies) { vacancy ->
+            findNavController().navigate(
+                R.id.action_searchFragment_to_detailsFragment,
+                DetailsFragment.putId(vacancy.id)
+            )
+        }
+        viewBinding.vacancyList.adapter = adapter
+        viewBinding.vacancyList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0) {
+                    val pos =
+                        (viewBinding.vacancyList.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+                    val itemsCount = adapter.itemCount
+                    if (pos >= itemsCount - 1) {
+                        //вызов метода viewModel, который вызовет интерактор для отправки поискового запроса
+                    }
+                }
+            }
+        })
     }
 
     override fun onDestroyView() {

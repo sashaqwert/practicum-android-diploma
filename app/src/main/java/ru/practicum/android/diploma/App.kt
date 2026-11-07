@@ -4,6 +4,7 @@ import android.app.Application
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
 import ru.practicum.android.diploma.common.di.appModule
+import ru.practicum.android.diploma.common.di.data.commonDataModule
 import ru.practicum.android.diploma.details.di.data.detailsDataModule
 import ru.practicum.android.diploma.details.di.domain.detailsDomainModule
 import ru.practicum.android.diploma.details.di.ui.detailsViewModelModule
@@ -11,6 +12,7 @@ import ru.practicum.android.diploma.favorite.di.data.favoriteDataModuleDI
 import ru.practicum.android.diploma.favorite.di.domain.favoriteDomainModuleDI
 import ru.practicum.android.diploma.favorite.di.ui.favoriteViewModelModuleDI
 import ru.practicum.android.diploma.filter.di.data.filterDataModule
+import ru.practicum.android.diploma.filter.di.domain.filterDomainModule
 import ru.practicum.android.diploma.filter.di.ui.filterViewModelModule
 import ru.practicum.android.diploma.search.di.data.searchDataModule
 import ru.practicum.android.diploma.search.di.domain.searchDomainModule
@@ -22,11 +24,12 @@ class App : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@App)
-            modules(detailsDataModule, detailsDomainModule, detailsViewModelModule,
+            modules(
+                detailsDataModule, detailsDomainModule, detailsViewModelModule,
                 favoriteDataModuleDI, favoriteDomainModuleDI, favoriteViewModelModuleDI,
-                filterDataModule, filterDataModule, filterViewModelModule,
+                filterDataModule, filterDomainModule, filterViewModelModule,
                 searchDataModule, searchDomainModule, searchViewModelModule,
-                appModule
+                appModule, commonDataModule
             )
         }
     }

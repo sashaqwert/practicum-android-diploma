@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.search.data.repository_impl
 
+import ru.practicum.android.diploma.common.data.converters.Converters
 import ru.practicum.android.diploma.common.data.dto.VacancyCardSalaryDto
 import ru.practicum.android.diploma.common.data.network.client.NetworkClient
 import ru.practicum.android.diploma.common.data.network.client.RequestIntent
@@ -13,7 +14,8 @@ import ru.practicum.android.diploma.util.NetworkConnectedCheck
 
 class SearchRepositoryImpl(
     private val networkClient: NetworkClient,
-    private val networkConnectedCheck: NetworkConnectedCheck
+    private val networkConnectedCheck: NetworkConnectedCheck,
+    private val converter: Converters
 ) : SearchRepository {
     override suspend fun searchVacancies(options: Map<String, String>): Resource<SearchResult> {
         val isConnected = networkConnectedCheck.isConnected()
@@ -24,7 +26,7 @@ class SearchRepositoryImpl(
             HTTP_OK -> {
                 if ((response as VacancyResponse).found > 0) {
                     Resource.Success(
-                        convertVacancies(response)
+                        converter.convertVacancies(response)
                     )
                 } else {
                     Resource.Success(
@@ -46,35 +48,6 @@ class SearchRepositoryImpl(
                 Resource.Error(response.code)
             }
         }
-    }
-
-    private fun convertVacancies(vacancies: VacancyResponse): SearchResult {
-        val vacanciesMapped = vacancies.vacancyCards.map {
-            VacancyCard(
-                id = it.id,
-                name = it.name,
-                company = it.company,
-                city = it.city,
-                salary = convertSalary(it.salary),
-                logo = it.logo
-            )
-        }
-
-        return SearchResult(
-            vacancies = vacanciesMapped,
-            found = vacancies.found,
-            page = vacancies.page,
-            pages = vacancies.pages
-        )
-    }
-
-    private fun convertSalary(salary: VacancyCardSalaryDto?): VacancyCardSalary? {
-        salary ?: return null
-        return VacancyCardSalary(
-            from = salary.from,
-            to = salary.to,
-            currency = salary.currency
-        )
     }
 
     companion object {
