@@ -7,5 +7,5 @@ sealed interface DetailsState {
 
     data class Content (val vacancyDetail : VacancyDetail) : DetailsState
 
-    object Error : DetailsState
+    data class Error(val code:  Int) : DetailsState
 }
