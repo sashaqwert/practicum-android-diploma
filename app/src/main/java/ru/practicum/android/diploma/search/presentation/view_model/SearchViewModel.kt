@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.search.presentation
+package ru.practicum.android.diploma.search.presentation.view_model
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,6 +12,7 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.common.domain.Resource
 import ru.practicum.android.diploma.search.domain.usecase.SearchInteractor
+import ru.practicum.android.diploma.search.presentation.state.SearchState
 import java.io.IOException
 
 class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewModel() {

@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.search.presentation
+package ru.practicum.android.diploma.search.presentation.state
 
 import ru.practicum.android.diploma.common.domain.models.VacancyCard
 
