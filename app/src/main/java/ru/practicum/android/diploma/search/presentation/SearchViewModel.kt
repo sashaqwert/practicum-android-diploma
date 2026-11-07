@@ -8,6 +8,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.common.domain.Resource
+import ru.practicum.android.diploma.search.domain.model.SearchResult
 import ru.practicum.android.diploma.search.domain.usecase.SearchInteractor
 import java.io.IOException
 
@@ -35,7 +37,7 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
             delay(SEARCH_DEBOUNCE_MILLIS)
             mutableState.value = SearchState.Loading
             try {
-                val result = searchInteractor.searchVacancies(searchQuery)
+                val result = searchInteractor.searchVacancies(mapOf("text" to searchQuery)) as SearchResult
                 ensureActive()
                 mutableState.value = SearchState.Content(result.vacancies, result.found)
             } catch (_: IOException) {
