@@ -39,7 +39,7 @@ class VacancyViewHolder(private val binding: ItemVacancyBinding) : RecyclerView.
                 .error(R.drawable.img_empty_logo_48_xml)
                 .transform(
                     RoundedCorners(
-                        TypedValueCompat.dpToPx(12f, itemView.resources.displayMetrics).toInt()
+                        TypedValueCompat.dpToPx(CORNERS, itemView.resources.displayMetrics).toInt()
                     )
                 )
                 .into(binding.imageRecyclerView)
@@ -54,5 +54,6 @@ class VacancyViewHolder(private val binding: ItemVacancyBinding) : RecyclerView.
             val binding = ItemVacancyBinding.inflate(inflater, parent, false)
             return VacancyViewHolder(binding)
         }
+        const val CORNERS = 12f
     }
 }
