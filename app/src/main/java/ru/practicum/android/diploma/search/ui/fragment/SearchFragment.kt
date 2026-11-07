@@ -19,10 +19,6 @@ import ru.practicum.android.diploma.databinding.FragmentSearchBinding
 import ru.practicum.android.diploma.details.ui.fragment.DetailsFragment
 
 
-private const val ARG_PARAM1 = "param1"
-
-private const val ARG_PARAM2 = "param2"
-
 /**
  * A simple [Fragment] subclass.
  * Use the [SearchFragment.newInstance] factory method to
@@ -30,9 +26,6 @@ private const val ARG_PARAM2 = "param2"
  */
 
 class SearchFragment : Fragment() {
-    private var param1: String? = null
-
-    private var param2: String? = null
     private var _viewBinding: FragmentSearchBinding? = null
     private var vacancies: List<VacancyCard> = emptyList()
 
@@ -164,8 +157,6 @@ class SearchFragment : Fragment() {
         fun newInstance() =
             SearchFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
                 }
             }
     }
