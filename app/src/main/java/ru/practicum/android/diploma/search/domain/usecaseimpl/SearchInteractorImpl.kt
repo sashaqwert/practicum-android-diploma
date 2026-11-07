@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.search.domain.use_case_impl
+package ru.practicum.android.diploma.search.domain.usecaseimpl
 
 import ru.practicum.android.diploma.common.domain.Resource
 import ru.practicum.android.diploma.search.domain.model.SearchResult

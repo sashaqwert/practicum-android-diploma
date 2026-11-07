@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.root_activity
+package ru.practicum.android.diploma.rootactivity
 
 import android.os.Bundle
 import android.view.ViewGroup
@@ -14,6 +14,7 @@ import ru.practicum.android.diploma.databinding.ActivityRootBinding
 
 class RootActivity : AppCompatActivity() {
 
+    @Suppress("LateinitUsage")
     private lateinit var viewBinding: ActivityRootBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,10 +42,14 @@ class RootActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.searchFragment, R.id.favoriteFragment, R.id.developersFragment -> viewBinding.bottomNavigationView.isVisible =
-                    true
-
-                else -> viewBinding.bottomNavigationView.isVisible = false
+                R.id.searchFragment,
+                R.id.favoriteFragment,
+                R.id.developersFragment -> {
+                    viewBinding.bottomNavigationView.isVisible = true
+                }
+                else -> {
+                    viewBinding.bottomNavigationView.isVisible = false
+                }
             }
         }
 
