@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.details.data.repositoryimpl
 
+import android.util.Log
 import ru.practicum.android.diploma.common.data.converters.Converters
 import ru.practicum.android.diploma.common.data.network.client.NetworkClient
 import ru.practicum.android.diploma.common.data.network.client.RequestIntent
@@ -25,8 +26,10 @@ class DetailsRepositoryImpl(
         } catch (e: CancellationException) {
             throw e
         } catch (e: IOException) {
+            Log.e("DetailsRepository", "Network error", e)
             null
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
+            Log.e("DetailsRepository", "Unexpected error", e)
             null
         }
 
