@@ -19,4 +19,9 @@
     <string name="to">до</string>
     <string name="salary_not_set">Зарплата не указана</string>
     <string name="vacancy">Вакансия</string>
+    <string name="vacancy_not_found">Вакансия не найдена или удалена</string>
+    <string name="server_error">Ошибка сервера</string>
+    <string name="salary_from">от %d </string>
+    <string name="salary_to">до %d</string>
+    <string name="experience_not_set">Опыт не указан</string>
 </resources>

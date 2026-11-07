@@ -57,11 +57,13 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
+            android:id="@+id/errorImg"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:src="@drawable/img_not_found"/>
 
         <TextView
+            android:id="@+id/errorText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/Text.Medium22"
