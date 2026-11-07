@@ -54,5 +54,6 @@ class VacancyViewHolder(private val binding: ItemVacancyBinding) : RecyclerView.
             val binding = ItemVacancyBinding.inflate(inflater, parent, false)
             return VacancyViewHolder(binding)
         }
+        const val CORNERS = 12f
     }
 }
