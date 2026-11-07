@@ -6,6 +6,6 @@ import ru.practicum.android.diploma.details.presentation.view_model.DetailsViewM
 
 val detailsViewModelModule = module {
     viewModel {
-        DetailsViewModel()
+        DetailsViewModel(get())
     }
 }
