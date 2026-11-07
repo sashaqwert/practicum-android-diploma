@@ -13,20 +13,13 @@ import ru.practicum.android.diploma.databinding.FragmentFavoriteBinding
  * create an instance of this fragment.
  */
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
 class FavoriteFragment : Fragment() {
-    private var param1: String? = null
-    private var param2: String? = null
     private var _viewBinding: FragmentFavoriteBinding? = null
     private val viewBinding get() = _viewBinding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
         }
     }
 
@@ -55,8 +48,6 @@ class FavoriteFragment : Fragment() {
         fun newInstance() =
             FavoriteFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
                 }
             }
     }
