@@ -15,9 +15,8 @@ class SearchRepositoryImpl(
     private val networkClient: NetworkClient,
     private val networkConnectedCheck: NetworkConnectedCheck
 ) : SearchRepository {
-    override suspend fun searchVacancies(query: String): Resource<SearchResult> {
+    override suspend fun searchVacancies(options: Map<String, String>): Resource<SearchResult> {
         val isConnected = networkConnectedCheck.isConnected()
-        val options = mapOf("text" to query)
 
         val response = networkClient.doRequest(RequestIntent.GetFilteredVacancies(options), isConnected)
 
