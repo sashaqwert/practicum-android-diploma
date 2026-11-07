@@ -25,6 +25,8 @@ class DetailsViewModel(private val detailsInteractor: DetailsInteractor) : ViewM
             if (res is Resource.Success) {
                 val v = res.data
                 stateLiveData.value = DetailsState.Content(v)
+            } else if (res is Resource.Error) {
+                stateLiveData.value = DetailsState.Error(res.code)
             }
         }
     }
