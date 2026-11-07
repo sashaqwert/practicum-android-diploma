@@ -31,7 +31,8 @@ class RegionFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _viewBinding = FragmentRegionBinding.inflate(inflater, container, false)

@@ -31,7 +31,8 @@ class IndustriesFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _viewBinding = FragmentIndustriesBinding.inflate(inflater, container, false)
