@@ -15,34 +15,35 @@ class SearchRepositoryImpl(
     private val networkClient: NetworkClient,
     private val networkConnectedCheck: NetworkConnectedCheck
 ) : SearchRepository {
-    override suspend fun searchVacancies(query: String): Resource<SearchResult> {
+    override suspend fun searchVacancies(options: Map<String, String>): Resource<SearchResult> {
         val isConnected = networkConnectedCheck.isConnected()
-        val options = mapOf("text" to query)
 
         val response = networkClient.doRequest(RequestIntent.GetFilteredVacancies(options), isConnected)
 
-        when (response.code) {
+        return when (response.code) {
             HTTP_OK -> {
                 if ((response as VacancyResponse).found > 0) {
-                    return Resource.Success(
+                    Resource.Success(
                         convertVacancies(response)
                     )
                 } else {
-                    return Resource.Success(
+                    Resource.Success(
                         SearchResult(
                             vacancies = listOf(),
-                            found = 0
+                            found = 0,
+                            page = 0,
+                            pages = 0
                         )
                     )
                 }
             }
 
             NO_INTERNET -> {
-                return Resource.Error(NO_INTERNET)
+                Resource.Error(NO_INTERNET)
             }
 
             else -> {
-                return Resource.Error(response.code)
+                Resource.Error(response.code)
             }
         }
     }
@@ -61,7 +62,9 @@ class SearchRepositoryImpl(
 
         return SearchResult(
             vacancies = vacanciesMapped,
-            found = vacancies.found
+            found = vacancies.found,
+            page = vacancies.page,
+            pages = vacancies.pages
         )
     }
 
