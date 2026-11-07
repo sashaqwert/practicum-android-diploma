@@ -1,12 +1,9 @@
-package ru.practicum.android.diploma.search.data.repository_impl
+package ru.practicum.android.diploma.search.data.repositoryimpl
 
 import ru.practicum.android.diploma.common.data.converters.Converters
-import ru.practicum.android.diploma.common.data.dto.VacancyCardSalaryDto
 import ru.practicum.android.diploma.common.data.network.client.NetworkClient
 import ru.practicum.android.diploma.common.data.network.client.RequestIntent
 import ru.practicum.android.diploma.common.domain.Resource
-import ru.practicum.android.diploma.common.domain.models.VacancyCard
-import ru.practicum.android.diploma.common.domain.models.VacancyCardSalary
 import ru.practicum.android.diploma.search.data.response.VacancyResponse
 import ru.practicum.android.diploma.search.domain.model.SearchResult
 import ru.practicum.android.diploma.search.domain.repository.SearchRepository

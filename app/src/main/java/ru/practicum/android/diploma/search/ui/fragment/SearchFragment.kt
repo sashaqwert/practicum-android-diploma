@@ -12,31 +12,21 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.domain.models.VacancyCard
-import ru.practicum.android.diploma.common.ui.for_recycler_view.VacancyAdapter
+import ru.practicum.android.diploma.common.ui.forrecyclerview.VacancyAdapter
 import ru.practicum.android.diploma.databinding.FragmentSearchBinding
 import ru.practicum.android.diploma.details.ui.fragment.DetailsFragment
-
-
-private const val ARG_PARAM1 = "param1"
-
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [SearchFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
+import ru.practicum.android.diploma.search.presentation.SearchState
+import ru.practicum.android.diploma.search.presentation.SearchViewModel
 
 class SearchFragment : Fragment() {
-    private var param1: String? = null
-
-    private var param2: String? = null
     private var _viewBinding: FragmentSearchBinding? = null
     private var vacancies: List<VacancyCard> = emptyList()
-
     private val viewBinding get() = _viewBinding!!
+
+    private val viewModel: SearchViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +35,8 @@ class SearchFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _viewBinding = FragmentSearchBinding.inflate(inflater, container, false)
@@ -61,6 +52,14 @@ class SearchFragment : Fragment() {
             viewBinding.clearButton.isVisible = !s.isNullOrEmpty()
         }
 
+        viewModel.state.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is SearchState.Content -> content()
+                SearchState.Default -> default()
+                SearchState.Error -> error()
+                SearchState.Loading -> loading()
+            }
+        }
 
         viewBinding.clearButton.setOnClickListener {
             viewBinding.searchEditText.setText("")
@@ -86,7 +85,7 @@ class SearchFragment : Fragment() {
                         (viewBinding.vacancyList.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
                     val itemsCount = adapter.itemCount
                     if (pos >= itemsCount - 1) {
-                        //вызов метода viewModel, который вызовет интерактор для отправки поискового запроса
+                        // вызов метода viewModel, который вызовет интерактор для отправки поискового запроса
                     }
                 }
             }
@@ -151,22 +150,5 @@ class SearchFragment : Fragment() {
             setImageResource(R.drawable.img_default_search_state_328)
             isVisible = true
         }
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @return A new instance of fragment SearchFragment.
-         */
-        @JvmStatic
-        fun newInstance() =
-            SearchFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
 }
