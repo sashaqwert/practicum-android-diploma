@@ -12,6 +12,7 @@ import ru.practicum.android.diploma.favorite.di.data.favoriteDataModuleDI
 import ru.practicum.android.diploma.favorite.di.domain.favoriteDomainModuleDI
 import ru.practicum.android.diploma.favorite.di.ui.favoriteViewModelModuleDI
 import ru.practicum.android.diploma.filter.di.data.filterDataModule
+import ru.practicum.android.diploma.filter.di.domain.filterDomainModule
 import ru.practicum.android.diploma.filter.di.ui.filterViewModelModule
 import ru.practicum.android.diploma.search.di.data.searchDataModule
 import ru.practicum.android.diploma.search.di.domain.searchDomainModule
@@ -26,7 +27,7 @@ class App : Application() {
             modules(
                 detailsDataModule, detailsDomainModule, detailsViewModelModule,
                 favoriteDataModuleDI, favoriteDomainModuleDI, favoriteViewModelModuleDI,
-                filterDataModule, filterDataModule, filterViewModelModule,
+                filterDataModule, filterDomainModule, filterViewModelModule,
                 searchDataModule, searchDomainModule, searchViewModelModule,
                 appModule, commonDataModule
             )
