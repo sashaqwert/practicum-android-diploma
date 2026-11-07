@@ -20,10 +20,13 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import ru.practicum.android.diploma.common.domain.Resource
 import ru.practicum.android.diploma.common.domain.models.VacancyCard
 import ru.practicum.android.diploma.common.domain.models.VacancyCardSalary
 import ru.practicum.android.diploma.search.domain.model.SearchResult
 import ru.practicum.android.diploma.search.domain.usecase.SearchInteractor
+import ru.practicum.android.diploma.search.presentation.state.SearchState
+import ru.practicum.android.diploma.search.presentation.viewmodel.SearchViewModel
 import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)

@@ -18,8 +18,8 @@ import ru.practicum.android.diploma.common.domain.models.VacancyCard
 import ru.practicum.android.diploma.common.ui.forrecyclerview.VacancyAdapter
 import ru.practicum.android.diploma.databinding.FragmentSearchBinding
 import ru.practicum.android.diploma.details.ui.fragment.DetailsFragment
-import ru.practicum.android.diploma.search.presentation.SearchState
-import ru.practicum.android.diploma.search.presentation.SearchViewModel
+import ru.practicum.android.diploma.search.presentation.state.SearchState
+import ru.practicum.android.diploma.search.presentation.viewmodel.SearchViewModel
 
 class SearchFragment : Fragment() {
     private var _viewBinding: FragmentSearchBinding? = null
