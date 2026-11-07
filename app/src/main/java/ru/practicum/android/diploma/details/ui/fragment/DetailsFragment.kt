@@ -101,6 +101,15 @@ class DetailsFragment : Fragment() {
         val employmentText = if (vacancyDetail.employment == null) "" else "${vacancyDetail.employment.name}, "
         val scheduleText = if (vacancyDetail.schedule == null) "" else vacancyDetail.schedule.name
 
+        bindItems(vacancyDetail, textSalary, employmentText, scheduleText)
+    }
+
+    private fun bindItems(
+        vacancyDetail: VacancyDetail,
+        textSalary: String,
+        employmentText: String,
+        scheduleText: String
+    ) {
         viewBinding.apply {
             vacancyName.setText(vacancyDetail.name)
             salary.text =
@@ -113,7 +122,7 @@ class DetailsFragment : Fragment() {
                 .error(R.drawable.img_empty_logo_48_xml)
                 .transform(
                     RoundedCorners(
-                        TypedValueCompat.dpToPx(12f, resources.displayMetrics).toInt()
+                        TypedValueCompat.dpToPx(R.dimen.margin_12.toFloat(), resources.displayMetrics).toInt()
                     )
                 )
                 .into(employerIcon)
@@ -125,7 +134,10 @@ class DetailsFragment : Fragment() {
             conditions.text = "$employmentText$scheduleText"
             description.text = bindDescription(vacancyDetail.description)
             skillsList.text = bindSkills(vacancyDetail)
-            likeButton.setImageResource(if (vacancyDetail.isFavorite) R.drawable.ic_like_pressed else R.drawable.ic_like)
+            likeButton.setImageResource(
+                if (vacancyDetail.isFavorite) R.drawable.ic_like_pressed
+                else R.drawable.ic_like
+            )
         }
     }
 
@@ -230,7 +242,6 @@ class DetailsFragment : Fragment() {
 
         return formatted
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
