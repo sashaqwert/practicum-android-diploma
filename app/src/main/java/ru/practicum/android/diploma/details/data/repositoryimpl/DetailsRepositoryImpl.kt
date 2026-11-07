@@ -25,9 +25,13 @@ class DetailsRepositoryImpl(
         } catch (e: CancellationException) {
             throw e
         } catch (e: IOException) {
-            return Resource.Error(NO_INTERNET)
+            null
         } catch (e: Exception) {
-            return Resource.Error(UNKNOWN_ERROR)
+            null
+        }
+
+        if (response == null) {
+            return Resource.Error(NO_INTERNET)
         }
 
         return when (response.code) {
@@ -35,7 +39,7 @@ class DetailsRepositoryImpl(
                 if (response is VacancyDetailResponse) {
                     val vacancyDetail = converter.toVacancyDetail(response)
                     Resource.Success(vacancyDetail)
-                } else Resource.Error(NO_DETAIL_RESPONSE)
+                } else { Resource.Error(NO_DETAIL_RESPONSE) }
             }
 
             NO_INTERNET -> {
@@ -55,7 +59,5 @@ class DetailsRepositoryImpl(
         private const val NO_INTERNET = -1
         private const val NO_DETAIL_RESPONSE = -2
         private const val NOT_FOUND = 404
-        private const val UNKNOWN_ERROR = -3
     }
 }
-

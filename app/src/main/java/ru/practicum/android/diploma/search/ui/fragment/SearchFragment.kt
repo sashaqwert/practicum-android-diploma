@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.domain.models.VacancyCard
-import ru.practicum.android.diploma.common.ui.for_recycler_view.VacancyAdapter
+import ru.practicum.android.diploma.common.ui.forrecyclerview.VacancyAdapter
 import ru.practicum.android.diploma.databinding.FragmentSearchBinding
 import ru.practicum.android.diploma.details.ui.fragment.DetailsFragment
 

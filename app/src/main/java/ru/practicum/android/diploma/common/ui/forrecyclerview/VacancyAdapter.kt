@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.common.ui.for_recycler_view
+package ru.practicum.android.diploma.common.ui.forrecyclerview
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
