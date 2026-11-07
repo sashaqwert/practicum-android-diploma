@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import ru.practicum.android.diploma.databinding.FragmentDetailsBinding
+
 class DetailsFragment : Fragment() {
 
     private var vacancyId: String? = null
