@@ -6,6 +6,7 @@ import ru.practicum.android.diploma.common.data.dto.FilterIndustryDto
 import ru.practicum.android.diploma.common.data.dto.VacancyCardSalaryDto
 import ru.practicum.android.diploma.common.domain.models.FilterArea
 import ru.practicum.android.diploma.common.domain.models.FilterIndustry
+import ru.practicum.android.diploma.common.domain.models.VacancyCard
 import ru.practicum.android.diploma.common.domain.models.VacancyCardSalary
 import ru.practicum.android.diploma.details.data.dto.AddressDto
 import ru.practicum.android.diploma.details.data.dto.ContactsDto
@@ -23,6 +24,8 @@ import ru.practicum.android.diploma.details.domain.model.Experience
 import ru.practicum.android.diploma.details.domain.model.Phone
 import ru.practicum.android.diploma.details.domain.model.Schedule
 import ru.practicum.android.diploma.details.domain.model.VacancyDetail
+import ru.practicum.android.diploma.search.data.response.VacancyResponse
+import ru.practicum.android.diploma.search.domain.model.SearchResult
 
 class Converters {
     private fun toAddress(addressDto: AddressDto?): Address? {
@@ -159,6 +162,26 @@ class Converters {
             skills = detailResponse.skills,
             url = detailResponse.url,
             isFavorite = false
+        )
+    }
+
+    fun convertVacancies(vacancies: VacancyResponse): SearchResult {
+        val vacanciesMapped = vacancies.vacancyCards.map {
+            VacancyCard(
+                id = it.id,
+                name = it.name,
+                company = it.company,
+                city = it.city,
+                salary = toSalary(it.salary),
+                logo = it.logo
+            )
+        }
+
+        return SearchResult(
+            vacancies = vacanciesMapped,
+            found = vacancies.found,
+            page = vacancies.page,
+            pages = vacancies.pages
         )
     }
 }
