@@ -44,9 +44,12 @@ import java.net.URL
 import kotlin.math.roundToInt
 import androidx.core.net.toUri
 import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import ru.practicum.android.diploma.details.ui.util.bindDescription
 import ru.practicum.android.diploma.details.ui.util.bindSkills
 import ru.practicum.android.diploma.details.ui.util.prepareLogoForGlide
+import java.text.NumberFormat
+import java.util.Locale
 
 class DetailsFragment : Fragment() {
 
@@ -88,7 +91,7 @@ class DetailsFragment : Fragment() {
 //            }
         }
 
-        viewModel.setID("000108c1-f7f5-3241-b9a2-44f6f1a2e58f") // vacancyId ?: "0"
+        viewModel.setID("00080c3c-d8b5-3de1-b0ba-1ce1c46fdadd") // vacancyId ?: "0"
         viewModel.fillData()
 
         viewModel.observeState().observe(viewLifecycleOwner) { state ->
@@ -136,8 +139,12 @@ class DetailsFragment : Fragment() {
 
     private fun setContent(vacancyDetail: VacancyDetail) {
         val textSalary = vacancyDetail.salary.let { salary ->
-            val salaryFrom = if (salary?.from != null) getString(R.string.salary_from, salary.from) else ""
-            val salaryTo = if (salary?.to != null) getString(R.string.salary_to, salary.to) else ""
+            val formatter = NumberFormat.getIntegerInstance(Locale("ru", "RU"))
+            val formattedSalaryFrom = salary?.from?.let { formatter.format(it) } ?: ""
+            val formattedSalaryTo = salary?.to?.let { formatter.format(it) } ?: ""
+
+            val salaryFrom = if (salary?.from != null) getString(R.string.salary_from, formattedSalaryFrom, salary.currency) else ""
+            val salaryTo = if (salary?.to != null) getString(R.string.salary_to, formattedSalaryTo, salary.currency) else ""
 
             "$salaryFrom$salaryTo"
         }
@@ -165,9 +172,8 @@ class DetailsFragment : Fragment() {
                 .placeholder(R.drawable.img_empty_logo_48_xml)
                 .error(R.drawable.img_empty_logo_48_xml)
                 .transform(
-                    RoundedCorners(
-                        TypedValueCompat.dpToPx(R.dimen.margin_12.toFloat(), resources.displayMetrics).toInt()
-                    )
+                    CenterCrop(),
+                    RoundedCorners(resources.getDimensionPixelSize(R.dimen.margin_12))
                 )
                 .into(viewBinding.employerIcon)
         }

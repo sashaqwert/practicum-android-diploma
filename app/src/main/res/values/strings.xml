@@ -21,8 +21,8 @@
     <string name="vacancy">Вакансия</string>
     <string name="vacancy_not_found">Вакансия не найдена или удалена</string>
     <string name="server_error">Ошибка сервера</string>
-    <string name="salary_from">от %d </string>
-    <string name="salary_to">до %d</string>
+    <string name="salary_from">от %s %s </string>
+    <string name="salary_to">до %s %s</string>
     <string name="experience_not_set">Опыт не указан</string>
     <string name="skills">Ключевые навыки</string>
     <string name="required_experience">Требуемый опыт</string>
