@@ -68,33 +68,37 @@ class DetailsFragment : Fragment() {
         viewModel.fillData()
 
         viewModel.observeState().observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is DetailsState.Content -> {
-                    setLayoutVisibilites(
-                        isVacancyLayoutVisible = true,
-                        isErrorLayoutVisible = false,
-                        isLoadingBarVisible = false
-                    )
-                    setContent(state.vacancyDetail)
-                }
+            handleState(state)
+        }
+    }
 
-                is DetailsState.Error -> {
-                    setLayoutVisibilites(
-                        isVacancyLayoutVisible = false,
-                        isErrorLayoutVisible = true,
-                        isLoadingBarVisible = false
-                    )
+    private fun handleState(state: DetailsState) {
+        when (state) {
+            is DetailsState.Content -> {
+                setLayoutVisibilites(
+                    isVacancyLayoutVisible = true,
+                    isErrorLayoutVisible = false,
+                    isLoadingBarVisible = false
+                )
+                setContent(state.vacancyDetail)
+            }
 
-                    setError(state.code)
-                }
+            is DetailsState.Error -> {
+                setLayoutVisibilites(
+                    isVacancyLayoutVisible = false,
+                    isErrorLayoutVisible = true,
+                    isLoadingBarVisible = false
+                )
 
-                DetailsState.Loading -> {
-                    setLayoutVisibilites(
-                        isVacancyLayoutVisible = false,
-                        isErrorLayoutVisible = false,
-                        isLoadingBarVisible = true
-                    )
-                }
+                setError(state.code)
+            }
+
+            DetailsState.Loading -> {
+                setLayoutVisibilites(
+                    isVacancyLayoutVisible = false,
+                    isErrorLayoutVisible = false,
+                    isLoadingBarVisible = true
+                )
             }
         }
     }
@@ -121,7 +125,20 @@ class DetailsFragment : Fragment() {
             startActivity(intent)
         }
 
-        val textSalary = vacancyDetail.salary?.let { salary ->
+        val textSalary = getTextSaylary(vacancyDetail)
+
+        val employmentText =
+            if (vacancyDetail.employment == null) ""
+            else "${vacancyDetail.employment.name}, "
+        val scheduleText =
+            if (vacancyDetail.schedule == null) ""
+            else vacancyDetail.schedule.name
+
+        bindItems(vacancyDetail, textSalary, employmentText, scheduleText)
+    }
+
+    private fun getTextSaylary(vacancyDetail: VacancyDetail): String {
+        return vacancyDetail.salary?.let { salary ->
             val formatter = NumberFormat.getIntegerInstance(Locale("ru", "RU"))
             val formattedSalaryFrom = salary.from?.let { formatter.format(it) } ?: ""
             val formattedSalaryTo = salary.to?.let { formatter.format(it) } ?: ""
@@ -129,16 +146,19 @@ class DetailsFragment : Fragment() {
             val currency = getCurrencySymbol(vacancyDetail.salary.currency ?: "")
 
             val salaryFrom =
-                if (salary.from != null) getString(R.string.salary_from, formattedSalaryFrom, currency) else ""
-            val salaryTo = if (salary.to != null) getString(R.string.salary_to, formattedSalaryTo, currency) else ""
+                if (salary.from != null) getString(
+                    R.string.salary_from,
+                    formattedSalaryFrom,
+                    currency
+                ) else ""
+            val salaryTo = if (salary.to != null) getString(
+                R.string.salary_to,
+                formattedSalaryTo,
+                currency
+            ) else ""
 
             "$salaryFrom$salaryTo"
         } ?: ""
-
-        val employmentText = if (vacancyDetail.employment == null) "" else "${vacancyDetail.employment.name}, "
-        val scheduleText = if (vacancyDetail.schedule == null) "" else vacancyDetail.schedule.name
-
-        bindItems(vacancyDetail, textSalary, employmentText, scheduleText)
     }
 
     private fun bindItems(
@@ -167,13 +187,20 @@ class DetailsFragment : Fragment() {
         }
         viewBinding.apply {
             vacancyName.setText(vacancyDetail.name)
-            salary.text =
-                if (textSalary.isNotEmpty() && textSalary.isNotBlank()) textSalary else getString(R.string.salary_not_set)
+            salary.text = if (textSalary.isNotEmpty() && textSalary.isNotBlank()) {
+                textSalary
+            } else {
+                getString(R.string.salary_not_set)
+            }
 
             employerName.text = vacancyDetail.employer.name
             employerLocation.text = vacancyDetail.area.name
             experienceValue.text =
-                if (vacancyDetail.experience == null) getString(R.string.experience_not_set) else vacancyDetail.experience.name
+                if (vacancyDetail.experience == null) {
+                    getString(R.string.experience_not_set)
+                } else {
+                    vacancyDetail.experience.name
+                }
             conditions.text = "$employmentText$scheduleText"
             description.setLineSpacing(0f, 1f)
             description.text = bindDescription(vacancyDetail.description, resources, context)

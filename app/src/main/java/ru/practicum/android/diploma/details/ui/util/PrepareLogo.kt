@@ -11,13 +11,19 @@ import java.io.IOException
 import java.net.URL
 
 private const val CONNECT_AND_READ_TIMEOUT = 5000
-suspend fun prepareLogoForGlide(logoUrl: String): Any? {
-    if (logoUrl.isBlank()) return null
-    if (logoUrl.toUri().path?.endsWith(".svg", ignoreCase = true) != true) {
-        return logoUrl
+suspend fun prepareLogoForGlide(logoUrl: String): Any? = when {
+    logoUrl.isBlank() -> null
+    logoUrl.toUri().path?.endsWith(".svg", ignoreCase = true) != true -> {
+        logoUrl
     }
 
-    return withContext(Dispatchers.IO) {
+    else -> {
+        renderSvgLogo(logoUrl)
+    }
+}
+
+private suspend fun renderSvgLogo(logoUrl: String) {
+    withContext(Dispatchers.IO) {
         try {
             val connection = URL(logoUrl).openConnection().apply {
                 connectTimeout = CONNECT_AND_READ_TIMEOUT
@@ -29,7 +35,7 @@ suspend fun prepareLogoForGlide(logoUrl: String): Any? {
                 SVG.getFromInputStream(it).renderToPicture()
             }
 
-            if (picture.width <= 0 || picture.height <= 0) return@withContext null
+            if (picture.width <= 0 || picture.height <= 0) null
 
             createBitmap(picture.width, picture.height).apply {
                 Canvas(this).drawPicture(picture)

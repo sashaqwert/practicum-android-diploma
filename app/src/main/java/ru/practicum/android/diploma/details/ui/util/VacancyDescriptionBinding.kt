@@ -9,11 +9,14 @@ import android.text.Spanned
 import android.text.style.BulletSpan
 import android.text.style.LeadingMarginSpan
 import android.text.style.LineHeightSpan
-import android.text.style.TextAppearanceSpan
 import androidx.core.text.HtmlCompat
 import androidx.core.text.parseAsHtml
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.details.domain.model.VacancyDetail
+
+private const val H2_TAG = "vacancy-h2"
+private const val H3_TAG = "vacancy-h3"
+private const val PARAGRAPH_TAG = "vacancy-p"
 
 fun bindSkills(vacancy: VacancyDetail, resources: Resources): SpannableStringBuilder {
     val skills = vacancy.skills
@@ -31,103 +34,85 @@ fun bindSkills(vacancy: VacancyDetail, resources: Resources): SpannableStringBui
 }
 
 fun bindDescription(html: String, resources: Resources, context: Context?): SpannableString {
-    val prepared = "<body>$html</body>"
-        .replace("<h2>", "<div><vacancy-h2>")
-        .replace("</h2>", "</vacancy-h2></div>")
-        .replace("<h3>", "<div><vacancy-h3>")
-        .replace("</h3>", "</vacancy-h3></div>")
-        .replace("<p>", "<div><vacancy-p>")
-        .replace("</p>", "</vacancy-p></div>")
-
-    val sectionStarts = mutableListOf<Int>()
-    var headingStart = 0
-
-    val headingGapPx = resources.getDimensionPixelSize(R.dimen.margin_4)
-    val headingEnds = mutableListOf<Int>()
-
-    val h2Ranges = mutableListOf<IntRange>()
-
-    val parsed = prepared.parseAsHtml(HtmlCompat.FROM_HTML_MODE_COMPACT, null) { opening, tag, output, _ ->
-        val style = when (tag) {
-            "vacancy-h2" -> R.style.Text_Medium22
-            "vacancy-h3" -> R.style.Text_Medium16
-            "vacancy-p" -> R.style.Text_Regular16
-            else -> return@parseAsHtml
-        }
-
-        if (opening) {
-            headingStart = output.length
-        } else if (headingStart < output.length) {
-            output.setSpan(
-                TextAppearanceSpan(context, style),
-                headingStart,
-                output.length,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-
-            if (tag == "vacancy-h2" || tag == "vacancy-h3") {
-                headingEnds.add(output.length)
-            }
-
-            if (tag == "vacancy-h2") {
-                h2Ranges.add(headingStart until output.length)
-            }
-
-            if (tag == "vacancy-h3") {
-                sectionStarts.add(headingStart)
-            }
-        }
-    }
-
-    val gapPx = resources.getDimensionPixelSize(R.dimen.margin_16)
+    val tagHandler = DescriptionTagHandler(context)
+    val parsed = prepareDescriptionHtml(html).parseAsHtml(
+        flags = HtmlCompat.FROM_HTML_MODE_COMPACT,
+        tagHandler = tagHandler
+    )
     val formatted = SpannableString(parsed)
+
+    formatted.applyLineHeights(resources, tagHandler.h2Ranges)
+    formatted.addHeadingSpacing(resources, tagHandler.headingEnds)
+    formatted.styleBullets(resources)
+    formatted.addSectionSpacing(resources, tagHandler.sectionStarts)
+
+    return SpannableString.valueOf(formatted.trimEnd('\n'))
+}
+
+private fun prepareDescriptionHtml(html: String): String {
+    return "<body>$html</body>"
+        .replace("<h2>", "<div><$H2_TAG>")
+        .replace("</h2>", "</$H2_TAG></div>")
+        .replace("<h3>", "<div><$H3_TAG>")
+        .replace("</h3>", "</$H3_TAG></div>")
+        .replace("<p>", "<div><$PARAGRAPH_TAG>")
+        .replace("</p>", "</$PARAGRAPH_TAG></div>")
+}
+
+private fun SpannableString.applyLineHeights(resources: Resources, h2Ranges: List<IntRange>) {
+    if (isEmpty()) return
 
     val titleHeight = resources.getDimensionPixelSize(R.dimen.text_26)
     val bodyHeight = resources.getDimensionPixelSize(R.dimen.text_19)
 
-    if (formatted.isNotEmpty()) {
-        val lineHeight = LineHeightSpan { _, lineStart, _, _, _, metrics ->
-            val height = if (h2Ranges.any { lineStart in it }) titleHeight else bodyHeight
-            val extra = height - (metrics.descent - metrics.ascent)
-            metrics.ascent -= extra / 2
-            metrics.descent = metrics.ascent + height
-        }
-
-        formatted.setSpan(lineHeight, 0, formatted.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+    val lineHeight = LineHeightSpan { _, lineStart, _, _, _, metrics ->
+        val height = if (h2Ranges.any { lineStart in it }) titleHeight else bodyHeight
+        val extra = height - (metrics.descent - metrics.ascent)
+        metrics.ascent -= extra / 2
+        metrics.descent = metrics.ascent + height
     }
+
+    setSpan(lineHeight, 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+}
+
+private fun SpannableString.addHeadingSpacing(resources: Resources, headingEnds: List<Int>) {
+    val gapPx = resources.getDimensionPixelSize(R.dimen.margin_4)
 
     for (headingEnd in headingEnds) {
         val spacing = LineHeightSpan { _, lineStart, lineEnd, _, _, metrics ->
             if (lineStart < headingEnd && lineEnd >= headingEnd) {
-                metrics.descent += headingGapPx
+                metrics.descent += gapPx
             }
         }
-        formatted.setSpan(spacing, headingEnd - 1, headingEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        setSpan(spacing, headingEnd - 1, headingEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
+}
 
+private fun SpannableString.styleBullets(resources: Resources) {
     val bulletGapPx = resources.getDimensionPixelSize(R.dimen.margin_4)
-    val bullets = formatted.getSpans(0, formatted.length, BulletSpan::class.java)
     val bulletIndentPx = resources.getDimensionPixelSize(R.dimen.margin_8)
+    val bullets = getSpans(0, length, BulletSpan::class.java)
 
     for (bullet in bullets) {
-        val start = formatted.getSpanStart(bullet)
-        val end = formatted.getSpanEnd(bullet)
-        val flags = formatted.getSpanFlags(bullet)
+        val start = getSpanStart(bullet)
+        val end = getSpanEnd(bullet)
+        val flags = getSpanFlags(bullet)
 
-        formatted.removeSpan(bullet)
-        formatted.setSpan(LeadingMarginSpan.Standard(bulletIndentPx), start, end, flags)
-        formatted.setSpan(BulletSpan(bulletGapPx), start, end, flags)
+        removeSpan(bullet)
+        setSpan(LeadingMarginSpan.Standard(bulletIndentPx), start, end, flags)
+        setSpan(BulletSpan(bulletGapPx), start, end, flags)
     }
+}
+
+private fun SpannableString.addSectionSpacing(resources: Resources, sectionStarts: List<Int>) {
+    val gapPx = resources.getDimensionPixelSize(R.dimen.margin_16)
 
     for (start in sectionStarts) {
-        val gap = LineHeightSpan { _, lineStart, _, _, _, metrics ->
+        val spacing = LineHeightSpan { _, lineStart, _, _, _, metrics ->
             if (lineStart == start) {
                 metrics.ascent -= gapPx
             }
         }
-
-        formatted.setSpan(gap, start, start + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        setSpan(spacing, start, start + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
-
-    return SpannableString.valueOf(formatted.trimEnd('\n'))
 }
