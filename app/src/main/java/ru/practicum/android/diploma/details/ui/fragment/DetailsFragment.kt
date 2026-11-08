@@ -44,6 +44,8 @@ import java.net.URL
 import kotlin.math.roundToInt
 import androidx.core.net.toUri
 import com.bumptech.glide.RequestBuilder
+import ru.practicum.android.diploma.details.ui.util.bindDescription
+import ru.practicum.android.diploma.details.ui.util.bindSkills
 import ru.practicum.android.diploma.details.ui.util.prepareLogoForGlide
 
 class DetailsFragment : Fragment() {
@@ -75,6 +77,16 @@ class DetailsFragment : Fragment() {
         (requireActivity() as AppCompatActivity).setSupportActionBar(viewBinding.toolBar)
         (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(true)
         viewBinding.toolBar.setNavigationOnClickListener { findNavController().popBackStack() }
+
+        viewBinding.apply {
+            likeButton.setOnClickListener {
+                viewModel.actionFavoriteClicked()
+            }
+
+            shareButton.setOnClickListener {
+                viewModel.actionShareClicked()
+            }
+        }
 
         viewModel.setID("000108c1-f7f5-3241-b9a2-44f6f1a2e58f") // vacancyId ?: "0"
         viewModel.fillData()
@@ -170,12 +182,15 @@ class DetailsFragment : Fragment() {
                 if (vacancyDetail.experience == null) getString(R.string.experience_not_set) else vacancyDetail.experience.name
             conditions.text = "$employmentText$scheduleText"
             description.setLineSpacing(0f, 1f)
-            description.text = bindDescription(vacancyDetail.description)
-            skillsList.text = bindSkills(vacancyDetail)
+            description.text = bindDescription(vacancyDetail.description, resources, context)
+            skillsList.text = bindSkills(vacancyDetail, resources)
             likeButton.setImageResource(
                 if (vacancyDetail.isFavorite) R.drawable.ic_like_pressed
                 else R.drawable.ic_like
             )
+
+            skillsTitle.isVisible = vacancyDetail.skills.isNotEmpty()
+            skillsList.isVisible = vacancyDetail.skills.isNotEmpty()
         }
     }
 
@@ -195,128 +210,6 @@ class DetailsFragment : Fragment() {
                 }
             }
         }
-    }
-
-    private fun bindSkills(vacancy: VacancyDetail): SpannableStringBuilder {
-        val skills = vacancy.skills
-        val gap = resources.getDimensionPixelSize(R.dimen.margin_4)
-
-        viewBinding.apply {
-            skillsTitle.isVisible = skills.isNotEmpty()
-            skillsList.isVisible = skills.isNotEmpty()
-        }
-
-        return SpannableStringBuilder().apply {
-            skills.forEachIndexed { index, skill ->
-                if (index > 0) append('\n')
-
-                val start = length
-                append(skill)
-                setSpan(BulletSpan(gap), start, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-            }
-        }
-    }
-
-    private fun bindDescription(html: String): SpannableString {
-        val prepared = "<body>$html</body>"
-            .replace("<h2>", "<div><vacancy-h2>")
-            .replace("</h2>", "</vacancy-h2></div>")
-            .replace("<h3>", "<div><vacancy-h3>")
-            .replace("</h3>", "</vacancy-h3></div>")
-            .replace("<p>", "<div><vacancy-p>")
-            .replace("</p>", "</vacancy-p></div>")
-
-        val sectionStarts = mutableListOf<Int>()
-        var headingStart = 0
-
-        val headingGapPx = resources.getDimensionPixelSize(R.dimen.margin_4)
-        val headingEnds = mutableListOf<Int>()
-
-        val h2Ranges = mutableListOf<IntRange>()
-
-        val parsed = prepared.parseAsHtml(HtmlCompat.FROM_HTML_MODE_COMPACT, null) { opening, tag, output, _ ->
-            val style = when (tag) {
-                "vacancy-h2" -> R.style.Text_Medium22
-                "vacancy-h3" -> R.style.Text_Medium16
-                "vacancy-p" -> R.style.Text_Regular16
-                else -> return@parseAsHtml
-            }
-
-            if (opening) {
-                headingStart = output.length
-            } else if (headingStart < output.length) {
-                output.setSpan(
-                    TextAppearanceSpan(context, style),
-                    headingStart,
-                    output.length,
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-
-                if (tag == "vacancy-h2" || tag == "vacancy-h3") {
-                    headingEnds.add(output.length)
-                }
-
-                if (tag == "vacancy-h2") {
-                    h2Ranges.add(headingStart until output.length)
-                }
-
-                if (tag == "vacancy-h3") {
-                    sectionStarts.add(headingStart)
-                }
-            }
-        }
-
-        val gapPx = resources.getDimensionPixelSize(R.dimen.margin_16)
-        val formatted = SpannableString(parsed)
-
-        val titleHeight = resources.getDimensionPixelSize(R.dimen.text_26)
-        val bodyHeight = resources.getDimensionPixelSize(R.dimen.text_19)
-
-        if (formatted.isNotEmpty()) {
-            val lineHeight = LineHeightSpan { _, lineStart, _, _, _, metrics ->
-                val height = if (h2Ranges.any { lineStart in it }) titleHeight else bodyHeight
-                val extra = height - (metrics.descent - metrics.ascent)
-                metrics.ascent -= extra / 2
-                metrics.descent = metrics.ascent + height
-            }
-
-            formatted.setSpan(lineHeight, 0, formatted.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        }
-
-        for (headingEnd in headingEnds) {
-            val spacing = LineHeightSpan { _, lineStart, lineEnd, _, _, metrics ->
-                if (lineStart < headingEnd && lineEnd >= headingEnd) {
-                    metrics.descent += headingGapPx
-                }
-            }
-            formatted.setSpan(spacing, headingEnd - 1, headingEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        }
-
-        val bulletGapPx = resources.getDimensionPixelSize(R.dimen.margin_4)
-        val bullets = formatted.getSpans(0, formatted.length, BulletSpan::class.java)
-        val bulletIndentPx = resources.getDimensionPixelSize(R.dimen.margin_8)
-
-        for (bullet in bullets) {
-            val start = formatted.getSpanStart(bullet)
-            val end = formatted.getSpanEnd(bullet)
-            val flags = formatted.getSpanFlags(bullet)
-
-            formatted.removeSpan(bullet)
-            formatted.setSpan(LeadingMarginSpan.Standard(bulletIndentPx), start, end, flags)
-            formatted.setSpan(BulletSpan(bulletGapPx), start, end, flags)
-        }
-
-        for (start in sectionStarts) {
-            val gap = LineHeightSpan { _, lineStart, _, _, _, metrics ->
-                if (lineStart == start) {
-                    metrics.ascent -= gapPx
-                }
-            }
-
-            formatted.setSpan(gap, start, start + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        }
-
-        return SpannableString.valueOf(formatted.trimEnd('\n'))
     }
 
     override fun onDestroyView() {
