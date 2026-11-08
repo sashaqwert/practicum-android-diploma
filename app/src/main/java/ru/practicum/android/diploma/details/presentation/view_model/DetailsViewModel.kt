@@ -34,8 +34,4 @@ class DetailsViewModel(private val detailsInteractor: DetailsInteractor) : ViewM
     fun actionFavoriteClicked() {
         // FIXME:
     }
-
-    fun actionShareClicked() {
-        // FIXME:
-    }
 }

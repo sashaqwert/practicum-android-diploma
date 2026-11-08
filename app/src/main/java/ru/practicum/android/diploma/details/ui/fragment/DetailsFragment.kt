@@ -83,9 +83,9 @@ class DetailsFragment : Fragment() {
                 viewModel.actionFavoriteClicked()
             }
 
-            shareButton.setOnClickListener {
-                viewModel.actionShareClicked()
-            }
+//            shareButton.setOnClickListener {
+//                viewModel.actionShareClicked()
+//            }
         }
 
         viewModel.setID("000108c1-f7f5-3241-b9a2-44f6f1a2e58f") // vacancyId ?: "0"
