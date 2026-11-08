@@ -128,7 +128,6 @@ class Converters {
         }
     }
 
-
     private fun toSchedule(scheduleDto: ScheduleDto?): Schedule? {
         return if (scheduleDto != null) {
             Schedule(

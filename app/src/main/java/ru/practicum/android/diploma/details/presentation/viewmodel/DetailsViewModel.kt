@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.details.presentation.view_model
+package ru.practicum.android.diploma.details.presentation.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -32,6 +32,6 @@ class DetailsViewModel(private val detailsInteractor: DetailsInteractor) : ViewM
     }
 
     fun actionFavoriteClicked() {
-        // FIXME:
+        // Тут логика обработки нажатия сердечка
     }
 }

@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.common.ui.for_recycler_view
+package ru.practicum.android.diploma.common.ui.forrecyclerview
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -39,7 +39,7 @@ class VacancyViewHolder(private val binding: ItemVacancyBinding) : RecyclerView.
                 .error(R.drawable.img_empty_logo_48_xml)
                 .transform(
                     RoundedCorners(
-                        TypedValueCompat.dpToPx(12f, itemView.resources.displayMetrics).toInt()
+                        TypedValueCompat.dpToPx(CORNER_RADIUS_DP, itemView.resources.displayMetrics).toInt()
                     )
                 )
                 .into(binding.imageRecyclerView)
@@ -48,12 +48,12 @@ class VacancyViewHolder(private val binding: ItemVacancyBinding) : RecyclerView.
         }
     }
 
-    companion object{
+    companion object {
         fun from(parent: ViewGroup): VacancyViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             val binding = ItemVacancyBinding.inflate(inflater, parent, false)
             return VacancyViewHolder(binding)
         }
-        const val CORNERS = 12f
+        const val CORNER_RADIUS_DP = 12f
     }
 }
