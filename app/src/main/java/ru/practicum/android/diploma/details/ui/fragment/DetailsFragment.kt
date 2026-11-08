@@ -11,11 +11,13 @@ import android.text.style.TextAppearanceSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
 import androidx.core.text.parseAsHtml
 import androidx.core.util.TypedValueCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -51,12 +53,23 @@ class DetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.setID(vacancyId ?: "0")
+        (requireActivity() as AppCompatActivity).setSupportActionBar(viewBinding.toolBar)
+        (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(true)
+        viewBinding.toolBar.setNavigationOnClickListener { findNavController().popBackStack() }
+
+        viewModel.setID("000108c1-f7f5-3241-b9a2-44f6f1a2e58f") // vacancyId ?: "0"
         viewModel.fillData()
 
         viewModel.observeState().observe(viewLifecycleOwner) { state ->
             when (state) {
-                is DetailsState.Content -> setContent(state.vacancyDetail)
+                is DetailsState.Content -> {
+                    setLayoutVisibilites(
+                        isVacancyLayoutVisible = true,
+                        isErrorLayoutVisible = false,
+                        isLoadingBarVisible = false
+                    )
+                    setContent(state.vacancyDetail)
+                }
                 is DetailsState.Error -> {
                     setLayoutVisibilites(
                         isVacancyLayoutVisible = false,
@@ -181,12 +194,12 @@ class DetailsFragment : Fragment() {
 
     private fun bindDescription(html: String): SpannableString {
         val prepared = "<body>$html</body>"
-            .replace("<h2>", "<vacancy-h2>")
-            .replace("</h2>", "</vacancy-h2>")
-            .replace("<h3>", "<vacancy-h3>")
-            .replace("</h3>", "</vacancy-h3>")
-            .replace("<p>", "<vacancy-p>")
-            .replace("</p>", "</vacancy-p>")
+            .replace("<h2>", "<div><vacancy-h2>")
+            .replace("</h2>", "</vacancy-h2></div>")
+            .replace("<h3>", "<div><vacancy-h3>")
+            .replace("</h3>", "</vacancy-h3></div>")
+            .replace("<p>", "<div><vacancy-p>")
+            .replace("</p>", "</vacancy-p></div>")
 
         val sectionStarts = mutableListOf<Int>()
         var headingStart = 0

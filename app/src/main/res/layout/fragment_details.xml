@@ -185,11 +185,11 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 style="@style/Text.Medium16"
+                android:text="@string/required_experience"
                 android:layout_marginTop="@dimen/margin_24"
                 app:layout_constraintTop_toBottomOf="@id/employerContainer"
                 app:layout_constraintStart_toEndOf="@id/startGuideline"
-                app:layout_constraintEnd_toStartOf="@id/endGuideline"
-                tools:text="Требуемый опыт"/>
+                app:layout_constraintEnd_toStartOf="@id/endGuideline" />
 
             <TextView
                 android:id="@+id/experienceValue"
