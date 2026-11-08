@@ -11,6 +11,7 @@ import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BulletSpan
+import android.text.style.LeadingMarginSpan
 import android.text.style.LineHeightSpan
 import android.text.style.TextAppearanceSpan
 import android.view.LayoutInflater
@@ -168,6 +169,7 @@ class DetailsFragment : Fragment() {
             experienceValue.text =
                 if (vacancyDetail.experience == null) getString(R.string.experience_not_set) else vacancyDetail.experience.name
             conditions.text = "$employmentText$scheduleText"
+            description.setLineSpacing(0f, 1f)
             description.text = bindDescription(vacancyDetail.description)
             skillsList.text = bindSkills(vacancyDetail)
             likeButton.setImageResource(
@@ -227,6 +229,11 @@ class DetailsFragment : Fragment() {
         val sectionStarts = mutableListOf<Int>()
         var headingStart = 0
 
+        val headingGapPx = resources.getDimensionPixelSize(R.dimen.margin_4)
+        val headingEnds = mutableListOf<Int>()
+
+        val h2Ranges = mutableListOf<IntRange>()
+
         val parsed = prepared.parseAsHtml(HtmlCompat.FROM_HTML_MODE_COMPACT, null) { opening, tag, output, _ ->
             val style = when (tag) {
                 "vacancy-h2" -> R.style.Text_Medium22
@@ -245,6 +252,14 @@ class DetailsFragment : Fragment() {
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
 
+                if (tag == "vacancy-h2" || tag == "vacancy-h3") {
+                    headingEnds.add(output.length)
+                }
+
+                if (tag == "vacancy-h2") {
+                    h2Ranges.add(headingStart until output.length)
+                }
+
                 if (tag == "vacancy-h3") {
                     sectionStarts.add(headingStart)
                 }
@@ -254,8 +269,32 @@ class DetailsFragment : Fragment() {
         val gapPx = resources.getDimensionPixelSize(R.dimen.margin_16)
         val formatted = SpannableString(parsed)
 
+        val titleHeight = resources.getDimensionPixelSize(R.dimen.text_26)
+        val bodyHeight = resources.getDimensionPixelSize(R.dimen.text_19)
+
+        if (formatted.isNotEmpty()) {
+            val lineHeight = LineHeightSpan { _, lineStart, _, _, _, metrics ->
+                val height = if (h2Ranges.any { lineStart in it }) titleHeight else bodyHeight
+                val extra = height - (metrics.descent - metrics.ascent)
+                metrics.ascent -= extra / 2
+                metrics.descent = metrics.ascent + height
+            }
+
+            formatted.setSpan(lineHeight, 0, formatted.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+
+        for (headingEnd in headingEnds) {
+            val spacing = LineHeightSpan { _, lineStart, lineEnd, _, _, metrics ->
+                if (lineStart < headingEnd && lineEnd >= headingEnd) {
+                    metrics.descent += headingGapPx
+                }
+            }
+            formatted.setSpan(spacing, headingEnd - 1, headingEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+
         val bulletGapPx = resources.getDimensionPixelSize(R.dimen.margin_4)
         val bullets = formatted.getSpans(0, formatted.length, BulletSpan::class.java)
+        val bulletIndentPx = resources.getDimensionPixelSize(R.dimen.margin_8)
 
         for (bullet in bullets) {
             val start = formatted.getSpanStart(bullet)
@@ -263,10 +302,11 @@ class DetailsFragment : Fragment() {
             val flags = formatted.getSpanFlags(bullet)
 
             formatted.removeSpan(bullet)
+            formatted.setSpan(LeadingMarginSpan.Standard(bulletIndentPx), start, end, flags)
             formatted.setSpan(BulletSpan(bulletGapPx), start, end, flags)
         }
 
-        for (start in sectionStarts.drop(1)) {
+        for (start in sectionStarts) {
             val gap = LineHeightSpan { _, lineStart, _, _, _, metrics ->
                 if (lineStart == start) {
                     metrics.ascent -= gapPx
@@ -276,7 +316,7 @@ class DetailsFragment : Fragment() {
             formatted.setSpan(gap, start, start + 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
 
-        return formatted
+        return SpannableString.valueOf(formatted.trimEnd('\n'))
     }
 
     override fun onDestroyView() {
