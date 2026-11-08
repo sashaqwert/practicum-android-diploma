@@ -20,7 +20,7 @@ import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentDetailsBinding
 import ru.practicum.android.diploma.details.domain.model.VacancyDetail
 import ru.practicum.android.diploma.details.presentation.state.DetailsState
-import ru.practicum.android.diploma.details.presentation.view_model.DetailsViewModel
+import ru.practicum.android.diploma.details.presentation.viewmodel.DetailsViewModel
 import ru.practicum.android.diploma.details.ui.util.bindDescription
 import ru.practicum.android.diploma.details.ui.util.bindSkills
 import ru.practicum.android.diploma.details.ui.util.getCurrencySymbol
