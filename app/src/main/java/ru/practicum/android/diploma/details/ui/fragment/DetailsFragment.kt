@@ -1,5 +1,10 @@
 package ru.practicum.android.diploma.details.ui.fragment
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Rect
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -17,15 +22,27 @@ import androidx.core.text.parseAsHtml
 import androidx.core.util.TypedValueCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.caverock.androidsvg.SVG
+import com.caverock.androidsvg.SVGParseException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentDetailsBinding
 import ru.practicum.android.diploma.details.domain.model.VacancyDetail
 import ru.practicum.android.diploma.details.presentation.state.DetailsState
 import ru.practicum.android.diploma.details.presentation.view_model.DetailsViewModel
+import java.io.IOException
+import java.net.HttpURLConnection
+import java.net.URL
+import kotlin.math.roundToInt
+import androidx.core.net.toUri
+import com.bumptech.glide.RequestBuilder
 
 class DetailsFragment : Fragment() {
 
@@ -123,14 +140,14 @@ class DetailsFragment : Fragment() {
         employmentText: String,
         scheduleText: String
     ) {
-        viewBinding.apply {
-            vacancyName.setText(vacancyDetail.name)
-            salary.text =
-                if (textSalary.isNotEmpty() && textSalary.isNotBlank()) textSalary else getString(R.string.salary_not_set)
+        lifecycleScope.launch {
+            val glide = Glide.with(this@DetailsFragment)
+            val logo = when (val logo = prepareLogoForGlide(vacancyDetail.employer.logo)) {
+                is Bitmap -> glide.load(logo)
+                else -> glide.load(logo as? String)
+            }
 
-            Glide
-                .with(this@DetailsFragment)
-                .load(vacancyDetail.employer.logo)
+            logo
                 .placeholder(R.drawable.img_empty_logo_48_xml)
                 .error(R.drawable.img_empty_logo_48_xml)
                 .transform(
@@ -138,7 +155,12 @@ class DetailsFragment : Fragment() {
                         TypedValueCompat.dpToPx(R.dimen.margin_12.toFloat(), resources.displayMetrics).toInt()
                     )
                 )
-                .into(employerIcon)
+                .into(viewBinding.employerIcon)
+        }
+        viewBinding.apply {
+            vacancyName.setText(vacancyDetail.name)
+            salary.text =
+                if (textSalary.isNotEmpty() && textSalary.isNotBlank()) textSalary else getString(R.string.salary_not_set)
 
             employerName.text = vacancyDetail.employer.name
             employerLocation.text = vacancyDetail.area.name
@@ -254,6 +276,47 @@ class DetailsFragment : Fragment() {
         }
 
         return formatted
+    }
+
+    private suspend fun prepareLogoForGlide(logoUrl: String): Any? {
+        if (logoUrl.isBlank()) return null
+
+        val isSvg = Uri.parse(logoUrl).path?.endsWith(".svg", ignoreCase = true) == true
+        if (!isSvg) return logoUrl
+
+        val sizePx = resources.getDimensionPixelSize(R.dimen.width_48)
+
+        return try {
+            withContext(Dispatchers.IO) {
+                val connection = URL(logoUrl).openConnection() as? HttpURLConnection
+                    ?: throw IOException("Expected an HTTP(S) logo URL")
+
+                try {
+                    connection.connectTimeout = 5_000
+                    connection.readTimeout = 5_000
+
+                    SVG.setInternalEntitiesEnabled(false)
+                    val picture = connection.inputStream.use { stream ->
+                        SVG.getFromInputStream(stream).renderToPicture()
+                    }
+
+                    val longestSide = maxOf(picture.width, picture.height).coerceAtLeast(1)
+                    val scale = sizePx.toFloat() / longestSide
+                    val width = (picture.width * scale).roundToInt().coerceAtLeast(1)
+                    val height = (picture.height * scale).roundToInt().coerceAtLeast(1)
+
+                    Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).also { bitmap ->
+                        Canvas(bitmap).drawPicture(picture, Rect(0, 0, width, height))
+                    }
+                } finally {
+                    connection.disconnect()
+                }
+            }
+        } catch (_: IOException) {
+            null
+        } catch (_: SVGParseException) {
+            null
+        }
     }
 
     override fun onDestroyView() {
