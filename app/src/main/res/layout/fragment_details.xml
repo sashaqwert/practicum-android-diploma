@@ -71,7 +71,7 @@
             tools:text="Вакансия не найдена или удалена"/>
     </LinearLayout>
 
-    <androidx.core.widget.ContentLoadingProgressBar
+    <ProgressBar
         android:id="@+id/loadingBar"
         android:layout_width="@dimen/width_48"
         android:layout_height="@dimen/height_48"

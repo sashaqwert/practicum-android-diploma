@@ -1,52 +1,29 @@
 package ru.practicum.android.diploma.details.ui.fragment
 
+import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Rect
-import android.graphics.drawable.Drawable
-import android.net.Uri
 import android.os.Bundle
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.style.BulletSpan
-import android.text.style.LeadingMarginSpan
-import android.text.style.LineHeightSpan
-import android.text.style.TextAppearanceSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.text.HtmlCompat
-import androidx.core.text.parseAsHtml
-import androidx.core.util.TypedValueCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.caverock.androidsvg.SVG
-import com.caverock.androidsvg.SVGParseException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentDetailsBinding
 import ru.practicum.android.diploma.details.domain.model.VacancyDetail
 import ru.practicum.android.diploma.details.presentation.state.DetailsState
 import ru.practicum.android.diploma.details.presentation.view_model.DetailsViewModel
-import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.URL
-import kotlin.math.roundToInt
-import androidx.core.net.toUri
-import com.bumptech.glide.RequestBuilder
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import ru.practicum.android.diploma.details.ui.util.bindDescription
 import ru.practicum.android.diploma.details.ui.util.bindSkills
+import ru.practicum.android.diploma.details.ui.util.getCurrencySymbol
 import ru.practicum.android.diploma.details.ui.util.prepareLogoForGlide
 import java.text.NumberFormat
 import java.util.Locale
@@ -85,13 +62,9 @@ class DetailsFragment : Fragment() {
             likeButton.setOnClickListener {
                 viewModel.actionFavoriteClicked()
             }
-
-//            shareButton.setOnClickListener {
-//                viewModel.actionShareClicked()
-//            }
         }
 
-        viewModel.setID("00080c3c-d8b5-3de1-b0ba-1ce1c46fdadd") // vacancyId ?: "0"
+        viewModel.setID(vacancyId ?: "0")
         viewModel.fillData()
 
         viewModel.observeState().observe(viewLifecycleOwner) { state ->
@@ -104,11 +77,12 @@ class DetailsFragment : Fragment() {
                     )
                     setContent(state.vacancyDetail)
                 }
+
                 is DetailsState.Error -> {
                     setLayoutVisibilites(
                         isVacancyLayoutVisible = false,
                         isErrorLayoutVisible = true,
-                        isLoadingBarVisible = true
+                        isLoadingBarVisible = false
                     )
 
                     setError(state.code)
@@ -138,16 +112,28 @@ class DetailsFragment : Fragment() {
     }
 
     private fun setContent(vacancyDetail: VacancyDetail) {
-        val textSalary = vacancyDetail.salary.let { salary ->
-            val formatter = NumberFormat.getIntegerInstance(Locale("ru", "RU"))
-            val formattedSalaryFrom = salary?.from?.let { formatter.format(it) } ?: ""
-            val formattedSalaryTo = salary?.to?.let { formatter.format(it) } ?: ""
+        viewBinding.shareButton.setOnClickListener {
+            val intent = Intent(Intent.ACTION_SEND).apply {
+                type = "text/plain"
+                putExtra(Intent.EXTRA_TEXT, vacancyDetail.url)
+            }
 
-            val salaryFrom = if (salary?.from != null) getString(R.string.salary_from, formattedSalaryFrom, salary.currency) else ""
-            val salaryTo = if (salary?.to != null) getString(R.string.salary_to, formattedSalaryTo, salary.currency) else ""
+            startActivity(intent)
+        }
+
+        val textSalary = vacancyDetail.salary?.let { salary ->
+            val formatter = NumberFormat.getIntegerInstance(Locale("ru", "RU"))
+            val formattedSalaryFrom = salary.from?.let { formatter.format(it) } ?: ""
+            val formattedSalaryTo = salary.to?.let { formatter.format(it) } ?: ""
+
+            val currency = getCurrencySymbol(vacancyDetail.salary.currency ?: "")
+
+            val salaryFrom =
+                if (salary.from != null) getString(R.string.salary_from, formattedSalaryFrom, currency) else ""
+            val salaryTo = if (salary.to != null) getString(R.string.salary_to, formattedSalaryTo, currency) else ""
 
             "$salaryFrom$salaryTo"
-        }
+        } ?: ""
 
         val employmentText = if (vacancyDetail.employment == null) "" else "${vacancyDetail.employment.name}, "
         val scheduleText = if (vacancyDetail.schedule == null) "" else vacancyDetail.schedule.name
@@ -162,13 +148,15 @@ class DetailsFragment : Fragment() {
         scheduleText: String
     ) {
         lifecycleScope.launch {
-            val glide = Glide.with(this@DetailsFragment)
+            viewBinding.employerIcon.setImageResource(R.drawable.img_empty_logo_48_xml)
             val logo = when (val logo = prepareLogoForGlide(vacancyDetail.employer.logo)) {
-                is Bitmap -> glide.load(logo)
-                else -> glide.load(logo as? String)
+                is Bitmap -> logo
+                else -> logo as? String
             }
 
-            logo
+            Glide
+                .with(this@DetailsFragment)
+                .load(logo)
                 .placeholder(R.drawable.img_empty_logo_48_xml)
                 .error(R.drawable.img_empty_logo_48_xml)
                 .transform(
@@ -215,6 +203,13 @@ class DetailsFragment : Fragment() {
                     errorText.setText(R.string.server_error)
                 }
             }
+
+            NO_INTERNET -> {
+                viewBinding.apply {
+                    errorImg.setImageResource(R.drawable.img_not_internet_search_state_328)
+                    errorText.setText(R.string.no_internet)
+                }
+            }
         }
     }
 
@@ -235,5 +230,6 @@ class DetailsFragment : Fragment() {
         private const val NO_DETAIL_RESPONSE = -2
         private const val NOT_FOUND = 404
         private const val UNKNOWN_ERROR = -3
+        private const val NO_INTERNET = -1
     }
 }

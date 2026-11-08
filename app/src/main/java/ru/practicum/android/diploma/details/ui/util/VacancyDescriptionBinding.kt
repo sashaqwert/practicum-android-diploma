@@ -12,7 +12,6 @@ import android.text.style.LineHeightSpan
 import android.text.style.TextAppearanceSpan
 import androidx.core.text.HtmlCompat
 import androidx.core.text.parseAsHtml
-import androidx.core.view.isVisible
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.details.domain.model.VacancyDetail
 
