@@ -125,19 +125,27 @@ class DetailsFragment : Fragment() {
             startActivity(intent)
         }
 
-        val textSalary = getTextSaylary(vacancyDetail)
+        val textSalary = getTextSalary(vacancyDetail)
 
         val employmentText =
-            if (vacancyDetail.employment == null) ""
-            else "${vacancyDetail.employment.name}, "
+            if (vacancyDetail.employment == null) {
+                ""
+            }
+            else {
+                "${vacancyDetail.employment.name}, "
+            }
         val scheduleText =
-            if (vacancyDetail.schedule == null) ""
-            else vacancyDetail.schedule.name
+            if (vacancyDetail.schedule == null) {
+                ""
+            }
+            else {
+                vacancyDetail.schedule.name
+            }
 
         bindItems(vacancyDetail, textSalary, employmentText, scheduleText)
     }
 
-    private fun getTextSaylary(vacancyDetail: VacancyDetail): String {
+    private fun getTextSalary(vacancyDetail: VacancyDetail): String {
         return vacancyDetail.salary?.let { salary ->
             val formatter = NumberFormat.getIntegerInstance(Locale("ru", "RU"))
             val formattedSalaryFrom = salary.from?.let { formatter.format(it) } ?: ""
@@ -146,16 +154,24 @@ class DetailsFragment : Fragment() {
             val currency = getCurrencySymbol(vacancyDetail.salary.currency ?: "")
 
             val salaryFrom =
-                if (salary.from != null) getString(
-                    R.string.salary_from,
-                    formattedSalaryFrom,
+                if (salary.from != null) {
+                    getString(
+                        R.string.salary_from,
+                        formattedSalaryFrom,
+                        currency
+                    )
+                } else {
+                    ""
+                }
+            val salaryTo = if (salary.to != null) {
+                getString(
+                    R.string.salary_to,
+                    formattedSalaryTo,
                     currency
-                ) else ""
-            val salaryTo = if (salary.to != null) getString(
-                R.string.salary_to,
-                formattedSalaryTo,
-                currency
-            ) else ""
+                )
+            } else {
+                ""
+            }
 
             "$salaryFrom$salaryTo"
         } ?: ""
@@ -167,24 +183,8 @@ class DetailsFragment : Fragment() {
         employmentText: String,
         scheduleText: String
     ) {
-        lifecycleScope.launch {
-            viewBinding.employerIcon.setImageResource(R.drawable.img_empty_logo_48_xml)
-            val logo = when (val logo = prepareLogoForGlide(vacancyDetail.employer.logo)) {
-                is Bitmap -> logo
-                else -> logo as? String
-            }
+        setGlide(vacancyDetail)
 
-            Glide
-                .with(this@DetailsFragment)
-                .load(logo)
-                .placeholder(R.drawable.img_empty_logo_48_xml)
-                .error(R.drawable.img_empty_logo_48_xml)
-                .transform(
-                    CenterCrop(),
-                    RoundedCorners(resources.getDimensionPixelSize(R.dimen.margin_12))
-                )
-                .into(viewBinding.employerIcon)
-        }
         viewBinding.apply {
             vacancyName.setText(vacancyDetail.name)
             salary.text = if (textSalary.isNotEmpty() && textSalary.isNotBlank()) {
@@ -212,6 +212,27 @@ class DetailsFragment : Fragment() {
 
             skillsTitle.isVisible = vacancyDetail.skills.isNotEmpty()
             skillsList.isVisible = vacancyDetail.skills.isNotEmpty()
+        }
+    }
+
+    private fun setGlide(vacancyDetail: VacancyDetail) {
+        lifecycleScope.launch {
+            viewBinding.employerIcon.setImageResource(R.drawable.img_empty_logo_48_xml)
+            val logo = when (val logo = prepareLogoForGlide(vacancyDetail.employer.logo)) {
+                is Bitmap -> logo
+                else -> logo as? String
+            }
+
+            Glide
+                .with(this@DetailsFragment)
+                .load(logo)
+                .placeholder(R.drawable.img_empty_logo_48_xml)
+                .error(R.drawable.img_empty_logo_48_xml)
+                .transform(
+                    CenterCrop(),
+                    RoundedCorners(resources.getDimensionPixelSize(R.dimen.margin_12))
+                )
+                .into(viewBinding.employerIcon)
         }
     }
 
