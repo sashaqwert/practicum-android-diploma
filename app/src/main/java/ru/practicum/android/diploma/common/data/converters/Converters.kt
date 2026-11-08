@@ -1,6 +1,8 @@
 package ru.practicum.android.diploma.common.data.converters
 
 import androidx.core.text.HtmlCompat
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import ru.practicum.android.diploma.common.data.dto.FilterAreaDto
 import ru.practicum.android.diploma.common.data.dto.FilterIndustryDto
 import ru.practicum.android.diploma.common.data.dto.VacancyCardSalaryDto
@@ -24,10 +26,11 @@ import ru.practicum.android.diploma.details.domain.model.Experience
 import ru.practicum.android.diploma.details.domain.model.Phone
 import ru.practicum.android.diploma.details.domain.model.Schedule
 import ru.practicum.android.diploma.details.domain.model.VacancyDetail
+import ru.practicum.android.diploma.favorite.data.db.entities.VacancyEntity
 import ru.practicum.android.diploma.search.data.response.VacancyResponse
 import ru.practicum.android.diploma.search.domain.model.SearchResult
 
-class Converters {
+class Converters(private val gson: Gson) {
     private fun toAddress(addressDto: AddressDto?): Address? {
         return if (addressDto != null) {
             Address(
@@ -183,4 +186,45 @@ class Converters {
             pages = vacancies.pages
         )
     }
+
+    fun detailToEntity(vacancy: VacancyDetail): VacancyEntity =
+        VacancyEntity(
+            id = vacancy.id,
+            address = gson.toJson(vacancy.address),
+            area = gson.toJson(vacancy.area),
+            contacts = gson.toJson(vacancy.contacts),
+            description = vacancy.description,
+            employer = gson.toJson(vacancy.employer),
+            employment = gson.toJson(vacancy.employment),
+            experience = gson.toJson(vacancy.experience),
+            industry = gson.toJson(vacancy.industry),
+            name = vacancy.name,
+            salary = gson.toJson(vacancy.salary),
+            schedule = gson.toJson(vacancy.schedule),
+            skills = gson.toJson(vacancy.skills),
+            url = vacancy.url
+        )
+
+    fun entityToDetail(vacancy: VacancyEntity): VacancyDetail =
+        VacancyDetail(
+            id = vacancy.id,
+            address = fromJson(vacancy.address),
+            area = fromJson(vacancy.area),
+            contacts = fromJson(vacancy.contacts),
+            description = vacancy.description,
+            employer = fromJson(vacancy.employer),
+            employment = fromJson(vacancy.employment),
+            experience = fromJson(vacancy.experience),
+            industry = fromJson(vacancy.industry),
+            name = vacancy.name,
+            salary = fromJson(vacancy.salary),
+            schedule = fromJson(vacancy.schedule),
+            skills = fromJson(vacancy.skills),
+            url = vacancy.url
+        )
+
+    private inline fun <reified T> fromJson(data: String): T {
+        return gson.fromJson(data, object : TypeToken<T>() {}.type)
+    }
+
 }

@@ -11,7 +11,7 @@ import ru.practicum.android.diploma.common.data.network.VacanciesApi
 val commonDataModule = module {
 
     single {
-        Converters()
+        Converters(get())
     }
 
     single {
