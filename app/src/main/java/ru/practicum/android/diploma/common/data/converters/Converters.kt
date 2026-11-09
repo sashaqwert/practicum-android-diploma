@@ -1,6 +1,5 @@
 package ru.practicum.android.diploma.common.data.converters
 
-import androidx.core.text.HtmlCompat
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import ru.practicum.android.diploma.common.data.dto.FilterAreaDto
