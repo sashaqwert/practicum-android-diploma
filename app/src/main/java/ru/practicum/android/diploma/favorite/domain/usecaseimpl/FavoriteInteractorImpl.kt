@@ -11,7 +11,7 @@ import ru.practicum.android.diploma.favorite.domain.usecase.FavoriteInteractor
 class FavoriteInteractorImpl(val repository: FavoriteRepository, val converter: Converters) :
     FavoriteInteractor {
 
-    override fun getAllVacancies(details: List<VacancyDetail>): Flow<List<VacancyCard>> {
+    override fun getAllVacancies(): Flow<List<VacancyCard>> {
         return repository.getAllVacancies().map { list ->
             converter.fromDetailToCard(list)
         }
