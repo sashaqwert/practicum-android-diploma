@@ -27,4 +27,10 @@ class FavoriteRepositoryImpl(
             converters.detailToEntity(vacancyDetail)
         )
     }
+
+    override suspend fun getVacancyById(id: String): VacancyDetail {
+        val vacancy = vacancyDao.getVacancyById(id)
+
+        return converters.entityToDetail(vacancy)
+    }
 }
