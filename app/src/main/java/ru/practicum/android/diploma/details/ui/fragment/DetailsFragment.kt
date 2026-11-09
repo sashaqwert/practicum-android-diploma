@@ -1,20 +1,18 @@
 package ru.practicum.android.diploma.details.ui.fragment
 
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import kotlinx.coroutines.launch
+import coil.decode.SvgDecoder
+import coil.load
+import coil.size.Scale
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentDetailsBinding
@@ -25,7 +23,6 @@ import ru.practicum.android.diploma.details.ui.util.HTTPResponses
 import ru.practicum.android.diploma.details.ui.util.bindDescription
 import ru.practicum.android.diploma.details.ui.util.bindSkills
 import ru.practicum.android.diploma.details.ui.util.getTextSalary
-import ru.practicum.android.diploma.details.ui.util.prepareLogoForGlide
 
 class DetailsFragment : Fragment() {
 
@@ -143,14 +140,13 @@ class DetailsFragment : Fragment() {
     }
 
 
-
     private fun bindItems(
         vacancyDetail: VacancyDetail,
         textSalary: String,
         employmentText: String,
         scheduleText: String
     ) {
-        setGlide(vacancyDetail)
+        setCoil(vacancyDetail)
 
         viewBinding.apply {
             vacancyName.setText(vacancyDetail.name)
@@ -185,24 +181,27 @@ class DetailsFragment : Fragment() {
         }
     }
 
-    private fun setGlide(vacancyDetail: VacancyDetail) {
-        lifecycleScope.launch {
-            viewBinding.employerIcon.setImageResource(R.drawable.img_empty_logo_48_xml)
-            val logo = when (val logo = prepareLogoForGlide(vacancyDetail.employer.logo)) {
-                is Bitmap -> logo
-                else -> logo as? String
+    private fun setCoil(vacancyDetail: VacancyDetail) {
+        viewBinding.employerIcon.load(vacancyDetail.employer.logo) {
+            setHeader(
+                "User-Agent",
+                "practicum-android-diploma/1.0 (https://github.com/sashaqwert/practicum-android-diploma)"
+            )
+
+            if (vacancyDetail.employer.logo.endsWith(".svg", ignoreCase = true)) {
+                decoderFactory(SvgDecoder.Factory())
             }
 
-            Glide
-                .with(this@DetailsFragment)
-                .load(logo)
-                .placeholder(R.drawable.img_empty_logo_48_xml)
-                .error(R.drawable.img_empty_logo_48_xml)
-                .transform(
-                    CenterCrop(),
-                    RoundedCorners(resources.getDimensionPixelSize(R.dimen.margin_12))
-                )
-                .into(viewBinding.employerIcon)
+            scale(Scale.FIT)
+
+            placeholder(R.drawable.img_empty_logo_48_xml)
+            error(R.drawable.img_empty_logo_48_xml)
+
+            listener(
+                onError = { _, result ->
+                    Log.e("CoilError", "Failed to load: ${vacancyDetail.employer.logo}", result.throwable)
+                }
+            )
         }
     }
 

@@ -20,7 +20,7 @@ fun getTextSalary(vacancyDetail: VacancyDetail, resources: Resources): String {
                     R.string.salary_from,
                     formattedSalaryFrom,
                     currency
-                )
+                ) + " "
             } else {
                 ""
             }
