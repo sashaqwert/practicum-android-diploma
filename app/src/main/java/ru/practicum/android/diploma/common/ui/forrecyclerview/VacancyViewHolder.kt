@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.util.TypedValueCompat
 import androidx.recyclerview.widget.RecyclerView
+import coil.decode.SvgDecoder
 import coil.load
 import coil.transform.RoundedCornersTransformation
 import ru.practicum.android.diploma.R
@@ -41,6 +42,15 @@ class VacancyViewHolder(private val binding: ItemVacancyBinding) : RecyclerView.
 
         if (vacancy.logo != null) {
             binding.imageRecyclerView.load(vacancy.logo) {
+                setHeader(
+                    "User-Agent",
+                    "practicum-android-diploma/1.0 (https://github.com/sashaqwert/practicum-android-diploma)"
+                )
+
+                if (vacancy.logo.endsWith(".svg", ignoreCase = true)) {
+                    decoderFactory(SvgDecoder.Factory())
+                }
+
                 placeholder(R.drawable.img_empty_logo_48_xml)
                 error(R.drawable.img_empty_logo_48_xml)
                 transformations(
