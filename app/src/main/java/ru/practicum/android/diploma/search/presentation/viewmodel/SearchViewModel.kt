@@ -34,6 +34,13 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
         }
     }
 
+    fun retrySearchWithDebounce() {
+        viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_MILLIS)
+            retrySearch()
+        }
+    }
+
     fun onQueryChanged(query: String) {
         if (query == currentQuery) {
             return

@@ -54,7 +54,8 @@ class SearchFragment : Fragment() {
 
         viewBinding.searchEditText.doOnTextChanged { s, _, _, _ ->
             viewBinding.clearButton.isVisible = !s.isNullOrEmpty()
-            loading()
+            viewBinding.spaceForImgInSearch.isVisible = false
+            viewBinding.textStateSpace.isVisible = false
             viewModel.onQueryChanged(s?.toString().orEmpty())
         }
 
@@ -88,8 +89,8 @@ class SearchFragment : Fragment() {
         }
 
         viewBinding.searchEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE) {
-                viewModel.retrySearch()
+            if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId ==EditorInfo.IME_ACTION_DONE) {
+               viewModel.retrySearch()
                 closeKeyboard()
                 true
             } else {
@@ -180,7 +181,7 @@ class SearchFragment : Fragment() {
             setText(R.string.no_internet)
             isVisible = true
         }
-        viewModel.onQueryChanged(viewModel.getCurrentQuery())
+        viewModel.retrySearchWithDebounce()
     }
 
     private fun error() {
