@@ -142,8 +142,6 @@ class DetailsFragment : Fragment() {
         bindItems(vacancyDetail, textSalary, employmentText, scheduleText)
     }
 
-
-
     private fun bindItems(
         vacancyDetail: VacancyDetail,
         textSalary: String,
