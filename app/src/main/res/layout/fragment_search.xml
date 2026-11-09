@@ -67,6 +67,32 @@
         app:layout_constraintEnd_toEndOf="@id/search_edit_text"
         app:layout_constraintTop_toTopOf="@id/search_edit_text" />
 
+    <ProgressBar
+        android:id="@+id/pagination_progress_bar"
+        android:layout_width="@dimen/width_36"
+        android:layout_height="@dimen/height_36"
+        android:layout_marginVertical="@dimen/margin_16"
+        android:src="@drawable/ic_loading_search_state_36"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/vacancy_list" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/vacancy_list"
+        android:layout_width="@dimen/width_0"
+        android:layout_height="@dimen/height_0"
+        android:layout_marginHorizontal="@dimen/margin_16"
+        android:clipToPadding="false"
+        android:paddingTop="@dimen/margin_46"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toTopOf="@id/pagination_progress_bar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_edit_text" />
+
     <TextView
         android:id="@+id/space_for_vacancy_count"
         style="@style/Text.Regular16"
@@ -86,19 +112,6 @@
         tools:text="@string/tools"
         tools:visibility="visible" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/vacancy_list"
-        android:layout_width="@dimen/width_0"
-        android:layout_height="@dimen/height_0"
-        android:layout_marginHorizontal="@dimen/margin_16"
-        android:layout_marginTop="@dimen/margin_8"
-        android:visibility="gone"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/space_for_vacancy_count" />
-
     <ImageView
         android:id="@+id/space_for_img_in_search"
         android:layout_width="wrap_content"
@@ -110,7 +123,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/search_edit_text" />
 
-    <androidx.core.widget.ContentLoadingProgressBar
+    <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="@dimen/width_36"
         android:layout_height="@dimen/height_36"

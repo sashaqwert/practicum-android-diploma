@@ -19,4 +19,7 @@
     <string name="to">до</string>
     <string name="salary_not_set">Зарплата не указана</string>
     <string name="vacancy">Вакансия</string>
+    <string name="no_wifi">Потеряно соединение</string>
+    <string name="empty_vacancy">Таких вакансий нет</string>
+    <string name="found_vacancy">Найдено %d вакансий</string>
 </resources>

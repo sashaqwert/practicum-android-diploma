@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -48,26 +49,10 @@ class SearchFragment : Fragment() {
         savedInstanceState: Bundle?
     ) {
         super.onViewCreated(view, savedInstanceState)
+
         viewBinding.searchEditText.doOnTextChanged { s, _, _, _ ->
             viewBinding.clearButton.isVisible = !s.isNullOrEmpty()
-        }
-
-        viewModel.state.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is SearchState.Content -> content()
-                SearchState.Default -> default()
-                SearchState.Error -> error()
-                SearchState.Loading -> loading()
-            }
-        }
-
-        viewBinding.clearButton.setOnClickListener {
-            viewBinding.searchEditText.setText("")
-            viewBinding.clearButton.isVisible = false
-            default()
-            val inputMethodManager =
-                requireContext().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-            inputMethodManager.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, 0)
+            viewModel.onQueryChanged(s?.toString().orEmpty())
         }
 
         val adapter = VacancyAdapter(vacancies) { vacancy ->
@@ -76,6 +61,29 @@ class SearchFragment : Fragment() {
                 DetailsFragment.putId(vacancy.id)
             )
         }
+
+        viewModel.state.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is SearchState.Content -> {
+                    adapter.updateList(state.vacancies)
+                    content(state.found)
+                    viewBinding.paginationProgressBar.isVisible = state.isLoadingMore
+                }
+
+                SearchState.Default -> default()
+                SearchState.Error.NoInternet -> noInternet()
+                SearchState.Error.Server -> error()
+                SearchState.Loading -> loading()
+            }
+        }
+
+        viewBinding.clearButton.setOnClickListener {
+            viewBinding.searchEditText.setText("")
+            viewBinding.clearButton.isVisible = false
+            closeKeyboard()
+            default()
+        }
+
         viewBinding.vacancyList.adapter = adapter
         viewBinding.vacancyList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -85,7 +93,16 @@ class SearchFragment : Fragment() {
                         (viewBinding.vacancyList.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
                     val itemsCount = adapter.itemCount
                     if (pos >= itemsCount - 1) {
-                        // вызов метода viewModel, который вызовет интерактор для отправки поискового запроса
+                        val currentState = viewModel.state.value as? SearchState.Content
+                        if (currentState != null) {
+                            if (currentState.paginationError == null) {
+                                val nextPage = currentState.page + 1
+                                viewModel.loadPage(nextPage)
+                            } else {
+                                Toast.makeText(requireContext(), R.string.no_wifi, Toast.LENGTH_LONG).show()
+                                viewModel.onPaginationErrorShown()
+                            }
+                        }
                     }
                 }
             }
@@ -97,20 +114,44 @@ class SearchFragment : Fragment() {
         _viewBinding = null
     }
 
+    private fun closeKeyboard() {
+        val inputMethodManager =
+            requireContext().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, 0)
+    }
+
     private fun loading() {
+        closeKeyboard()
+        viewBinding.progressBar.isVisible = true
         viewBinding.spaceForImgInSearch.isVisible = false
         viewBinding.spaceForVacancyCount.isVisible = false
         viewBinding.vacancyList.isVisible = false
-        viewBinding.progressBar.isVisible = true
         viewBinding.textStateSpace.isVisible = false
     }
 
-    private fun content() {
-        viewBinding.spaceForImgInSearch.isVisible = false
-        viewBinding.spaceForVacancyCount.isVisible = true
-        viewBinding.vacancyList.isVisible = true
+    private fun content(found: Int) {
+        viewBinding.spaceForImgInSearch.apply {
+            setImageResource(R.drawable.img_error_search_state_328)
+            isVisible = found == 0
+        }
+        viewBinding.spaceForVacancyCount.apply {
+            if (found == 0) {
+                setText(R.string.empty_vacancy)
+            } else {
+                text = getString(R.string.found_vacancy, found)
+            }
+            isVisible = true
+        }
+        viewBinding.vacancyList.isVisible = found > 0
         viewBinding.progressBar.isVisible = false
-        viewBinding.textStateSpace.isVisible = false
+        viewBinding.textStateSpace.apply {
+            if (found > 0) {
+                isVisible = false
+            } else {
+                setText(R.string.vacancy_error)
+                isVisible = true
+            }
+        }
     }
 
     private fun noInternet() {

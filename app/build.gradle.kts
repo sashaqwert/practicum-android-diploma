@@ -97,4 +97,7 @@ dependencies {
     // Glide
     implementation(libs.glide)
     kapt(libs.glide.compiler)
+
+    // Coil
+    implementation(libs.coil)
 }

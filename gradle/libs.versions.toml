@@ -47,6 +47,9 @@ peko = "3.0.5"
 # Glide
 glide = "4.14.2"
 
+# Coil
+coil = "2.6.0"
+
 [libraries]
 
 # AndroidX
@@ -108,4 +111,6 @@ peko = { module = "com.markodevcic:peko", version.ref = "peko" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
 
+# Coil
+coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 [bundles]
