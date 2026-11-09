@@ -29,9 +29,10 @@ class SearchFragment : Fragment() {
     private val viewBinding get() = _viewBinding!!
     private val viewModel: SearchViewModel by viewModel()
 
-    private lateinit var adapter : VacancyAdapter
+    @Suppress("LateinitUsage")
+    private lateinit var adapter: VacancyAdapter
 
-    override fun onCreateView(
+    override fun onCreateView (
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
