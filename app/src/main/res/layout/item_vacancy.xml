@@ -13,7 +13,8 @@
         android:background="@drawable/shape_for_image_recycler_view_element"
         android:src="@drawable/img_empty_logo_48_xml"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:backgroundTint="@color/white"/>
 
     <TextView
         android:id="@+id/vacation_name"
