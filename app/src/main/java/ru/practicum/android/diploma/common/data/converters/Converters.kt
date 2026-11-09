@@ -219,6 +219,19 @@ class Converters(private val gson: Gson) {
             url = vacancy.url
         )
 
+    fun fromDetailToCard(details: List<VacancyDetail>): List<VacancyCard> {
+        return details.map { detail ->
+            VacancyCard(
+                id = detail.id,
+                name = detail.name,
+                company = detail.employer.name,
+                city = detail.address?.city,
+                salary = detail.salary,
+                logo = detail.employer.logo
+            )
+        }
+    }
+
     private inline fun <reified T> fromJson(data: String): T {
         return gson.fromJson(data, object : TypeToken<T>() {}.type)
     }
