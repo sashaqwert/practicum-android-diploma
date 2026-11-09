@@ -1,12 +1,18 @@
 package ru.practicum.android.diploma.favorite.di.data
 
+import androidx.room.Room
+import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
+import ru.practicum.android.diploma.favorite.data.db.AppDatabase
 
-val favoriteDataModuleDI = module {}
+val favoriteDataModuleDI = module {
+    single {
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db")
+            .fallbackToDestructiveMigration(dropAllTables = true)
+            .build()
+    }
 
-/*
-    Модуль пуст, но сущности и DAO описаны в favorite/data/db.
-    Стоит добавить провайдеры AppDatabase и VacancyDao,
-    чтобы Data-слой избранного был готов к следующей итерации.
-
-*/
+    single {
+        get<AppDatabase>().vacancyDao()
+    }
+}
