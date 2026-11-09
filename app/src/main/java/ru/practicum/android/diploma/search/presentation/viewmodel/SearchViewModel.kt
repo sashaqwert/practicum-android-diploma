@@ -22,6 +22,18 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
     private var currentQuery = ""
     private var searchJob: Job? = null
 
+    fun getCurrentQuery(): String = currentQuery
+
+    fun retrySearch() {
+        val query = currentQuery.trim()
+        if (query.isEmpty()) return
+
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            searchPage(query, FIRST_PAGE)
+        }
+    }
+
     fun onQueryChanged(query: String) {
         if (query == currentQuery) {
             return

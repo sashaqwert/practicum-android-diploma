@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.common.ui.forrecyclerview
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.util.TypedValueCompat
@@ -46,6 +47,12 @@ class VacancyViewHolder(private val binding: ItemVacancyBinding) : RecyclerView.
                     RoundedCornersTransformation(
                         radius = TypedValueCompat.dpToPx(CORNER_RADIUS_DP, itemView.resources.displayMetrics)
                     )
+                )
+
+                listener(
+                    onError = { _, result ->
+                        Log.e("CoilError", "Failed to load: ${vacancy.logo}", result.throwable)
+                    }
                 )
             }
         } else {

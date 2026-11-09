@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.view.isVisible
@@ -26,6 +27,7 @@ class SearchFragment : Fragment() {
     private var _viewBinding: FragmentSearchBinding? = null
     private var vacancies: List<VacancyCard> = emptyList()
     private val viewBinding get() = _viewBinding!!
+
 
     private val viewModel: SearchViewModel by viewModel()
 
@@ -52,6 +54,7 @@ class SearchFragment : Fragment() {
 
         viewBinding.searchEditText.doOnTextChanged { s, _, _, _ ->
             viewBinding.clearButton.isVisible = !s.isNullOrEmpty()
+            loading()
             viewModel.onQueryChanged(s?.toString().orEmpty())
         }
 
@@ -82,6 +85,16 @@ class SearchFragment : Fragment() {
             viewBinding.clearButton.isVisible = false
             closeKeyboard()
             default()
+        }
+
+        viewBinding.searchEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE) {
+                viewModel.retrySearch()
+                closeKeyboard()
+                true
+            } else {
+                false
+            }
         }
 
         viewBinding.vacancyList.adapter = adapter
@@ -121,7 +134,6 @@ class SearchFragment : Fragment() {
     }
 
     private fun loading() {
-        closeKeyboard()
         viewBinding.progressBar.isVisible = true
         viewBinding.spaceForImgInSearch.isVisible = false
         viewBinding.spaceForVacancyCount.isVisible = false
@@ -130,6 +142,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun content(found: Int) {
+        closeKeyboard()
         viewBinding.spaceForImgInSearch.apply {
             setImageResource(R.drawable.img_error_search_state_328)
             isVisible = found == 0
@@ -155,6 +168,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun noInternet() {
+        closeKeyboard()
         viewBinding.spaceForVacancyCount.isVisible = false
         viewBinding.vacancyList.isVisible = false
         viewBinding.progressBar.isVisible = false
@@ -166,9 +180,11 @@ class SearchFragment : Fragment() {
             setText(R.string.no_internet)
             isVisible = true
         }
+        viewModel.onQueryChanged(viewModel.getCurrentQuery())
     }
 
     private fun error() {
+        closeKeyboard()
         viewBinding.spaceForVacancyCount.isVisible = false
         viewBinding.vacancyList.isVisible = false
         viewBinding.progressBar.isVisible = false
@@ -183,6 +199,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun default() {
+        closeKeyboard()
         viewBinding.vacancyList.isVisible = false
         viewBinding.spaceForVacancyCount.isVisible = false
         viewBinding.progressBar.isVisible = false
