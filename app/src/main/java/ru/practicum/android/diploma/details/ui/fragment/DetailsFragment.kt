@@ -21,12 +21,11 @@ import ru.practicum.android.diploma.databinding.FragmentDetailsBinding
 import ru.practicum.android.diploma.details.domain.model.VacancyDetail
 import ru.practicum.android.diploma.details.presentation.state.DetailsState
 import ru.practicum.android.diploma.details.presentation.viewmodel.DetailsViewModel
+import ru.practicum.android.diploma.details.ui.util.HTTPResponses
 import ru.practicum.android.diploma.details.ui.util.bindDescription
 import ru.practicum.android.diploma.details.ui.util.bindSkills
-import ru.practicum.android.diploma.details.ui.util.getCurrencySymbol
+import ru.practicum.android.diploma.details.ui.util.getTextSalary
 import ru.practicum.android.diploma.details.ui.util.prepareLogoForGlide
-import java.text.NumberFormat
-import java.util.Locale
 
 class DetailsFragment : Fragment() {
 
@@ -125,57 +124,25 @@ class DetailsFragment : Fragment() {
             startActivity(intent)
         }
 
-        val textSalary = getTextSalary(vacancyDetail)
+        val textSalary = getTextSalary(vacancyDetail, resources)
 
         val employmentText =
             if (vacancyDetail.employment == null) {
                 ""
-            }
-            else {
+            } else {
                 "${vacancyDetail.employment.name}, "
             }
         val scheduleText =
             if (vacancyDetail.schedule == null) {
                 ""
-            }
-            else {
+            } else {
                 vacancyDetail.schedule.name
             }
 
         bindItems(vacancyDetail, textSalary, employmentText, scheduleText)
     }
 
-    private fun getTextSalary(vacancyDetail: VacancyDetail): String {
-        return vacancyDetail.salary?.let { salary ->
-            val formatter = NumberFormat.getIntegerInstance(Locale("ru", "RU"))
-            val formattedSalaryFrom = salary.from?.let { formatter.format(it) } ?: ""
-            val formattedSalaryTo = salary.to?.let { formatter.format(it) } ?: ""
 
-            val currency = getCurrencySymbol(vacancyDetail.salary.currency ?: "")
-
-            val salaryFrom =
-                if (salary.from != null) {
-                    getString(
-                        R.string.salary_from,
-                        formattedSalaryFrom,
-                        currency
-                    )
-                } else {
-                    ""
-                }
-            val salaryTo = if (salary.to != null) {
-                getString(
-                    R.string.salary_to,
-                    formattedSalaryTo,
-                    currency
-                )
-            } else {
-                ""
-            }
-
-            "$salaryFrom$salaryTo"
-        } ?: ""
-    }
 
     private fun bindItems(
         vacancyDetail: VacancyDetail,
@@ -206,8 +173,11 @@ class DetailsFragment : Fragment() {
             description.text = bindDescription(vacancyDetail.description, resources, context)
             skillsList.text = bindSkills(vacancyDetail, resources)
             likeButton.setImageResource(
-                if (vacancyDetail.isFavorite) R.drawable.ic_like_pressed
-                else R.drawable.ic_like
+                if (vacancyDetail.isFavorite) {
+                    R.drawable.ic_like_pressed
+                } else {
+                    R.drawable.ic_like
+                }
             )
 
             skillsTitle.isVisible = vacancyDetail.skills.isNotEmpty()
@@ -238,21 +208,21 @@ class DetailsFragment : Fragment() {
 
     private fun setError(code: Int) {
         when (code) {
-            NO_DETAIL_RESPONSE, NOT_FOUND -> {
+            HTTPResponses.NO_DETAIL_RESPONSE, HTTPResponses.NOT_FOUND -> {
                 viewBinding.apply {
                     errorImg.setImageResource(R.drawable.img_not_found)
                     errorText.setText(R.string.vacancy_not_found)
                 }
             }
 
-            UNKNOWN_ERROR -> {
+            HTTPResponses.UNKNOWN_ERROR -> {
                 viewBinding.apply {
                     errorImg.setImageResource(R.drawable.img_server_error)
                     errorText.setText(R.string.server_error)
                 }
             }
 
-            NO_INTERNET -> {
+            HTTPResponses.NO_INTERNET -> {
                 viewBinding.apply {
                     errorImg.setImageResource(R.drawable.img_not_internet_search_state_328)
                     errorText.setText(R.string.no_internet)
@@ -274,10 +244,5 @@ class DetailsFragment : Fragment() {
                 putString(CURRENT_VACANCY_ID, id)
             }
         }
-
-        private const val NO_DETAIL_RESPONSE = -2
-        private const val NOT_FOUND = 404
-        private const val UNKNOWN_ERROR = -3
-        private const val NO_INTERNET = -1
     }
 }
