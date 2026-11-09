@@ -97,4 +97,7 @@ dependencies {
     // Glide
     implementation(libs.glide)
     kapt(libs.glide.compiler)
+
+    // Android SVG Support for Glide
+    implementation(libs.androidsvg.aar)
 }

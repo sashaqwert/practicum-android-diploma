@@ -146,10 +146,7 @@ class Converters {
             address = toAddress(detailResponse.address),
             area = toFilterArea(detailResponse.area),
             contacts = toContacts(detailResponse.contacts),
-            description = HtmlCompat.fromHtml(
-                detailResponse.description,
-                HtmlCompat.FROM_HTML_MODE_LEGACY
-            ).toString(),
+            description = detailResponse.description,
             employer = toEmployer(detailResponse.employer),
             employment = toEmployment(detailResponse.employment),
             experience = toExperience(detailResponse.experience),
