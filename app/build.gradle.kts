@@ -98,6 +98,10 @@ dependencies {
     implementation(libs.glide)
     kapt(libs.glide.compiler)
 
+    // Coil
+    implementation(libs.coil)
+    implementation(libs.coil.svg)
+
     // Android SVG Support for Glide
     implementation(libs.androidsvg.aar)
 }

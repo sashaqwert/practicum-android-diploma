@@ -4,7 +4,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.practicum.android.diploma.common.domain.models.VacancyCard
 
-class VacancyAdapter(private val vacancies: List<VacancyCard>, private val onItemClick: (VacancyCard) -> Unit) :
+class VacancyAdapter(private var vacancies: List<VacancyCard>, private val onItemClick: (VacancyCard) -> Unit) :
     RecyclerView.Adapter<VacancyViewHolder>() {
 
     override fun onCreateViewHolder(
@@ -27,5 +27,10 @@ class VacancyAdapter(private val vacancies: List<VacancyCard>, private val onIte
 
     override fun getItemCount(): Int {
         return vacancies.size
+    }
+
+    fun updateList(newList: List<VacancyCard>) {
+        vacancies = newList
+        notifyDataSetChanged()
     }
 }

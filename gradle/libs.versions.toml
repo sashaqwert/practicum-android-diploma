@@ -48,11 +48,15 @@ peko = "3.0.5"
 # Glide
 glide = "4.14.2"
 
+# Coil
+coil = "2.6.0"
+
 [libraries]
 
 # AndroidX
 androidsvg-aar = { module = "com.caverock:androidsvg-aar", version.ref = "androidsvgAar" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coil" }
 constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 
@@ -110,4 +114,6 @@ peko = { module = "com.markodevcic:peko", version.ref = "peko" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
 
+# Coil
+coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 [bundles]
