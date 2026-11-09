@@ -8,11 +8,10 @@
 
     <ImageView
         android:id="@+id/image_recycler_view"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="@dimen/width_48"
+        android:layout_height="@dimen/height_48"
         android:background="@drawable/shape_for_image_recycler_view_element"
         android:src="@drawable/img_empty_logo_48_xml"
-        android:scaleType="centerInside"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

@@ -3,12 +3,10 @@ package ru.practicum.android.diploma.common.ui.forrecyclerview
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.util.TypedValueCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil.decode.SvgDecoder
 import coil.load
 import coil.size.Scale
-import coil.transform.RoundedCornersTransformation
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.domain.models.VacancyCard
 import ru.practicum.android.diploma.databinding.ItemVacancyBinding
@@ -104,7 +102,5 @@ class VacancyViewHolder(private val binding: ItemVacancyBinding) : RecyclerView.
             val binding = ItemVacancyBinding.inflate(inflater, parent, false)
             return VacancyViewHolder(binding)
         }
-
-        const val CORNER_RADIUS_DP = 12f
     }
 }

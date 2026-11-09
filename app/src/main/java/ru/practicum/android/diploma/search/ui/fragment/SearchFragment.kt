@@ -31,12 +31,6 @@ class SearchFragment : Fragment() {
 
     private val viewModel: SearchViewModel by viewModel()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -89,8 +83,8 @@ class SearchFragment : Fragment() {
         }
 
         viewBinding.searchEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId ==EditorInfo.IME_ACTION_DONE) {
-               viewModel.retrySearch()
+            if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE) {
+                viewModel.retrySearch()
                 closeKeyboard()
                 true
             } else {
@@ -140,6 +134,7 @@ class SearchFragment : Fragment() {
         viewBinding.spaceForVacancyCount.isVisible = false
         viewBinding.vacancyList.isVisible = false
         viewBinding.textStateSpace.isVisible = false
+        viewBinding.vacancyList.scrollToPosition(0)
     }
 
     private fun content(found: Int) {
