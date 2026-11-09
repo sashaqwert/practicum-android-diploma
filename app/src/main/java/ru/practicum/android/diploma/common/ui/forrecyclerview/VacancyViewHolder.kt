@@ -7,6 +7,7 @@ import androidx.core.util.TypedValueCompat
 import androidx.recyclerview.widget.RecyclerView
 import coil.decode.SvgDecoder
 import coil.load
+import coil.size.Scale
 import coil.transform.RoundedCornersTransformation
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.domain.models.VacancyCard
@@ -40,6 +41,8 @@ class VacancyViewHolder(private val binding: ItemVacancyBinding) : RecyclerView.
             binding.salary.setText(R.string.salary_not_set)
         }
 
+        binding.imageRecyclerView.clipToOutline = true
+
         if (vacancy.logo != null) {
             binding.imageRecyclerView.load(vacancy.logo) {
                 setHeader(
@@ -51,13 +54,10 @@ class VacancyViewHolder(private val binding: ItemVacancyBinding) : RecyclerView.
                     decoderFactory(SvgDecoder.Factory())
                 }
 
+                scale(Scale.FIT)
+
                 placeholder(R.drawable.img_empty_logo_48_xml)
                 error(R.drawable.img_empty_logo_48_xml)
-                transformations(
-                    RoundedCornersTransformation(
-                        radius = TypedValueCompat.dpToPx(CORNER_RADIUS_DP, itemView.resources.displayMetrics)
-                    )
-                )
 
                 listener(
                     onError = { _, result ->
