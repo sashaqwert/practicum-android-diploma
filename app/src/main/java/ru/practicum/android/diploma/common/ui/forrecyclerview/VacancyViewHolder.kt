@@ -1,6 +1,5 @@
 package ru.practicum.android.diploma.common.ui.forrecyclerview
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -53,15 +52,8 @@ class VacancyViewHolder(private val binding: ItemVacancyBinding) : RecyclerView.
                 }
 
                 scale(Scale.FIT)
-
                 placeholder(R.drawable.img_empty_logo_48_xml)
                 error(R.drawable.img_empty_logo_48_xml)
-
-                listener(
-                    onError = { _, result ->
-                        Log.e("CoilError", "Failed to load: ${vacancy.logo}", result.throwable)
-                    }
-                )
             }
         } else {
             binding.imageRecyclerView.setImageResource(R.drawable.img_empty_logo_48_xml)
