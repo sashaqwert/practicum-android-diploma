@@ -27,8 +27,6 @@ class SearchFragment : Fragment() {
     private var _viewBinding: FragmentSearchBinding? = null
     private var vacancies: List<VacancyCard> = emptyList()
     private val viewBinding get() = _viewBinding!!
-
-
     private val viewModel: SearchViewModel by viewModel()
 
     override fun onCreateView(

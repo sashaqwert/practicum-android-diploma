@@ -1,4 +1,4 @@
-package ru.practicum.android.diploma.common.util
+package ru.practicum.android.diploma.util
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
