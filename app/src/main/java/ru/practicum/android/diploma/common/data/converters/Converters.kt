@@ -1,6 +1,5 @@
 package ru.practicum.android.diploma.common.data.converters
 
-import androidx.core.text.HtmlCompat
 import ru.practicum.android.diploma.common.data.dto.FilterAreaDto
 import ru.practicum.android.diploma.common.data.dto.FilterIndustryDto
 import ru.practicum.android.diploma.common.data.dto.VacancyCardSalaryDto
@@ -146,10 +145,7 @@ class Converters {
             address = toAddress(detailResponse.address),
             area = toFilterArea(detailResponse.area),
             contacts = toContacts(detailResponse.contacts),
-            description = HtmlCompat.fromHtml(
-                detailResponse.description,
-                HtmlCompat.FROM_HTML_MODE_LEGACY
-            ).toString(),
+            description = detailResponse.description,
             employer = toEmployer(detailResponse.employer),
             employment = toEmployment(detailResponse.employment),
             experience = toExperience(detailResponse.experience),

@@ -100,4 +100,7 @@ dependencies {
 
     // Coil
     implementation(libs.coil)
+
+    // Android SVG Support for Glide
+    implementation(libs.androidsvg.aar)
 }
