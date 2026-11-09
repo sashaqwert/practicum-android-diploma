@@ -8,7 +8,8 @@ import ru.practicum.android.diploma.details.domain.model.VacancyDetail
 import ru.practicum.android.diploma.favorite.domain.repository.FavoriteRepository
 import ru.practicum.android.diploma.favorite.domain.usecase.FavoriteInteractor
 
-class FavoriteInteractorImpl(val repository: FavoriteRepository, val converter: Converters) : FavoriteInteractor {
+class FavoriteInteractorImpl(val repository: FavoriteRepository, val converter: Converters) :
+    FavoriteInteractor {
 
     override fun getAllVacancies(details: List<VacancyDetail>): Flow<List<VacancyCard>> {
         return repository.getAllVacancies().map { list ->
@@ -22,5 +23,9 @@ class FavoriteInteractorImpl(val repository: FavoriteRepository, val converter: 
 
     override suspend fun deleteVacancy(vacancyDetail: VacancyDetail) {
         repository.deleteVacancy(vacancyDetail)
+    }
+
+    override suspend fun getVacancyById(id: String): VacancyDetail {
+        return repository.getVacancyById(id)
     }
 }
