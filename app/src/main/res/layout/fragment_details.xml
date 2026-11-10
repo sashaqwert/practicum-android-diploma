@@ -149,7 +149,7 @@
                 app:layout_constraintDimensionRatio="h,1:1"
                 android:layout_marginStart="@dimen/margin_16"
                 android:background="@drawable/rounded_12"
-                android:scaleType="centerCrop"
+                android:backgroundTint="@color/white"
                 app:layout_constraintTop_toTopOf="@id/employerContainer"
                 app:layout_constraintBottom_toBottomOf="@id/employerContainer"
                 app:layout_constraintStart_toStartOf="@id/employerContainer"

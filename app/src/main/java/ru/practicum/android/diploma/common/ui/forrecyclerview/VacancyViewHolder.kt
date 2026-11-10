@@ -45,7 +45,7 @@ class VacancyViewHolder(private val binding: ItemVacancyBinding) : RecyclerView.
                 "KZT" -> "₸"
                 "UAH" -> "₴"
                 "AZN" -> "₼"
-                "UZS" -> "so'm"
+                "UZS" -> "сум"
                 "GEL" -> "₾"
                 "KGT" -> "сом"
                 else -> ""
