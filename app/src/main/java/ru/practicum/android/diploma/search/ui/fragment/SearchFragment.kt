@@ -63,6 +63,9 @@ class SearchFragment : Fragment() {
             closeKeyboard()
             default()
         }
+        viewBinding.filerButton.setOnClickListener {
+            findNavController().navigate(R.id.action_searchFragment_to_filterFragment)
+        }
 
         viewBinding.searchEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE) {
