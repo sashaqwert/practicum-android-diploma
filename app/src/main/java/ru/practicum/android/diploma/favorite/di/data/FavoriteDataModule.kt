@@ -4,6 +4,8 @@ import androidx.room.Room
 import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 import ru.practicum.android.diploma.favorite.data.db.AppDatabase
+import ru.practicum.android.diploma.favorite.data.repositoryimpl.FavoriteRepositoryImpl
+import ru.practicum.android.diploma.favorite.domain.repository.FavoriteRepository
 
 val favoriteDataModuleDI = module {
     single {
@@ -14,5 +16,9 @@ val favoriteDataModuleDI = module {
 
     single {
         get<AppDatabase>().vacancyDao()
+    }
+
+    single<FavoriteRepository> {
+        FavoriteRepositoryImpl(get(), get())
     }
 }
