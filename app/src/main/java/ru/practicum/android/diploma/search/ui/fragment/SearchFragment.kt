@@ -147,7 +147,7 @@ class SearchFragment : Fragment() {
     private fun content(found: Int) {
         closeKeyboard()
         viewBinding.spaceForImgInSearch.apply {
-            setImageResource(R.drawable.img_error_search_state_328)
+            setImageResource(R.drawable.img_empty_search_state_328)
             isVisible = found == 0
         }
         viewBinding.spaceForVacancyCount.apply {
@@ -192,7 +192,7 @@ class SearchFragment : Fragment() {
         viewBinding.vacancyList.isVisible = false
         viewBinding.progressBar.isVisible = false
         viewBinding.spaceForImgInSearch.apply {
-            setImageResource(R.drawable.img_error_search_state_328)
+            setImageResource(R.drawable.img_empty_search_state_328)
             isVisible = true
         }
         viewBinding.textStateSpace.apply {
