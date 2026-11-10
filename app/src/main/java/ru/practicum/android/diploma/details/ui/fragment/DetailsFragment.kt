@@ -71,7 +71,7 @@ class DetailsFragment : Fragment() {
     private fun handleState(state: DetailsState) {
         when (state) {
             is DetailsState.Content -> {
-                setLayoutVisibilites(
+                setLayoutVisibilities(
                     isVacancyLayoutVisible = true,
                     isErrorLayoutVisible = false,
                     isLoadingBarVisible = false
@@ -80,7 +80,7 @@ class DetailsFragment : Fragment() {
             }
 
             is DetailsState.Error -> {
-                setLayoutVisibilites(
+                setLayoutVisibilities(
                     isVacancyLayoutVisible = false,
                     isErrorLayoutVisible = true,
                     isLoadingBarVisible = false
@@ -90,7 +90,7 @@ class DetailsFragment : Fragment() {
             }
 
             DetailsState.Loading -> {
-                setLayoutVisibilites(
+                setLayoutVisibilities(
                     isVacancyLayoutVisible = false,
                     isErrorLayoutVisible = false,
                     isLoadingBarVisible = true
@@ -99,7 +99,7 @@ class DetailsFragment : Fragment() {
         }
     }
 
-    private fun setLayoutVisibilites(
+    private fun setLayoutVisibilities(
         isVacancyLayoutVisible: Boolean,
         isErrorLayoutVisible: Boolean,
         isLoadingBarVisible: Boolean
@@ -139,7 +139,6 @@ class DetailsFragment : Fragment() {
         bindItems(vacancyDetail, textSalary, employmentText, scheduleText)
     }
 
-
     private fun bindItems(
         vacancyDetail: VacancyDetail,
         textSalary: String,
@@ -164,7 +163,8 @@ class DetailsFragment : Fragment() {
                 } else {
                     vacancyDetail.experience.name
                 }
-            conditions.text = "$employmentText$scheduleText"
+            val text = "$employmentText$scheduleText"
+            conditions.text = text
             description.setLineSpacing(0f, 1f)
             description.text = bindDescription(vacancyDetail.description, resources, context)
             skillsList.text = bindSkills(vacancyDetail, resources)
