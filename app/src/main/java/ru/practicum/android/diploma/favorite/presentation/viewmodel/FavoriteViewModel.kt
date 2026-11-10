@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.common.domain.Resource
 import ru.practicum.android.diploma.favorite.domain.usecase.FavoriteInteractor
 import ru.practicum.android.diploma.favorite.presentation.state.FavoriteState
 
@@ -16,10 +17,14 @@ class FavoriteViewModel(private val favoriteInteractor: FavoriteInteractor) : Vi
         stateLiveData.value = FavoriteState.Loading
         viewModelScope.launch {
             favoriteInteractor.getAllVacancies().collect {
-                if (it.isEmpty()) {
-                    stateLiveData.value = FavoriteState.Empty
-                } else {
-                    stateLiveData.value = FavoriteState.Content(it)
+                if (it is Resource.Success) {
+                    if (it.data.isEmpty()) {
+                        stateLiveData.value = FavoriteState.Empty
+                    } else {
+                        stateLiveData.value = FavoriteState.Content(it.data)
+                    }
+                } else if (it is Resource.Error) {
+                    stateLiveData.value = FavoriteState.Error
                 }
             }
         }
