@@ -7,7 +7,7 @@ sealed interface FavoriteState {
 
     object Empty : FavoriteState
 
-    data class Content(val vacancyes: List<VacancyCard>): FavoriteState
+    data class Content(val vacancies: List<VacancyCard>) : FavoriteState
 
     object Error : FavoriteState
 }

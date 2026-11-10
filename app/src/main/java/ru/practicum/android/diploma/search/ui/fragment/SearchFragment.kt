@@ -29,7 +29,10 @@ class SearchFragment : Fragment() {
     private val viewBinding get() = _viewBinding!!
     private val viewModel: SearchViewModel by viewModel()
 
-    override fun onCreateView(
+    @Suppress("LateinitUsage")
+    private lateinit var adapter: VacancyAdapter
+
+    override fun onCreateView (
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -51,27 +54,8 @@ class SearchFragment : Fragment() {
             viewModel.onQueryChanged(s?.toString().orEmpty())
         }
 
-        val adapter = VacancyAdapter(vacancies) { vacancy ->
-            findNavController().navigate(
-                R.id.action_searchFragment_to_detailsFragment,
-                DetailsFragment.putId(vacancy.id)
-            )
-        }
-
-        viewModel.state.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is SearchState.Content -> {
-                    adapter.updateList(state.vacancies)
-                    content(state.found)
-                    viewBinding.paginationProgressBar.isVisible = state.isLoadingMore
-                }
-
-                SearchState.Default -> default()
-                SearchState.Error.NoInternet -> noInternet()
-                SearchState.Error.Server -> error()
-                SearchState.Loading -> loading()
-            }
-        }
+        initAdapter()
+        observeViewModelState()
 
         viewBinding.clearButton.setOnClickListener {
             viewBinding.searchEditText.setText("")
@@ -113,6 +97,32 @@ class SearchFragment : Fragment() {
                 }
             }
         })
+    }
+
+    private fun initAdapter() {
+        adapter = VacancyAdapter(vacancies) { vacancy ->
+            findNavController().navigate(
+                R.id.action_searchFragment_to_detailsFragment,
+                DetailsFragment.putId(vacancy.id)
+            )
+        }
+    }
+
+    private fun observeViewModelState() {
+        viewModel.state.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is SearchState.Content -> {
+                    adapter.updateList(state.vacancies)
+                    content(state.found)
+                    viewBinding.paginationProgressBar.isVisible = state.isLoadingMore
+                }
+
+                SearchState.Default -> default()
+                SearchState.Error.NoInternet -> noInternet()
+                SearchState.Error.Server -> error()
+                SearchState.Loading -> loading()
+            }
+        }
     }
 
     override fun onDestroyView() {

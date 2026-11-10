@@ -7,4 +7,5 @@ interface FavoriteRepository {
     fun getAllVacancies(): Flow<List<VacancyDetail>>
     suspend fun insertVacancy(vacancyDetail: VacancyDetail)
     suspend fun deleteVacancy(vacancyDetail: VacancyDetail)
+    suspend fun getVacancyById(id: String): VacancyDetail
 }
