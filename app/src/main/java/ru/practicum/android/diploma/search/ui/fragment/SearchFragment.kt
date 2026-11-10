@@ -32,7 +32,7 @@ class SearchFragment : Fragment() {
     @Suppress("LateinitUsage")
     private lateinit var adapter: VacancyAdapter
 
-    override fun onCreateView (
+    override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -119,7 +119,6 @@ class SearchFragment : Fragment() {
                     content(state.found)
                     viewBinding.paginationProgressBar.isVisible = state.isLoadingMore
                 }
-
                 SearchState.Default -> default()
                 SearchState.Error.NoInternet -> noInternet()
                 SearchState.Error.Server -> error()
@@ -151,7 +150,7 @@ class SearchFragment : Fragment() {
     private fun content(found: Int) {
         closeKeyboard()
         viewBinding.spaceForImgInSearch.apply {
-            setImageResource(R.drawable.img_error_search_state_328)
+            setImageResource(R.drawable.img_empty_search_state_328)
             isVisible = found == 0
         }
         viewBinding.spaceForVacancyCount.apply {
@@ -168,7 +167,7 @@ class SearchFragment : Fragment() {
             if (found > 0) {
                 isVisible = false
             } else {
-                setText(R.string.vacancy_error)
+                setText(R.string.vacancy_empty)
                 isVisible = true
             }
         }
@@ -200,7 +199,7 @@ class SearchFragment : Fragment() {
             isVisible = true
         }
         viewBinding.textStateSpace.apply {
-            setText(R.string.vacancy_error)
+            setText(R.string.server_error)
             isVisible = true
         }
     }
