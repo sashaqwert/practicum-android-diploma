@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.common.ui.forrecyclerview
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -8,6 +9,7 @@ import coil.load
 import coil.size.Scale
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.domain.models.VacancyCard
+import ru.practicum.android.diploma.common.domain.models.VacancyCardSalary
 import ru.practicum.android.diploma.databinding.ItemVacancyBinding
 
 class VacancyViewHolder(private val binding: ItemVacancyBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -18,46 +20,9 @@ class VacancyViewHolder(private val binding: ItemVacancyBinding) : RecyclerView.
         } else {
             binding.industry.text = ""
         }
-        if (vacancy.salary != null) {
-            if ((vacancy.salary.to != null) or (vacancy.salary.from != null)) {
-                var salary = ""
-                if (vacancy.salary.from != null) {
-                    salary += itemView.context.getString(R.string.from) + " "
-                    salary += formatNumber(vacancy.salary.from) + " "
-                }
-                if (vacancy.salary.to != null) {
-                    salary += itemView.context.getString(R.string.to) + " "
-                    salary += formatNumber(vacancy.salary.to) + " "
-                }
-                val currency = formatCurrency(vacancy.salary.currency)
-                binding.salary.text = salary + currency
-            } else {
-                binding.salary.setText(R.string.salary_not_set)
-            }
-        } else {
-            binding.salary.setText(R.string.salary_not_set)
-        }
-
+        setSalary(vacancy.salary)
         binding.imageRecyclerView.clipToOutline = true
-
-        if (vacancy.logo != null) {
-            binding.imageRecyclerView.load(vacancy.logo) {
-                setHeader(
-                    "User-Agent",
-                    "practicum-android-diploma/1.0 (https://github.com/sashaqwert/practicum-android-diploma)"
-                )
-
-                if (vacancy.logo.endsWith(".svg", ignoreCase = true)) {
-                    decoderFactory(SvgDecoder.Factory())
-                }
-
-                scale(Scale.FIT)
-                placeholder(R.drawable.img_empty_logo_48_xml)
-                error(R.drawable.img_empty_logo_48_xml)
-            }
-        } else {
-            binding.imageRecyclerView.setImageResource(R.drawable.img_empty_logo_48_xml)
-        }
+        setLogo(vacancy.logo)
     }
 
     private fun formatNumber(value: Int): String {
@@ -85,6 +50,57 @@ class VacancyViewHolder(private val binding: ItemVacancyBinding) : RecyclerView.
                 "KGT" -> "сом"
                 else -> ""
             }
+        }
+    }
+
+    private fun setSalary(vacancySalary: VacancyCardSalary?) {
+        if (vacancySalary != null) {
+            if ((vacancySalary.to != null) or (vacancySalary.from != null)) {
+                var salary = ""
+                if (vacancySalary.from != null) {
+                    salary += itemView.context.getString(R.string.from) + " "
+                    salary += formatNumber(vacancySalary.from) + " "
+                }
+                if (vacancySalary.to != null) {
+                    salary += itemView.context.getString(R.string.to) + " "
+                    salary += formatNumber(vacancySalary.to) + " "
+                }
+                val currency = formatCurrency(vacancySalary.currency)
+                val result = salary + currency
+                binding.salary.text = result
+            } else {
+                binding.salary.setText(R.string.salary_not_set)
+            }
+        } else {
+            binding.salary.setText(R.string.salary_not_set)
+        }
+    }
+
+    private fun setLogo(logo: String?) {
+        if (logo != null) {
+            binding.imageRecyclerView.load(logo) {
+                setHeader(
+                    "User-Agent",
+                    "practicum-android-diploma/1.0 (https://github.com/sashaqwert/practicum-android-diploma)"
+                )
+
+                if (logo.endsWith(".svg", ignoreCase = true)) {
+                    decoderFactory(SvgDecoder.Factory())
+                }
+
+                scale(Scale.FIT)
+
+                placeholder(R.drawable.img_empty_logo_48_xml)
+                error(R.drawable.img_empty_logo_48_xml)
+
+                listener(
+                    onError = { _, result ->
+                        Log.e("CoilError", "Failed to load: ${logo}", result.throwable)
+                    }
+                )
+            }
+        } else {
+            binding.imageRecyclerView.setImageResource(R.drawable.img_empty_logo_48_xml)
         }
     }
 

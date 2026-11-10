@@ -29,7 +29,8 @@ class SearchFragment : Fragment() {
     private val viewBinding get() = _viewBinding!!
     private val viewModel: SearchViewModel by viewModel()
 
-    private lateinit var adapter : VacancyAdapter
+    @Suppress("LateinitUsage")
+    private lateinit var adapter: VacancyAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,6 +62,9 @@ class SearchFragment : Fragment() {
             viewBinding.clearButton.isVisible = false
             closeKeyboard()
             default()
+        }
+        viewBinding.filerButton.setOnClickListener {
+            findNavController().navigate(R.id.action_searchFragment_to_filterFragment)
         }
 
         viewBinding.searchEditText.setOnEditorActionListener { _, actionId, _ ->
@@ -115,7 +119,6 @@ class SearchFragment : Fragment() {
                     content(state.found)
                     viewBinding.paginationProgressBar.isVisible = state.isLoadingMore
                 }
-
                 SearchState.Default -> default()
                 SearchState.Error.NoInternet -> noInternet()
                 SearchState.Error.Server -> error()
@@ -164,7 +167,7 @@ class SearchFragment : Fragment() {
             if (found > 0) {
                 isVisible = false
             } else {
-                setText(R.string.vacancy_error)
+                setText(R.string.vacancy_empty)
                 isVisible = true
             }
         }
@@ -196,7 +199,7 @@ class SearchFragment : Fragment() {
             isVisible = true
         }
         viewBinding.textStateSpace.apply {
-            setText(R.string.vacancy_error)
+            setText(R.string.server_error)
             isVisible = true
         }
     }
