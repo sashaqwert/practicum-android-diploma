@@ -35,15 +35,19 @@ class DetailsViewModel(private val detailsInteractor: DetailsInteractor, private
 
     fun actionFavoriteClicked() {
         if (stateLiveData.value is DetailsState.Content) {
-            val v = stateLiveData.value
+            val v : DetailsState = stateLiveData.value!!
             if (v is DetailsState.Content) { // Проверяем заново, т.к. компилятор требует однозначности
                 if (v.vacancyDetail.isFavorite) {
                     viewModelScope.launch {
                         favoriteInteractor.deleteVacancy(v.vacancyDetail)
+                        v.vacancyDetail.isFavorite = false
+                        stateLiveData.value = v
                     }
                 } else {
                     viewModelScope.launch {
                         favoriteInteractor.insertVacancy(v.vacancyDetail)
+                        v.vacancyDetail.isFavorite = true
+                        stateLiveData.value = v
                     }
                 }
             }
