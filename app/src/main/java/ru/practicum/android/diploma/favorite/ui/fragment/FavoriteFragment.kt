@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.common.domain.models.VacancyCard
 import ru.practicum.android.diploma.common.ui.forrecyclerview.VacancyAdapter
 import ru.practicum.android.diploma.databinding.FragmentFavoriteBinding
 import ru.practicum.android.diploma.details.ui.fragment.DetailsFragment
@@ -21,6 +22,7 @@ class FavoriteFragment : Fragment() {
     private var _viewBinding: FragmentFavoriteBinding? = null
     private val viewBinding get() = _viewBinding!!
     private val viewModel by viewModel<FavoriteViewModel>()
+    private var adapter: VacancyAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,7 +37,7 @@ class FavoriteFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.fillData()
-        val adapter = VacancyAdapter(emptyList()) { vacancy ->
+        adapter = VacancyAdapter(emptyList()) { vacancy ->
             findNavController().navigate(
                 R.id.action_favoriteFragment_to_detailsFragment,
                 DetailsFragment.putId(vacancy.id)
@@ -44,41 +46,53 @@ class FavoriteFragment : Fragment() {
 
         viewBinding.favoriteList.adapter = adapter
         viewModel.observeState().observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is FavoriteState.Content -> {
-                    adapter.updateList(state.vacancies)
-                    viewBinding.favoriteList.isVisible = true
-                    viewBinding.favoritePlaceholderImage.isVisible = false
-                    viewBinding.favoritePlaceholder.isVisible = false
-                    viewBinding.favoriteLoading.isVisible = false
-                }
-                FavoriteState.Empty -> showPlaceholder(R.drawable.img_favorite_empty, R.string.favorite_list_empty)
-                FavoriteState.Error -> showPlaceholder(R.drawable.img_error_search_state_328, R.string.vacancy_error)
-                FavoriteState.Loading -> {
-                    viewBinding.favoriteLoading.isVisible = true
-                    viewBinding.favoriteList.isVisible = false
-                    viewBinding.favoritePlaceholderImage.isVisible = false
-                    viewBinding.favoritePlaceholder.isVisible = false
-                }
-            }
+            renderPlaceholder(state)
         }
 
     }
 
     private fun renderPlaceholder(state: FavoriteState) {
+        when (state) {
+            is FavoriteState.Content -> {
+                showContent(state.vacancies)
+            }
 
+            FavoriteState.Empty -> {
+                showPlaceholder(R.drawable.img_favorite_empty, R.string.favorite_list_empty)
+            }
+
+            FavoriteState.Error -> showPlaceholder(R.drawable.img_error_search_state_328, R.string.vacancy_error)
+            FavoriteState.Loading -> {
+                hidePlaceholder()
+            }
+        }
+    }
+
+    private fun showContent(vacancies: List<VacancyCard>) {
+        adapter?.updateList(vacancies)
+        viewBinding.favoriteList.isVisible = true
+        viewBinding.favoritePlaceholder.isVisible = false
+        viewBinding.favoriteLoading.isVisible = false
     }
 
     private fun showPlaceholder(@DrawableRes image: Int, @StringRes message: Int) {
         with(viewBinding) {
+            viewBinding.favoriteLoading.isVisible = false
             favoritePlaceholderImage.setImageResource(image)
             favoritePlaceholderMessage.setText(message)
             favoritePlaceholder.isVisible = true
         }
     }
 
+    private fun hidePlaceholder() {
+        viewBinding.favoriteLoading.isVisible = true
+        viewBinding.favoriteList.isVisible = false
+        viewBinding.favoritePlaceholder.isVisible = false
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _viewBinding = null
+        adapter = null
     }
 }

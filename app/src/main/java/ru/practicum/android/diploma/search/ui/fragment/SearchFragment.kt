@@ -119,6 +119,7 @@ class SearchFragment : Fragment() {
                     content(state.found)
                     viewBinding.paginationProgressBar.isVisible = state.isLoadingMore
                 }
+
                 SearchState.Default -> default()
                 SearchState.Error.NoInternet -> noInternet()
                 SearchState.Error.Server -> error()
