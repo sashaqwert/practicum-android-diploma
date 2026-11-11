@@ -5,7 +5,6 @@ import ru.practicum.android.diploma.favorite.domain.usecase.FavoriteInteractor
 import ru.practicum.android.diploma.favorite.domain.usecaseimpl.FavoriteInteractorImpl
 
 val favoriteDomainModuleDI = module {
-
     single<FavoriteInteractor> {
         FavoriteInteractorImpl(get(), get())
     }

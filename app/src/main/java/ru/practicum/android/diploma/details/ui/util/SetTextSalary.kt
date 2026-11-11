@@ -7,33 +7,21 @@ import java.text.NumberFormat
 import java.util.Locale
 
 fun getTextSalary(vacancyDetail: VacancyDetail, resources: Resources): String {
-    return vacancyDetail.salary?.let { salary ->
-        val formatter = NumberFormat.getIntegerInstance(Locale("ru", "RU"))
-        val formattedSalaryFrom = salary.from?.let { formatter.format(it) } ?: ""
-        val formattedSalaryTo = salary.to?.let { formatter.format(it) } ?: ""
+    val salary = vacancyDetail.salary ?: return ""
+    val formatter = NumberFormat.getIntegerInstance(Locale("ru", "RU"))
+    val currency = getCurrencySymbol(salary.currency.orEmpty())
 
-        val currency = getCurrencySymbol(vacancyDetail.salary.currency ?: "")
-
-        val salaryFrom =
-            if (salary.from != null) {
-                resources.getString(
-                    R.string.salary_from,
-                    formattedSalaryFrom,
-                    currency
-                )
-            } else {
-                ""
-            }
-        val salaryTo = if (salary.to != null) {
-            resources.getString(
-                R.string.salary_to,
-                formattedSalaryTo,
-                currency
-            )
+    val salaryFrom = salary.from?.let { amount ->
+        if (salary.to != null) {
+            resources.getString(R.string.salary_from_without_to, formatter.format(amount))
         } else {
-            ""
+            resources.getString(R.string.salary_from, formatter.format(amount), currency)
         }
+    }
 
-        "$salaryFrom$salaryTo"
-    } ?: ""
+    val salaryTo = salary.to?.let { amount ->
+        resources.getString(R.string.salary_to, formatter.format(amount), currency)
+    }
+
+    return listOfNotNull(salaryFrom, salaryTo).joinToString(" ")
 }
