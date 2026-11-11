@@ -42,7 +42,12 @@ class FavoriteRepositoryImpl(
             val vacancy = withContext(Dispatchers.IO) {
                 vacancyDao.getVacancyById(id)
             }
-            return Resource.Success(converters.entityToDetail(vacancy))
+            val response = if (vacancy != null) {
+                Resource.Success(converters.entityToDetail(vacancy))
+            } else {
+                return Resource.Error(NOT_FOUND)
+            }
+            return response
         } catch (_: SQLiteException) {
             return Resource.Error(SQLITE_EXCEPTION)
         }
@@ -50,5 +55,6 @@ class FavoriteRepositoryImpl(
 
     companion object {
         private const val SQLITE_EXCEPTION = 1
+        private const val NOT_FOUND = 2
     }
 }

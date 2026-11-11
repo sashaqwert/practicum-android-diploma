@@ -20,5 +20,5 @@ interface VacancyDao {
     fun getAllVacancies(): Flow<List<VacancyEntity>>
 
     @Query("SELECT * FROM vacancy_table WHERE id = :id")
-    fun getVacancyById(id: String): VacancyEntity
+    suspend fun getVacancyById(id: String): VacancyEntity?
 }
