@@ -31,4 +31,5 @@
     <string name="experience_not_set">Опыт не указан</string>
     <string name="skills">Ключевые навыки</string>
     <string name="required_experience">Требуемый опыт</string>
+    <string name="vacancy_error">Не удалось получить\\nсписок вакансий</string>
 </resources>
