@@ -8,6 +8,7 @@ import ru.practicum.android.diploma.common.domain.Resource
 import ru.practicum.android.diploma.details.data.response.VacancyDetailResponse
 import ru.practicum.android.diploma.details.domain.model.VacancyDetail
 import ru.practicum.android.diploma.details.domain.repository.DetailsRepository
+import ru.practicum.android.diploma.favorite.domain.repository.FavoriteRepository
 import ru.practicum.android.diploma.util.NetworkConnectedCheck
 import java.io.IOException
 import kotlin.coroutines.cancellation.CancellationException
@@ -15,7 +16,8 @@ import kotlin.coroutines.cancellation.CancellationException
 class DetailsRepositoryImpl(
     private val client: NetworkClient,
     private val connectionCheck: NetworkConnectedCheck,
-    private val converter: Converters
+    private val converter: Converters,
+    private val favoriteRepository: FavoriteRepository
 ) : DetailsRepository {
 
     override suspend fun getDetailsInfo(vacancyId: String): Resource<VacancyDetail> {
@@ -41,8 +43,13 @@ class DetailsRepositoryImpl(
             HTTP_OK -> {
                 if (response is VacancyDetailResponse) {
                     val vacancyDetail = converter.toVacancyDetail(response)
+                    val favorite: Boolean =
+                        favoriteRepository.getVacancyById(vacancyDetail.id) is Resource.Success<VacancyDetail>
+                    vacancyDetail.isFavorite = favorite
                     Resource.Success(vacancyDetail)
-                } else { Resource.Error(NO_DETAIL_RESPONSE) }
+                } else {
+                    Resource.Error(NO_DETAIL_RESPONSE)
+                }
             }
 
             NO_INTERNET -> {

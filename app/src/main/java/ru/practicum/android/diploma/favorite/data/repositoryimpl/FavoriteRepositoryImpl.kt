@@ -1,9 +1,11 @@
 package ru.practicum.android.diploma.favorite.data.repositoryimpl
 
 import androidx.sqlite.SQLiteException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 import ru.practicum.android.diploma.common.data.converters.Converters
 import ru.practicum.android.diploma.common.domain.Resource
 import ru.practicum.android.diploma.details.domain.model.VacancyDetail
@@ -19,7 +21,7 @@ class FavoriteRepositoryImpl(
             vacancyDao.getAllVacancies().map { vacancyEntities ->
                 Resource.Success(vacancyEntities.map { converters.entityToDetail(it) }.reversed())
             }
-        } catch (e: SQLiteException) {
+        } catch (_: SQLiteException) {
             flowOf(Resource.Error(SQLITE_EXCEPTION))
         }
 
@@ -37,10 +39,11 @@ class FavoriteRepositoryImpl(
 
     override suspend fun getVacancyById(id: String): Resource<VacancyDetail> {
         try {
-            val vacancy = vacancyDao.getVacancyById(id)
-
+            val vacancy = withContext(Dispatchers.IO) {
+                vacancyDao.getVacancyById(id)
+            }
             return Resource.Success(converters.entityToDetail(vacancy))
-        } catch (e: SQLiteException) {
+        } catch (_: SQLiteException) {
             return Resource.Error(SQLITE_EXCEPTION)
         }
     }
