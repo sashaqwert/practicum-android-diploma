@@ -22,33 +22,29 @@ class DetailsViewModel(private val detailsInteractor: DetailsInteractor, private
 
     fun fillData() {
         stateLiveData.value = DetailsState.Loading
-            val res = getVacancy()
+        viewModelScope.launch {
+            val res = detailsInteractor.getDetailsInfo(id)
             if (res is Resource.Success) {
                 val v = res.data
                 stateLiveData.value = DetailsState.Content(v)
             } else if (res is Resource.Error) {
                 stateLiveData.value = DetailsState.Error(res.code)
             }
-    }
-
-    private fun getVacancy() : Resource<VacancyDetail> {
-        var res : Resource<VacancyDetail> = Resource.Error(-123) // Просто дефолтное значение, чтобы не nullable
-        viewModelScope.launch {
-            res = detailsInteractor.getDetailsInfo(id)
         }
-        return res
     }
 
     fun actionFavoriteClicked() {
-        val r = getVacancy()
-        if (r is Resource.Success) {
-            if (r.data.isFavorite) {
-                viewModelScope.launch {
-                    favoriteInteractor.deleteVacancy(r.data)
-                }
-            } else {
-                viewModelScope.launch {
-                    favoriteInteractor.insertVacancy(r.data)
+        if (stateLiveData.value is DetailsState.Content) {
+            val v = stateLiveData.value
+            if (v is DetailsState.Content) { // Проверяем заново, т.к. компилятор требует однозначности
+                if (v.vacancyDetail.isFavorite) {
+                    viewModelScope.launch {
+                        favoriteInteractor.deleteVacancy(v.vacancyDetail)
+                    }
+                } else {
+                    viewModelScope.launch {
+                        favoriteInteractor.insertVacancy(v.vacancyDetail)
+                    }
                 }
             }
         }
