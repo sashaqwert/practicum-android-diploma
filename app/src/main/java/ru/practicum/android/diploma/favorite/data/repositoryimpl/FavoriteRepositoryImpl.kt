@@ -45,7 +45,7 @@ class FavoriteRepositoryImpl(
             val response = if (vacancy != null) {
                 Resource.Success(converters.entityToDetail(vacancy))
             } else {
-                return Resource.Error(NOT_FOUND)
+                Resource.Error(NOT_FOUND)
             }
             return response
         } catch (_: SQLiteException) {
