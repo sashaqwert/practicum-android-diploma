@@ -32,4 +32,5 @@
     <string name="skills">Ключевые навыки</string>
     <string name="required_experience">Требуемый опыт</string>
     <string name="vacancy_error">Не удалось получить\\nсписок вакансий</string>
+    <string name="contacts">Контакты</string>
 </resources>

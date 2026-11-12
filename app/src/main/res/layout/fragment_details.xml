@@ -252,13 +252,60 @@
                 style="@style/Text.Regular16"
                 android:gravity="start"
                 android:layout_marginTop="@dimen/margin_16"
-                android:layout_marginBottom="@dimen/margin_24"
                 android:paddingStart="@dimen/margin_8"
                 app:layout_constraintTop_toBottomOf="@id/skillsTitle"
                 app:layout_constraintStart_toEndOf="@id/startGuideline"
                 app:layout_constraintEnd_toStartOf="@id/endGuideline"
-                app:layout_constraintBottom_toBottomOf="parent"
                 tools:text="Ключевые навыки"/>
+
+            <TextView
+                android:id="@+id/contactsHeader"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_24"
+                style="@style/Text.Medium22"
+                android:text="@string/contacts"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintEnd_toStartOf="@id/endGuideline"
+                app:layout_constraintTop_toBottomOf="@id/skillsList"/>
+
+            <TextView
+                android:id="@+id/contactsName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_16"
+                style="@style/Text.Regular16"
+                android:paddingStart="@dimen/margin_8"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintEnd_toStartOf="@id/endGuideline"
+                app:layout_constraintTop_toBottomOf="@id/contactsHeader"
+                tools:text="Имя"/>
+
+            <TextView
+                android:id="@+id/contactsMail"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                style="@style/Text.Regular16"
+                android:paddingStart="@dimen/margin_8"
+                android:textColor="@color/blue"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintEnd_toStartOf="@id/endGuideline"
+                app:layout_constraintTop_toBottomOf="@id/contactsName"
+                tools:text="123@gmail.com"/>
+
+            <TextView
+                android:id="@+id/contactsNumbers"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                style="@style/Text.Regular16"
+                android:paddingStart="@dimen/margin_8"
+                android:textColor="@color/blue"
+                android:layout_marginBottom="@dimen/margin_24"
+                app:layout_constraintStart_toEndOf="@id/startGuideline"
+                app:layout_constraintEnd_toStartOf="@id/endGuideline"
+                app:layout_constraintTop_toBottomOf="@id/contactsMail"
+                app:layout_constraintBottom_toBottomOf="parent"
+                tools:text="+7 (999) 123 45 67"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

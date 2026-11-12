@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -21,8 +22,9 @@ import ru.practicum.android.diploma.details.presentation.state.DetailsState
 import ru.practicum.android.diploma.details.presentation.viewmodel.DetailsViewModel
 import ru.practicum.android.diploma.details.ui.util.HTTPResponses
 import ru.practicum.android.diploma.details.ui.util.bindDescription
-import ru.practicum.android.diploma.details.ui.util.bindSkills
+import ru.practicum.android.diploma.details.ui.util.bindListToBullets
 import ru.practicum.android.diploma.details.ui.util.getTextSalary
+import ru.practicum.android.diploma.details.ui.util.setSpanToText
 
 class DetailsFragment : Fragment() {
 
@@ -54,18 +56,14 @@ class DetailsFragment : Fragment() {
         (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(true)
         viewBinding.toolBar.setNavigationOnClickListener { findNavController().popBackStack() }
 
-        viewBinding.apply {
-            likeButton.setOnClickListener {
-                viewModel.actionFavoriteClicked()
-            }
-        }
-
         viewModel.setID(vacancyId ?: "0")
         viewModel.fillData()
 
         viewModel.observeState().observe(viewLifecycleOwner) { state ->
             handleState(state)
         }
+
+        setListeners()
     }
 
     private fun handleState(state: DetailsState) {
@@ -174,7 +172,7 @@ class DetailsFragment : Fragment() {
             conditions.text = text
             description.setLineSpacing(0f, 1f)
             description.text = bindDescription(vacancyDetail.description, resources, context)
-            skillsList.text = bindSkills(vacancyDetail, resources)
+            skillsList.text = bindListToBullets(vacancyDetail.skills, resources)
             likeButton.setImageResource(
                 if (vacancyDetail.isFavorite) {
                     R.drawable.ic_like_pressed
@@ -185,6 +183,8 @@ class DetailsFragment : Fragment() {
 
             skillsTitle.isVisible = vacancyDetail.skills.isNotEmpty()
             skillsList.isVisible = vacancyDetail.skills.isNotEmpty()
+
+            setContacts(vacancyDetail)
         }
     }
 
@@ -233,6 +233,42 @@ class DetailsFragment : Fragment() {
                     errorImg.setImageResource(R.drawable.img_not_internet_search_state_328)
                     errorText.setText(R.string.no_internet)
                 }
+            }
+        }
+    }
+
+    private fun setContacts(vacancyDetail: VacancyDetail) {
+        vacancyDetail.contacts?.let { contacts ->
+            val phones = contacts.phones.map {
+                it.formatted
+            }.joinToString()
+            viewBinding.apply {
+                contactsName.text = setSpanToText(contacts.name, resources)
+                contactsMail.text = setSpanToText(contacts.email, resources)
+                contactsNumbers.text = setSpanToText(phones, resources)
+            }
+        } ?: {
+            viewBinding.apply {
+                contactsHeader.visibility = View.GONE
+                contactsName.visibility = View.GONE
+                contactsMail.visibility = View.GONE
+                contactsNumbers.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun setListeners() {
+        viewBinding.apply {
+            likeButton.setOnClickListener {
+                viewModel.actionFavoriteClicked()
+            }
+
+            contactsMail.setOnClickListener {
+
+            }
+
+            contactsNumbers.setOnClickListener {
+
             }
         }
     }

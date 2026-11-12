@@ -7,6 +7,7 @@ import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.BulletSpan
+import android.text.style.ForegroundColorSpan
 import android.text.style.LeadingMarginSpan
 import android.text.style.LineHeightSpan
 import androidx.core.text.HtmlCompat
@@ -18,17 +19,42 @@ private const val H2_TAG = "vacancy-h2"
 private const val H3_TAG = "vacancy-h3"
 private const val PARAGRAPH_TAG = "vacancy-p"
 
-fun bindSkills(vacancy: VacancyDetail, resources: Resources): SpannableStringBuilder {
-    val skills = vacancy.skills
+fun setSpanToText(text: String, resources: Resources): SpannableStringBuilder {
+    val gap = resources.getDimensionPixelSize(R.dimen.margin_4)
+    return SpannableStringBuilder().apply {
+        val start = length
+        append(text)
+        setSpan(
+            BulletSpan(gap),
+            start,
+            length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+    }
+}
+fun bindListToBullets(
+    listToBind: List<String>,
+    resources: Resources,
+    colorForItem: (String) -> Int? = { null }
+): SpannableStringBuilder {
     val gap = resources.getDimensionPixelSize(R.dimen.margin_4)
 
     return SpannableStringBuilder().apply {
-        skills.forEachIndexed { index, skill ->
+        listToBind.forEachIndexed { index, el ->
             if (index > 0) append('\n')
 
             val start = length
-            append(skill)
+            append(el)
             setSpan(BulletSpan(gap), start, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            colorForItem(el)?.let { color ->
+                setSpan(
+                    ForegroundColorSpan(color),
+                    start,
+                    length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            }
         }
     }
 }
