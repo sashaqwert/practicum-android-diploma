@@ -80,7 +80,10 @@ class DetailsFragment : Fragment() {
             }
 
             is DetailsState.NotFound -> {
-                // TODO
+                viewBinding.apply {
+                    errorImg.setImageResource(R.drawable.img_not_found)
+                    errorText.setText(R.string.vacancy_not_found)
+                }
             }
 
             is DetailsState.OtherError -> {
@@ -211,7 +214,7 @@ class DetailsFragment : Fragment() {
 
     private fun setError(code: Int) {
         when (code) {
-            HTTPResponses.NO_DETAIL_RESPONSE, HTTPResponses.NOT_FOUND -> {
+            HTTPResponses.NO_DETAIL_RESPONSE -> {
                 viewBinding.apply {
                     errorImg.setImageResource(R.drawable.img_not_found)
                     errorText.setText(R.string.vacancy_not_found)
