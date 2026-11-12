@@ -27,7 +27,11 @@ class DetailsViewModel(private val detailsInteractor: DetailsInteractor, private
                 val v = res.data
                 stateLiveData.value = DetailsState.Content(v)
             } else if (res is Resource.Error) {
-                stateLiveData.value = DetailsState.OtherError(res.code)
+                if (res.code == NOT_FOUND) {
+                    stateLiveData.value = DetailsState.NotFound
+                } else {
+                    stateLiveData.value = DetailsState.OtherError(res.code)
+                }
             }
         }
     }
@@ -51,5 +55,9 @@ class DetailsViewModel(private val detailsInteractor: DetailsInteractor, private
                 }
             }
         }
+    }
+
+    companion object {
+        private const val NOT_FOUND = 404
     }
 }
