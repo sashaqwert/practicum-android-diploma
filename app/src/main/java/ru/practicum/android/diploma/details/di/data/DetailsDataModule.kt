@@ -6,6 +6,6 @@ import ru.practicum.android.diploma.details.domain.repository.DetailsRepository
 
 val detailsDataModule = module {
     single<DetailsRepository> {
-        DetailsRepositoryImpl(get(), get(), get())
+        DetailsRepositoryImpl(get(), get(), get(), get())
     }
 }
