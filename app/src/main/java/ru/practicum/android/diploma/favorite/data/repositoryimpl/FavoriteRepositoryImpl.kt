@@ -43,7 +43,9 @@ class FavoriteRepositoryImpl(
                 vacancyDao.getVacancyById(id)
             }
             val response = if (vacancy != null) {
-                Resource.Success(converters.entityToDetail(vacancy))
+                val trueVacancy = converters.entityToDetail(vacancy)
+                trueVacancy.isFavorite = true
+                Resource.Success(trueVacancy)
             } else {
                 Resource.Error(NOT_FOUND)
             }
@@ -51,6 +53,10 @@ class FavoriteRepositoryImpl(
         } catch (_: SQLiteException) {
             return Resource.Error(SQLITE_EXCEPTION)
         }
+    }
+
+    override suspend fun deleteVacancyBYId(id: String): Int {
+        return vacancyDao.deleteVacancyById(id)
     }
 
     companion object {

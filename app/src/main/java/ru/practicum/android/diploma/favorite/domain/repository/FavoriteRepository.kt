@@ -9,4 +9,5 @@ interface FavoriteRepository {
     suspend fun insertVacancy(vacancyDetail: VacancyDetail)
     suspend fun deleteVacancy(vacancyDetail: VacancyDetail)
     suspend fun getVacancyById(id: String): Resource<VacancyDetail>
+    suspend fun deleteVacancyBYId(id: String): Int
 }

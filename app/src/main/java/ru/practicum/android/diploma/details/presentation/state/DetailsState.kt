@@ -7,5 +7,7 @@ sealed interface DetailsState {
 
     data class Content(val vacancyDetail: VacancyDetail) : DetailsState
 
-    data class Error(val code: Int) : DetailsState
+    object NotFound: DetailsState
+
+    data class OtherError(val code: Int) : DetailsState
 }
