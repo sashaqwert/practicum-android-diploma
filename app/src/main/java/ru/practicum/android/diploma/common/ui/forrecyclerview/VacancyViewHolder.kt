@@ -28,7 +28,7 @@ class VacancyViewHolder(private val binding: ItemVacancyBinding) : RecyclerView.
     private fun formatNumber(value: Int): String {
         return value.toString()
             .reversed()
-            .chunked(3)
+            .chunked(CHUNKED)
             .joinToString(" ")
             .reversed()
     }
@@ -95,7 +95,7 @@ class VacancyViewHolder(private val binding: ItemVacancyBinding) : RecyclerView.
 
                 listener(
                     onError = { _, result ->
-                        Log.e("CoilError", "Failed to load: ${logo}", result.throwable)
+                        Log.e("CoilError", "Failed to load: $logo", result.throwable)
                     }
                 )
             }
@@ -110,5 +110,6 @@ class VacancyViewHolder(private val binding: ItemVacancyBinding) : RecyclerView.
             val binding = ItemVacancyBinding.inflate(inflater, parent, false)
             return VacancyViewHolder(binding)
         }
+        private const val CHUNKED = 3
     }
 }

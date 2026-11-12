@@ -251,13 +251,10 @@ class DetailsFragment : Fragment() {
             viewBinding.apply {
                 contactsMail.isVisible = checkStringOnEmpty(contacts.email)
                 contactsNumbers.isVisible = contacts.phones.isNotEmpty()
-
-
                 contactsName.text = setSpanToText(contacts.name, resources)
                 contactsMail.text = setSpanToText(contacts.email, resources) {
                     blueColor
                 }
-
                 contactsNumbers.text = bindListToBullets(
                     phones,
                     resources,
