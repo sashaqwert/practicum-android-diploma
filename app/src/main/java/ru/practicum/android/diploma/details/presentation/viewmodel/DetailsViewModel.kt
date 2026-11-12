@@ -10,7 +10,10 @@ import ru.practicum.android.diploma.details.domain.usecase.DetailsInteractor
 import ru.practicum.android.diploma.details.presentation.state.DetailsState
 import ru.practicum.android.diploma.favorite.domain.usecase.FavoriteInteractor
 
-class DetailsViewModel(private val detailsInteractor: DetailsInteractor, private val favoriteInteractor: FavoriteInteractor) : ViewModel() {
+class DetailsViewModel(
+    private val detailsInteractor: DetailsInteractor,
+    private val favoriteInteractor: FavoriteInteractor
+) : ViewModel() {
     private var id: String = "0"
     private val stateLiveData = MutableLiveData<DetailsState>()
     fun observeState(): LiveData<DetailsState> = stateLiveData
@@ -38,7 +41,7 @@ class DetailsViewModel(private val detailsInteractor: DetailsInteractor, private
 
     fun actionFavoriteClicked() {
         if (stateLiveData.value is DetailsState.Content) {
-            val v : DetailsState = stateLiveData.value!!
+            val v: DetailsState = stateLiveData.value!!
             if (v is DetailsState.Content) { // Проверяем заново, т.к. компилятор требует однозначности
                 if (v.vacancyDetail.isFavorite) {
                     viewModelScope.launch {
