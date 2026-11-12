@@ -79,7 +79,11 @@ class DetailsFragment : Fragment() {
                 setContent(state.vacancyDetail)
             }
 
-            is DetailsState.Error -> {
+            is DetailsState.NotFound -> {
+                // TODO
+            }
+
+            is DetailsState.OtherError -> {
                 setLayoutVisibilities(
                     isVacancyLayoutVisible = false,
                     isErrorLayoutVisible = true,

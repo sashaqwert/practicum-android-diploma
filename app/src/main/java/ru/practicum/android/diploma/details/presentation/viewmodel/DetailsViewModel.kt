@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.common.domain.Resource
-import ru.practicum.android.diploma.details.domain.model.VacancyDetail
 import ru.practicum.android.diploma.details.domain.usecase.DetailsInteractor
 import ru.practicum.android.diploma.details.presentation.state.DetailsState
 import ru.practicum.android.diploma.favorite.domain.usecase.FavoriteInteractor
@@ -28,7 +27,7 @@ class DetailsViewModel(private val detailsInteractor: DetailsInteractor, private
                 val v = res.data
                 stateLiveData.value = DetailsState.Content(v)
             } else if (res is Resource.Error) {
-                stateLiveData.value = DetailsState.Error(res.code)
+                stateLiveData.value = DetailsState.OtherError(res.code)
             }
         }
     }
