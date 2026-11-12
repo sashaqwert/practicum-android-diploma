@@ -1,13 +1,15 @@
 package ru.practicum.android.diploma.details.ui.fragment
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -62,8 +64,6 @@ class DetailsFragment : Fragment() {
         viewModel.observeState().observe(viewLifecycleOwner) { state ->
             handleState(state)
         }
-
-        setListeners()
     }
 
     private fun handleState(state: DetailsState) {
@@ -142,6 +142,8 @@ class DetailsFragment : Fragment() {
             }
 
         bindItems(vacancyDetail, textSalary, employmentText, scheduleText)
+
+        setListeners(vacancyDetail)
     }
 
     private fun bindItems(
@@ -241,11 +243,29 @@ class DetailsFragment : Fragment() {
         vacancyDetail.contacts?.let { contacts ->
             val phones = contacts.phones.map {
                 it.formatted
-            }.joinToString()
+            }
+
             viewBinding.apply {
+                contactsMail.isVisible = checkStringOnEmpty(contacts.email)
+                contactsNumbers.isVisible = contacts.phones.isNotEmpty()
+
+
                 contactsName.text = setSpanToText(contacts.name, resources)
                 contactsMail.text = setSpanToText(contacts.email, resources)
-                contactsNumbers.text = setSpanToText(phones, resources)
+
+                contactsNumbers.text = bindListToBullets(
+                    phones,
+                    resources,
+                    onItemClick = { phone ->
+                        val intent = Intent(Intent.ACTION_DIAL).apply {
+                            data = "tel:$phone".toUri()
+                        }
+
+                        startActivity(intent)
+                    }
+                )
+
+                contactsNumbers.movementMethod = LinkMovementMethod.getInstance()
             }
         } ?: {
             viewBinding.apply {
@@ -257,18 +277,23 @@ class DetailsFragment : Fragment() {
         }
     }
 
-    private fun setListeners() {
+    private fun checkStringOnEmpty(text: String): Boolean {
+        return text.isNotEmpty() && text.isNotBlank()
+    }
+
+    private fun setListeners(vacancyDetail: VacancyDetail) {
         viewBinding.apply {
             likeButton.setOnClickListener {
                 viewModel.actionFavoriteClicked()
             }
 
             contactsMail.setOnClickListener {
+                val intent = Intent(Intent.ACTION_SENDTO)
 
-            }
+                intent.data = Uri.fromParts("mailto", vacancyDetail.contacts?.email, null)
 
-            contactsNumbers.setOnClickListener {
-
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
             }
         }
     }
