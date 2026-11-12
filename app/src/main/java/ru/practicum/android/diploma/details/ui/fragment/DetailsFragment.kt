@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -245,13 +246,17 @@ class DetailsFragment : Fragment() {
                 it.formatted
             }
 
+            val blueColor = ContextCompat.getColor(requireContext(), R.color.blue)
+
             viewBinding.apply {
                 contactsMail.isVisible = checkStringOnEmpty(contacts.email)
                 contactsNumbers.isVisible = contacts.phones.isNotEmpty()
 
 
                 contactsName.text = setSpanToText(contacts.name, resources)
-                contactsMail.text = setSpanToText(contacts.email, resources)
+                contactsMail.text = setSpanToText(contacts.email, resources) {
+                    blueColor
+                }
 
                 contactsNumbers.text = bindListToBullets(
                     phones,
@@ -262,7 +267,8 @@ class DetailsFragment : Fragment() {
                         }
 
                         startActivity(intent)
-                    }
+                    },
+                    colorForItem = { blueColor }
                 )
 
                 contactsNumbers.movementMethod = LinkMovementMethod.getInstance()

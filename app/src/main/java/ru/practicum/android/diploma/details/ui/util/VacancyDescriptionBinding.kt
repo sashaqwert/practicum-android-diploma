@@ -21,7 +21,11 @@ private const val H2_TAG = "vacancy-h2"
 private const val H3_TAG = "vacancy-h3"
 private const val PARAGRAPH_TAG = "vacancy-p"
 
-fun setSpanToText(text: String, resources: Resources): SpannableStringBuilder {
+fun setSpanToText(
+    text: String,
+    resources: Resources,
+    colorForItem: (String) -> Int? = { null }
+): SpannableStringBuilder {
     val gap = resources.getDimensionPixelSize(R.dimen.margin_4)
     return SpannableStringBuilder().apply {
         val start = length
@@ -32,6 +36,15 @@ fun setSpanToText(text: String, resources: Resources): SpannableStringBuilder {
             length,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
+
+        colorForItem(text)?.let { color ->
+            setSpan(
+                ForegroundColorSpan(color),
+                start,
+                length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
     }
 }
 
