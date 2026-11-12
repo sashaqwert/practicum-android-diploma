@@ -6,10 +6,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.common.domain.Resource
+import ru.practicum.android.diploma.details.domain.model.VacancyDetail
 import ru.practicum.android.diploma.details.domain.usecase.DetailsInteractor
 import ru.practicum.android.diploma.details.presentation.state.DetailsState
+import ru.practicum.android.diploma.favorite.domain.usecase.FavoriteInteractor
 
-class DetailsViewModel(private val detailsInteractor: DetailsInteractor) : ViewModel() {
+class DetailsViewModel(private val detailsInteractor: DetailsInteractor, private val favoriteInteractor: FavoriteInteractor) : ViewModel() {
     private var id: String = "0"
     private val stateLiveData = MutableLiveData<DetailsState>()
     fun observeState(): LiveData<DetailsState> = stateLiveData
@@ -32,6 +34,23 @@ class DetailsViewModel(private val detailsInteractor: DetailsInteractor) : ViewM
     }
 
     fun actionFavoriteClicked() {
-        // Тут логика обработки нажатия сердечка
+        if (stateLiveData.value is DetailsState.Content) {
+            val v : DetailsState = stateLiveData.value!!
+            if (v is DetailsState.Content) { // Проверяем заново, т.к. компилятор требует однозначности
+                if (v.vacancyDetail.isFavorite) {
+                    viewModelScope.launch {
+                        favoriteInteractor.deleteVacancy(v.vacancyDetail)
+                        v.vacancyDetail.isFavorite = false
+                        stateLiveData.value = v
+                    }
+                } else {
+                    viewModelScope.launch {
+                        favoriteInteractor.insertVacancy(v.vacancyDetail)
+                        v.vacancyDetail.isFavorite = true
+                        stateLiveData.value = v
+                    }
+                }
+            }
+        }
     }
 }
