@@ -1,6 +1,7 @@
 package ru.practicum.android.diploma.details.data.repositoryimpl
 
 import android.util.Log
+import okhttp3.Response
 import ru.practicum.android.diploma.common.data.converters.Converters
 import ru.practicum.android.diploma.common.data.network.client.NetworkClient
 import ru.practicum.android.diploma.common.data.network.client.RequestIntent
@@ -8,6 +9,7 @@ import ru.practicum.android.diploma.common.domain.Resource
 import ru.practicum.android.diploma.details.data.response.VacancyDetailResponse
 import ru.practicum.android.diploma.details.domain.model.VacancyDetail
 import ru.practicum.android.diploma.details.domain.repository.DetailsRepository
+import ru.practicum.android.diploma.favorite.domain.repository.FavoriteRepository
 import ru.practicum.android.diploma.util.NetworkConnectedCheck
 import java.io.IOException
 import kotlin.coroutines.cancellation.CancellationException
@@ -15,7 +17,8 @@ import kotlin.coroutines.cancellation.CancellationException
 class DetailsRepositoryImpl(
     private val client: NetworkClient,
     private val connectionCheck: NetworkConnectedCheck,
-    private val converter: Converters
+    private val converter: Converters,
+    private val favoriteRepository: FavoriteRepository
 ) : DetailsRepository {
 
     override suspend fun getDetailsInfo(vacancyId: String): Resource<VacancyDetail> {
@@ -26,8 +29,8 @@ class DetailsRepositoryImpl(
         } catch (e: CancellationException) {
             throw e
         } catch (e: IOException) {
-            Log.e("DetailsRepository", "Network error", e)
-            null
+            val fromRoom = favoriteRepository.getVacancyById(vacancyId)
+            if (fromRoom.is)
         } catch (e: Throwable) {
             Log.e("DetailsRepository", "Unexpected error", e)
             null

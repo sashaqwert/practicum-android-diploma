@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,8 +8,75 @@
     tools:context=".favorite.ui.fragment.FavoriteFragment">
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:id="@+id/favorite_title"
+        style="@style/Text.Medium22"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/height_64"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="@dimen/margin_16"
+        android:text="@string/favorite"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</FrameLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/favorite_list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="@dimen/margin_16"
+        android:clipToPadding="false"
+        android:paddingVertical="@dimen/margin_16"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/favorite_title"
+        tools:itemCount="2"
+        tools:listitem="@layout/item_vacancy" />
+
+    <LinearLayout
+        android:id="@+id/favorite_placeholder"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_16"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/favorite_title"
+        app:layout_constraintWidth_max="328dp">
+
+        <ImageView
+            android:id="@+id/favorite_placeholder_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:contentDescription="@null"
+            android:src="@drawable/img_favorite_empty" />
+
+        <TextView
+            android:id="@+id/favorite_placeholder_message"
+            style="@style/Text.Medium22"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_16"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:maxWidth="240dp"
+            android:text="@string/favorite_list_empty" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/favorite_loading"
+        android:layout_width="@dimen/width_36"
+        android:layout_height="@dimen/height_36"
+        android:indeterminateTint="@color/blue"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/favorite_title" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
