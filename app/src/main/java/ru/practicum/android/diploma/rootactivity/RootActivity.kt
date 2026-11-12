@@ -45,6 +45,7 @@ class RootActivity : AppCompatActivity() {
                 R.id.favoriteFragment,
                 R.id.developersFragment -> {
                     viewBinding.bottomNavigationView.isVisible = true
+                    viewBinding.navDivider.isVisible = true
                 }
                 else -> {
                     viewBinding.bottomNavigationView.isVisible = false

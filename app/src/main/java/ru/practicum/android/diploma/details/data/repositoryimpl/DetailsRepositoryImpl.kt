@@ -59,6 +59,11 @@ class DetailsRepositoryImpl(
             }
 
             NOT_FOUND -> {
+                /* хочу поменять вот на это, если удаление будет по id
+                favoriteRepository.deleteVacancy(vacancyId)
+                 */
+                val vacancy = favoriteRepository.getVacancyById(vacancyId) as Resource.Success<VacancyDetail>
+                favoriteRepository.deleteVacancy(vacancy.data)
                 Resource.Error(NOT_FOUND)
             }
 
