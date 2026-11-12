@@ -55,6 +55,10 @@ class FavoriteRepositoryImpl(
         }
     }
 
+    override suspend fun deleteVacancyBYId(id: String): Int {
+        return vacancyDao.deleteVacancyById(id)
+    }
+
     companion object {
         private const val SQLITE_EXCEPTION = 1
         private const val NOT_FOUND = 2
