@@ -58,6 +58,8 @@ dependencies {
     implementation(libs.constraintlayout)
 
     testImplementation(libs.junit4)
+    testImplementation(libs.androidx.arch.core.testing)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.junit.ext)
     androidTestImplementation(libs.espresso.core)
 
@@ -95,4 +97,11 @@ dependencies {
     // Glide
     implementation(libs.glide)
     kapt(libs.glide.compiler)
+
+    // Coil
+    implementation(libs.coil)
+    implementation(libs.coil.svg)
+
+    // Android SVG Support for Glide
+    implementation(libs.androidsvg.aar)
 }

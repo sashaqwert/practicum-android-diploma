@@ -1,5 +1,11 @@
 package ru.practicum.android.diploma.details.di.ui
 
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import ru.practicum.android.diploma.details.presentation.viewmodel.DetailsViewModel
 
-val detailsViewModelModule = module {}
+val detailsViewModelModule = module {
+    viewModel {
+        DetailsViewModel(get(), get())
+    }
+}
