@@ -1,14 +1,192 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/background"
     tools:context=".filter.ui.fragments.FilterFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolBar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        app:navigationIcon="@drawable/ic_back"
+        app:contentInsetStartWithNavigation="@dimen/margin_4"
+        app:titleTextAppearance="@style/Text.Medium22"
+        app:navigationIconTint="?attr/colorOnPrimary"
+        app:title="@string/filter_settings"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-</FrameLayout>
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/startGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="@dimen/margin_16"/>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/endGuideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="@dimen/margin_16"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/workPlace"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/work_place"
+        app:boxBackgroundMode="filled"
+        app:boxBackgroundColor="@color/background"
+        android:layout_marginTop="@dimen/margin_16"
+        app:boxStrokeWidth="0dp"
+        style="@style/Text.Regular12"
+        android:textColorHint="@color/gray"
+        app:layout_constraintTop_toBottomOf="@id/toolBar"
+        app:layout_constraintStart_toEndOf="@id/startGuideline"
+        app:layout_constraintEnd_toEndOf="@id/endGuideline">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/workPlaceValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:inputType="none"
+            android:paddingStart="0dp"
+            style="@style/Text.Regular16"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageView
+        android:id="@+id/workPlaceIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_select"
+        android:layout_marginEnd="@dimen/margin_4"
+        app:layout_constraintTop_toTopOf="@id/workPlace"
+        app:layout_constraintBottom_toBottomOf="@id/workPlace"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/industry"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/industry"
+        app:boxBackgroundMode="filled"
+        app:boxBackgroundColor="@color/background"
+        app:boxStrokeWidth="0dp"
+        style="@style/Text.Regular12"
+        android:textColorHint="@color/gray"
+        app:layout_constraintTop_toBottomOf="@id/workPlace"
+        app:layout_constraintStart_toEndOf="@id/startGuideline"
+        app:layout_constraintEnd_toEndOf="@id/endGuideline">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/industryValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="false"
+            android:inputType="none"
+            android:paddingStart="0dp"
+            style="@style/Text.Regular16"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageView
+        android:id="@+id/industryIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_select"
+        android:layout_marginEnd="@dimen/margin_4"
+        app:layout_constraintTop_toTopOf="@id/industry"
+        app:layout_constraintBottom_toBottomOf="@id/industry"
+        app:layout_constraintEnd_toEndOf="parent"/>
+    
+    <LinearLayout
+        android:id="@+id/salaryEditTextContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_24"
+        android:background="@drawable/edit_text_shape_12"
+        android:paddingHorizontal="@dimen/margin_16"
+        android:paddingVertical="@dimen/margin_8"
+        android:orientation="vertical"
+        app:layout_constraintStart_toEndOf="@id/startGuideline"
+        app:layout_constraintEnd_toEndOf="@id/endGuideline"
+        app:layout_constraintTop_toBottomOf="@id/industry">
+
+        <TextView
+            android:id="@+id/salaryEditTextHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Text.Regular12"
+            android:textColor="?attr/colorOnContainer"
+            android:text="@string/expected_salary"/>
+
+        <EditText
+            android:id="@+id/salaryEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:textColor="@color/black"
+            android:textColorHint="?attr/colorOnContainer"
+            style="@style/Text.Regular16"
+            android:hint="@string/print_the_sum"/>
+    </LinearLayout>
+
+    <CheckedTextView
+        android:id="@+id/salaryCheckBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/dont_show_without_salary"
+        android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+        android:gravity="center_vertical"
+        android:layout_marginTop="@dimen/margin_24"
+        android:paddingVertical="14dp"
+        style="@style/Text.Regular16"
+        app:layout_constraintStart_toEndOf="@id/startGuideline"
+        app:layout_constraintEnd_toEndOf="@id/endGuideline"
+        app:layout_constraintTop_toBottomOf="@id/salaryEditTextContainer"/>
+
+
+    <TextView
+        android:id="@+id/apply_filter"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingVertical="20dp"
+        android:text="@string/apply"
+        style="@style/Text.Medium16"
+        android:gravity="center"
+        android:layout_marginStart="@dimen/margin_17"
+        android:layout_marginEnd="@dimen/margin_17"
+        android:textColor="@color/white"
+        android:background="@drawable/filter_apply_shape_12"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:clipToOutline="true"
+        android:layout_marginBottom="@dimen/margin_8"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/cancelButton"/>
+
+    <TextView
+        android:id="@+id/cancelButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/throw_off"
+        style="@style/Text.Medium16"
+        android:paddingVertical="20dp"
+        android:textColor="@color/red"
+        android:gravity="center"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:clipToOutline="true"
+        android:background="@drawable/rounded_12"
+        android:layout_marginBottom="@dimen/margin_24"
+        app:layout_constraintStart_toStartOf="@id/startGuideline"
+        app:layout_constraintEnd_toEndOf="@id/endGuideline"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
