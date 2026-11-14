@@ -33,4 +33,12 @@
     <string name="required_experience">Требуемый опыт</string>
     <string name="vacancy_error">Не удалось получить\\nсписок вакансий</string>
     <string name="contacts">Контакты</string>
+    <string name="filter_settings">Настройки фильтрации</string>
+    <string name="work_place">Место работы</string>
+    <string name="industry">Отрасль</string>
+    <string name="expected_salary">Ожидаемая зарплата</string>
+    <string name="print_the_sum">Введите сумму</string>
+    <string name="dont_show_without_salary">Не показывать без зарплаты</string>
+    <string name="throw_off">Сбросить</string>
+    <string name="apply">Применить</string>
 </resources>
