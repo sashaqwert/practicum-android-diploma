@@ -1,6 +1,7 @@
 [versions]
 
 # Build constants
+androidsvgAar = "1.4"
 compileSdk = "36"
 java = "VERSION_17"
 material = "1.13.0"
@@ -16,6 +17,7 @@ coreKtx = "1.18.0"
 espressoCore = "3.5.1"
 junit4 = "4.13.2"
 junitExt = "1.1.5"
+archCore = "2.2.0"
 
 # Static analysis
 detekt = "1.23.8"
@@ -46,10 +48,15 @@ peko = "3.0.5"
 # Glide
 glide = "4.14.2"
 
+# Coil
+coil = "2.6.0"
+
 [libraries]
 
 # AndroidX
+androidsvg-aar = { module = "com.caverock:androidsvg-aar", version.ref = "androidsvgAar" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coil" }
 constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 
@@ -60,6 +67,8 @@ material = { module = "com.google.android.material:material", version.ref = "mat
 espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
 junit4 = { module = "junit:junit", version.ref = "junit4" }
 junit-ext = { module = "androidx.test.ext:junit", version.ref = "junitExt" }
+androidx-arch-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "archCore" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
 # Static analysis
 staticAnalysis-detektApi = { module = "io.gitlab.arturbosch.detekt:detekt-api", version.ref = "detekt" }
@@ -105,4 +114,6 @@ peko = { module = "com.markodevcic:peko", version.ref = "peko" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
 
+# Coil
+coil = { module = "io.coil-kt:coil", version.ref = "coil" }
 [bundles]

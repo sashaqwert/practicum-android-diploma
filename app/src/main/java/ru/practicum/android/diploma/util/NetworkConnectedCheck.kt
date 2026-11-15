@@ -10,15 +10,13 @@ class NetworkConnectedCheck(private val context: Context) {
             Context.CONNECTIVITY_SERVICE
         ) as ConnectivityManager
 
-        val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+        val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork) ?: return false
 
-        if (capabilities != null) {
-            when {
-                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> return true
-                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> return true
-                capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> return true
-            }
+        return when {
+            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+            else -> false
         }
-        return false
     }
 }

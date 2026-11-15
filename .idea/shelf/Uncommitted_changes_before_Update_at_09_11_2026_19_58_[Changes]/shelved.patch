@@ -1,0 +1,151 @@
+Index: app/src/main/java/ru/practicum/android/diploma/search/ui/fragment/SearchFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ru.practicum.android.diploma.search.ui.fragment\r\n\r\nimport android.content.Context.INPUT_METHOD_SERVICE\r\nimport android.os.Bundle\r\nimport android.view.LayoutInflater\r\nimport android.view.View\r\nimport android.view.ViewGroup\r\nimport android.view.inputmethod.EditorInfo\r\nimport android.view.inputmethod.InputMethodManager\r\nimport android.widget.Toast\r\nimport androidx.core.view.isVisible\r\nimport androidx.core.widget.doOnTextChanged\r\nimport androidx.fragment.app.Fragment\r\nimport androidx.navigation.fragment.findNavController\r\nimport androidx.recyclerview.widget.LinearLayoutManager\r\nimport androidx.recyclerview.widget.RecyclerView\r\nimport org.koin.androidx.viewmodel.ext.android.viewModel\r\nimport ru.practicum.android.diploma.R\r\nimport ru.practicum.android.diploma.common.domain.models.VacancyCard\r\nimport ru.practicum.android.diploma.common.ui.forrecyclerview.VacancyAdapter\r\nimport ru.practicum.android.diploma.databinding.FragmentSearchBinding\r\nimport ru.practicum.android.diploma.details.ui.fragment.DetailsFragment\r\nimport ru.practicum.android.diploma.search.presentation.state.SearchState\r\nimport ru.practicum.android.diploma.search.presentation.viewmodel.SearchViewModel\r\n\r\nclass SearchFragment : Fragment() {\r\n    private var _viewBinding: FragmentSearchBinding? = null\r\n    private var vacancies: List<VacancyCard> = emptyList()\r\n    private val viewBinding get() = _viewBinding!!\r\n    private val viewModel: SearchViewModel by viewModel()\r\n\r\n    override fun onCreateView(\r\n        inflater: LayoutInflater,\r\n        container: ViewGroup?,\r\n        savedInstanceState: Bundle?\r\n    ): View? {\r\n        _viewBinding = FragmentSearchBinding.inflate(inflater, container, false)\r\n        return viewBinding.root\r\n    }\r\n\r\n    override fun onViewCreated(\r\n        view: View,\r\n        savedInstanceState: Bundle?\r\n    ) {\r\n        super.onViewCreated(view, savedInstanceState)\r\n\r\n        viewBinding.searchEditText.doOnTextChanged { s, _, _, _ ->\r\n            viewBinding.clearButton.isVisible = !s.isNullOrEmpty()\r\n            viewBinding.spaceForImgInSearch.isVisible = false\r\n            viewBinding.textStateSpace.isVisible = false\r\n            viewModel.onQueryChanged(s?.toString().orEmpty())\r\n        }\r\n\r\n        val adapter = VacancyAdapter(vacancies) { vacancy ->\r\n            findNavController().navigate(\r\n                R.id.action_searchFragment_to_detailsFragment,\r\n                DetailsFragment.putId(vacancy.id)\r\n            )\r\n        }\r\n\r\n        viewModel.state.observe(viewLifecycleOwner) { state ->\r\n            when (state) {\r\n                is SearchState.Content -> {\r\n                    adapter.updateList(state.vacancies)\r\n                    content(state.found)\r\n                    viewBinding.paginationProgressBar.isVisible = state.isLoadingMore\r\n                }\r\n\r\n                SearchState.Default -> default()\r\n                SearchState.Error.NoInternet -> noInternet()\r\n                SearchState.Error.Server -> error()\r\n                SearchState.Loading -> loading()\r\n            }\r\n        }\r\n\r\n        viewBinding.clearButton.setOnClickListener {\r\n            viewBinding.searchEditText.setText(\"\")\r\n            viewBinding.clearButton.isVisible = false\r\n            closeKeyboard()\r\n            default()\r\n        }\r\n\r\n        viewBinding.searchEditText.setOnEditorActionListener { _, actionId, _ ->\r\n            if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE) {\r\n                viewModel.retrySearch()\r\n                closeKeyboard()\r\n                true\r\n            } else {\r\n                false\r\n            }\r\n        }\r\n\r\n        viewBinding.vacancyList.adapter = adapter\r\n        viewBinding.vacancyList.addOnScrollListener(object : RecyclerView.OnScrollListener() {\r\n            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {\r\n                super.onScrolled(recyclerView, dx, dy)\r\n                if (dy > 0) {\r\n                    val pos =\r\n                        (viewBinding.vacancyList.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()\r\n                    val itemsCount = adapter.itemCount\r\n                    if (pos >= itemsCount - 1) {\r\n                        val currentState = viewModel.state.value as? SearchState.Content\r\n                        if (currentState != null) {\r\n                            if (currentState.paginationError == null) {\r\n                                val nextPage = currentState.page + 1\r\n                                viewModel.loadPage(nextPage)\r\n                            } else {\r\n                                Toast.makeText(requireContext(), R.string.no_wifi, Toast.LENGTH_LONG).show()\r\n                                viewModel.onPaginationErrorShown()\r\n                            }\r\n                        }\r\n                    }\r\n                }\r\n            }\r\n        })\r\n    }\r\n\r\n    override fun onDestroyView() {\r\n        super.onDestroyView()\r\n        _viewBinding = null\r\n    }\r\n\r\n    private fun closeKeyboard() {\r\n        val inputMethodManager =\r\n            requireContext().getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager\r\n        inputMethodManager.hideSoftInputFromWindow(requireActivity().currentFocus?.windowToken, 0)\r\n    }\r\n\r\n    private fun loading() {\r\n        viewBinding.progressBar.isVisible = true\r\n        viewBinding.spaceForImgInSearch.isVisible = false\r\n        viewBinding.spaceForVacancyCount.isVisible = false\r\n        viewBinding.vacancyList.isVisible = false\r\n        viewBinding.textStateSpace.isVisible = false\r\n        viewBinding.vacancyList.scrollToPosition(0)\r\n    }\r\n\r\n    private fun content(found: Int) {\r\n        closeKeyboard()\r\n        viewBinding.spaceForImgInSearch.apply {\r\n            setImageResource(R.drawable.img_error_search_state_328)\r\n            isVisible = found == 0\r\n        }\r\n        viewBinding.spaceForVacancyCount.apply {\r\n            if (found == 0) {\r\n                setText(R.string.empty_vacancy)\r\n            } else {\r\n                text = getString(R.string.found_vacancy, found)\r\n            }\r\n            isVisible = true\r\n        }\r\n        viewBinding.vacancyList.isVisible = found > 0\r\n        viewBinding.progressBar.isVisible = false\r\n        viewBinding.textStateSpace.apply {\r\n            if (found > 0) {\r\n                isVisible = false\r\n            } else {\r\n                setText(R.string.vacancy_error)\r\n                isVisible = true\r\n            }\r\n        }\r\n    }\r\n\r\n    private fun noInternet() {\r\n        closeKeyboard()\r\n        viewBinding.spaceForVacancyCount.isVisible = false\r\n        viewBinding.vacancyList.isVisible = false\r\n        viewBinding.progressBar.isVisible = false\r\n        viewBinding.spaceForImgInSearch.apply {\r\n            setImageResource(R.drawable.img_not_internet_search_state_328)\r\n            isVisible = true\r\n        }\r\n        viewBinding.textStateSpace.apply {\r\n            setText(R.string.no_internet)\r\n            isVisible = true\r\n        }\r\n        viewModel.retrySearchWithDebounce()\r\n    }\r\n\r\n    private fun error() {\r\n        closeKeyboard()\r\n        viewBinding.spaceForVacancyCount.isVisible = false\r\n        viewBinding.vacancyList.isVisible = false\r\n        viewBinding.progressBar.isVisible = false\r\n        viewBinding.spaceForImgInSearch.apply {\r\n            setImageResource(R.drawable.img_error_search_state_328)\r\n            isVisible = true\r\n        }\r\n        viewBinding.textStateSpace.apply {\r\n            setText(R.string.vacancy_error)\r\n            isVisible = true\r\n        }\r\n    }\r\n\r\n    private fun default() {\r\n        closeKeyboard()\r\n        viewBinding.vacancyList.isVisible = false\r\n        viewBinding.spaceForVacancyCount.isVisible = false\r\n        viewBinding.progressBar.isVisible = false\r\n        viewBinding.textStateSpace.isVisible = false\r\n        viewBinding.spaceForImgInSearch.apply {\r\n            setImageResource(R.drawable.img_default_search_state_328)\r\n            isVisible = true\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/ru/practicum/android/diploma/search/ui/fragment/SearchFragment.kt b/app/src/main/java/ru/practicum/android/diploma/search/ui/fragment/SearchFragment.kt
+--- a/app/src/main/java/ru/practicum/android/diploma/search/ui/fragment/SearchFragment.kt	(revision 83d1c05506d65fdd4d2ea0b30454cb1ea11ffbc1)
++++ b/app/src/main/java/ru/practicum/android/diploma/search/ui/fragment/SearchFragment.kt	(date 1794243440797)
+@@ -29,7 +29,7 @@
+     private val viewBinding get() = _viewBinding!!
+     private val viewModel: SearchViewModel by viewModel()
+ 
+-    override fun onCreateView(
++    override fun onCreateView (
+         inflater: LayoutInflater,
+         container: ViewGroup?,
+         savedInstanceState: Bundle?
+Index: app/src/main/java/ru/practicum/android/diploma/common/ui/forrecyclerview/VacancyViewHolder.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ru.practicum.android.diploma.common.ui.forrecyclerview\r\n\r\nimport android.util.Log\r\nimport android.view.LayoutInflater\r\nimport android.view.ViewGroup\r\nimport androidx.recyclerview.widget.RecyclerView\r\nimport coil.decode.SvgDecoder\r\nimport coil.load\r\nimport coil.size.Scale\r\nimport ru.practicum.android.diploma.R\r\nimport ru.practicum.android.diploma.common.domain.models.VacancyCard\r\nimport ru.practicum.android.diploma.databinding.ItemVacancyBinding\r\n\r\nclass VacancyViewHolder(private val binding: ItemVacancyBinding) : RecyclerView.ViewHolder(binding.root) {\r\n    fun bind(vacancy: VacancyCard) {\r\n        binding.vacationName.text = vacancy.name\r\n        if (vacancy.company != null) {\r\n            binding.industry.text = vacancy.company\r\n        } else {\r\n            binding.industry.text = \"\"\r\n        }\r\n        if (vacancy.salary != null) {\r\n            if ((vacancy.salary.to != null) or (vacancy.salary.from != null)) {\r\n                var salary = \"\"\r\n                if (vacancy.salary.from != null) {\r\n                    salary += itemView.context.getString(R.string.from) + \" \"\r\n                    salary += formatNumber(vacancy.salary.from) + \" \"\r\n                }\r\n                if (vacancy.salary.to != null) {\r\n                    salary += itemView.context.getString(R.string.to) + \" \"\r\n                    salary += formatNumber(vacancy.salary.to) + \" \"\r\n                }\r\n                val currency = formatCurrency(vacancy.salary.currency)\r\n                binding.salary.text = salary + currency\r\n            } else {\r\n                binding.salary.setText(R.string.salary_not_set)\r\n            }\r\n        } else {\r\n            binding.salary.setText(R.string.salary_not_set)\r\n        }\r\n\r\n        binding.imageRecyclerView.clipToOutline = true\r\n\r\n        if (vacancy.logo != null) {\r\n            binding.imageRecyclerView.load(vacancy.logo) {\r\n                setHeader(\r\n                    \"User-Agent\",\r\n                    \"practicum-android-diploma/1.0 (https://github.com/sashaqwert/practicum-android-diploma)\"\r\n                )\r\n\r\n                if (vacancy.logo.endsWith(\".svg\", ignoreCase = true)) {\r\n                    decoderFactory(SvgDecoder.Factory())\r\n                }\r\n\r\n                scale(Scale.FIT)\r\n\r\n                placeholder(R.drawable.img_empty_logo_48_xml)\r\n                error(R.drawable.img_empty_logo_48_xml)\r\n\r\n                listener(\r\n                    onError = { _, result ->\r\n                        Log.e(\"CoilError\", \"Failed to load: ${vacancy.logo}\", result.throwable)\r\n                    }\r\n                )\r\n            }\r\n        } else {\r\n            binding.imageRecyclerView.setImageResource(R.drawable.img_empty_logo_48_xml)\r\n        }\r\n    }\r\n\r\n    private fun formatNumber(value: Int): String {\r\n        return value.toString()\r\n            .reversed()\r\n            .chunked(3)\r\n            .joinToString(\" \")\r\n            .reversed()\r\n    }\r\n\r\n    private fun formatCurrency(currency: String?): String {\r\n        if (currency.isNullOrEmpty()) {\r\n            return \"\"\r\n        } else {\r\n            return when (currency) {\r\n                \"RUR\", \"RUB\" -> \"₽\"\r\n                \"BYR\" -> \"Br\"\r\n                \"USD\" -> \"$\"\r\n                \"EUR\" -> \"€\"\r\n                \"KZT\" -> \"₸\"\r\n                \"UAH\" -> \"₴\"\r\n                \"AZN\" -> \"₼\"\r\n                \"UZS\" -> \"so'm\"\r\n                \"GEL\" -> \"₾\"\r\n                \"KGT\" -> \"сом\"\r\n                else -> \"\"\r\n            }\r\n        }\r\n    }\r\n\r\n    companion object {\r\n        fun from(parent: ViewGroup): VacancyViewHolder {\r\n            val inflater = LayoutInflater.from(parent.context)\r\n            val binding = ItemVacancyBinding.inflate(inflater, parent, false)\r\n            return VacancyViewHolder(binding)\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/ru/practicum/android/diploma/common/ui/forrecyclerview/VacancyViewHolder.kt b/app/src/main/java/ru/practicum/android/diploma/common/ui/forrecyclerview/VacancyViewHolder.kt
+--- a/app/src/main/java/ru/practicum/android/diploma/common/ui/forrecyclerview/VacancyViewHolder.kt	(revision 83d1c05506d65fdd4d2ea0b30454cb1ea11ffbc1)
++++ b/app/src/main/java/ru/practicum/android/diploma/common/ui/forrecyclerview/VacancyViewHolder.kt	(date 1794243353591)
+@@ -9,6 +9,7 @@
+ import coil.size.Scale
+ import ru.practicum.android.diploma.R
+ import ru.practicum.android.diploma.common.domain.models.VacancyCard
++import ru.practicum.android.diploma.common.domain.models.VacancyCardSalary
+ import ru.practicum.android.diploma.databinding.ItemVacancyBinding
+ 
+ class VacancyViewHolder(private val binding: ItemVacancyBinding) : RecyclerView.ViewHolder(binding.root) {
+@@ -19,53 +20,9 @@
+         } else {
+             binding.industry.text = ""
+         }
+-        if (vacancy.salary != null) {
+-            if ((vacancy.salary.to != null) or (vacancy.salary.from != null)) {
+-                var salary = ""
+-                if (vacancy.salary.from != null) {
+-                    salary += itemView.context.getString(R.string.from) + " "
+-                    salary += formatNumber(vacancy.salary.from) + " "
+-                }
+-                if (vacancy.salary.to != null) {
+-                    salary += itemView.context.getString(R.string.to) + " "
+-                    salary += formatNumber(vacancy.salary.to) + " "
+-                }
+-                val currency = formatCurrency(vacancy.salary.currency)
+-                binding.salary.text = salary + currency
+-            } else {
+-                binding.salary.setText(R.string.salary_not_set)
+-            }
+-        } else {
+-            binding.salary.setText(R.string.salary_not_set)
+-        }
+-
++        setSalary(vacancy.salary)
+         binding.imageRecyclerView.clipToOutline = true
+-
+-        if (vacancy.logo != null) {
+-            binding.imageRecyclerView.load(vacancy.logo) {
+-                setHeader(
+-                    "User-Agent",
+-                    "practicum-android-diploma/1.0 (https://github.com/sashaqwert/practicum-android-diploma)"
+-                )
+-
+-                if (vacancy.logo.endsWith(".svg", ignoreCase = true)) {
+-                    decoderFactory(SvgDecoder.Factory())
+-                }
+-
+-                scale(Scale.FIT)
+-
+-                placeholder(R.drawable.img_empty_logo_48_xml)
+-                error(R.drawable.img_empty_logo_48_xml)
+-
+-                listener(
+-                    onError = { _, result ->
+-                        Log.e("CoilError", "Failed to load: ${vacancy.logo}", result.throwable)
+-                    }
+-                )
+-            }
+-        } else {
+-            binding.imageRecyclerView.setImageResource(R.drawable.img_empty_logo_48_xml)
+-        }
++        setLogo(vacancy.logo)
+     }
+ 
+     private fun formatNumber(value: Int): String {
+@@ -96,6 +53,57 @@
+         }
+     }
+ 
++    private fun setSalary(vacancySalary: VacancyCardSalary?) {
++        if (vacancySalary != null) {
++            if ((vacancySalary.to != null) or (vacancySalary.from != null)) {
++                var salary = ""
++                if (vacancySalary.from != null) {
++                    salary += itemView.context.getString(R.string.from) + " "
++                    salary += formatNumber(vacancySalary.from) + " "
++                }
++                if (vacancySalary.to != null) {
++                    salary += itemView.context.getString(R.string.to) + " "
++                    salary += formatNumber(vacancySalary.to) + " "
++                }
++                val currency = formatCurrency(vacancySalary.currency)
++                val result = salary + currency
++                binding.salary.text = result
++            } else {
++                binding.salary.setText(R.string.salary_not_set)
++            }
++        } else {
++            binding.salary.setText(R.string.salary_not_set)
++        }
++    }
++
++    private fun setLogo(logo: String?) {
++        if (logo != null) {
++            binding.imageRecyclerView.load(logo) {
++                setHeader(
++                    "User-Agent",
++                    "practicum-android-diploma/1.0 (https://github.com/sashaqwert/practicum-android-diploma)"
++                )
++
++                if (logo.endsWith(".svg", ignoreCase = true)) {
++                    decoderFactory(SvgDecoder.Factory())
++                }
++
++                scale(Scale.FIT)
++
++                placeholder(R.drawable.img_empty_logo_48_xml)
++                error(R.drawable.img_empty_logo_48_xml)
++
++                listener(
++                    onError = { _, result ->
++                        Log.e("CoilError", "Failed to load: ${logo}", result.throwable)
++                    }
++                )
++            }
++        } else {
++            binding.imageRecyclerView.setImageResource(R.drawable.img_empty_logo_48_xml)
++        }
++    }
++
+     companion object {
+         fun from(parent: ViewGroup): VacancyViewHolder {
+             val inflater = LayoutInflater.from(parent.context)
