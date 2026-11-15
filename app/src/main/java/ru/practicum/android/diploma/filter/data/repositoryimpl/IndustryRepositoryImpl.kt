@@ -10,6 +10,7 @@ import ru.practicum.android.diploma.common.domain.models.FilterIndustry
 import ru.practicum.android.diploma.filter.data.response.IndustryResponse
 import ru.practicum.android.diploma.filter.domain.repository.IndustryRepository
 import ru.practicum.android.diploma.util.NetworkConnectedCheck
+import kotlin.coroutines.cancellation.CancellationException
 
 class IndustryRepositoryImpl(
     private val networkClient: NetworkClient,
@@ -21,6 +22,8 @@ class IndustryRepositoryImpl(
 
         val response = try {
             networkClient.doRequest(RequestIntent.GetIndustries, isConnected)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: IOException) {
             Log.e("IndustryRepository", "Network error", e)
             null
