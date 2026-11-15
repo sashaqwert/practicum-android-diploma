@@ -1,7 +1,6 @@
 package ru.practicum.android.diploma.filter.data.repositoryimpl
 
 import android.util.Log
-import kotlinx.coroutines.CancellationException
 import okio.IOException
 import ru.practicum.android.diploma.common.data.converters.Converters
 import ru.practicum.android.diploma.common.data.network.client.NetworkClient
@@ -22,8 +21,6 @@ class IndustryRepositoryImpl(
 
         val response = try {
             networkClient.doRequest(RequestIntent.GetIndustries, isConnected)
-        } catch (e: CancellationException) {
-            throw e
         } catch (e: IOException) {
             Log.e("IndustryRepository", "Network error", e)
             null
