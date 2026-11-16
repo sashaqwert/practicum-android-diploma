@@ -1,14 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="?attr/colorPrimary"
     tools:context=".filter.ui.fragments.LocationFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <ImageButton
+        android:id="@+id/from_work_place"
+        android:layout_width="@dimen/width_48"
+        android:layout_height="@dimen/height_48"
+        android:layout_marginHorizontal="@dimen/margin_4"
+        android:layout_marginVertical="@dimen/margin_8"
+        android:backgroundTint="?attr/colorPrimary"
+        android:src="@drawable/ic_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="?attr/colorOnPrimary" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/workplace_tool_bar"
+        style="@style/Text.Medium22"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/height_64"
+        android:gravity="center_vertical"
+        android:text="@string/work_place_chose"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/from_work_place"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/chosen_country"
+        style="@style/Text.Regular16"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginTop="@dimen/margin_16"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/margin_16"
+        android:paddingEnd="@dimen/margin_24"
+        android:text="@string/country"
+        android:textColor="@color/gray"
+        app:drawableEndCompat="@drawable/ic_chose_8"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/workplace_tool_bar" />
+
+    <TextView
+        android:id="@+id/chosen_region"
+        style="@style/Text.Regular16"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/margin_16"
+        android:paddingEnd="@dimen/margin_24"
+        android:text="@string/region"
+        android:textColor="@color/gray"
+        app:drawableEndCompat="@drawable/ic_chose_8"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chosen_country" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
