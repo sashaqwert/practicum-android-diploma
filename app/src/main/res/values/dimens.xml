@@ -33,4 +33,5 @@
     <dimen name="height_60">60dp</dimen>
     <dimen name="height_59">59dp</dimen>
     <dimen name="corners_12">12dp</dimen>
+    <dimen name="margin_20">20dp</dimen>
 </resources>

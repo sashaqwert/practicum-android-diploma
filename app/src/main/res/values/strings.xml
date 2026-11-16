@@ -45,4 +45,6 @@
     <string name="country">Страна</string>
     <string name="region">Регион</string>
     <string name="chose">Выбрать</string>
+    <string name="choose_industry">Выбор отрасли</string>
+    <string name="print_industry">Введите отрасль</string>
 </resources>
