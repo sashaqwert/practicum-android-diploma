@@ -4,14 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentFilterBinding
 
-/**
- * A simple [Fragment] subclass.
- * Use the [FilterFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class FilterFragment : Fragment() {
     private var _viewBinding: FragmentFilterBinding? = null
 
@@ -32,23 +31,51 @@ class FilterFragment : Fragment() {
         return viewBinding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        setListeners()
+
+        showButtons(1)
+    }
+
+    private fun setListeners() {
+        viewBinding.apply {
+            salaryCheckBox.setOnClickListener {
+                salaryCheckBox.toggle()
+            }
+
+            salaryEditTextContainer.setOnClickListener {
+                salaryEditText.requestFocus()
+
+                WindowCompat.getInsetsController(requireActivity().window, salaryEditText)
+                    .show(WindowInsetsCompat.Type.ime())
+            }
+
+            industryValue.setOnClickListener {
+                findNavController().navigate(R.id.action_filterFragment_to_industryFragment)
+            }
+
+            workPlaceValue.setOnClickListener {
+                findNavController().navigate(R.id.action_filterFragment_to_locationFragment)
+            }
+        }
+    }
+
+    private fun showButtons(isFiltersChanged: Int) {
+        viewBinding.apply {
+            applyFilter.clipToOutline = true
+            cancelButton.clipToOutline = true
+            applyFilter.visibility = isFiltersChanged
+            cancelButton.visibility = isFiltersChanged
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _viewBinding = null
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @return A new instance of fragment FilterFragment.
-         */
-        @JvmStatic
-        fun newInstance() =
-            FilterFragment().apply {
-                arguments = Bundle().apply {
-                }
-            }
     }
 }

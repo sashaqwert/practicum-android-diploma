@@ -6,29 +6,91 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.Spanned
+import android.text.TextPaint
 import android.text.style.BulletSpan
+import android.text.style.ClickableSpan
+import android.text.style.ForegroundColorSpan
 import android.text.style.LeadingMarginSpan
 import android.text.style.LineHeightSpan
+import android.view.View
 import androidx.core.text.HtmlCompat
 import androidx.core.text.parseAsHtml
 import ru.practicum.android.diploma.R
-import ru.practicum.android.diploma.details.domain.model.VacancyDetail
 
 private const val H2_TAG = "vacancy-h2"
 private const val H3_TAG = "vacancy-h3"
 private const val PARAGRAPH_TAG = "vacancy-p"
 
-fun bindSkills(vacancy: VacancyDetail, resources: Resources): SpannableStringBuilder {
-    val skills = vacancy.skills
+fun setSpanToText(
+    text: String,
+    resources: Resources,
+    colorForItem: (String) -> Int? = { null }
+): SpannableStringBuilder {
+    val gap = resources.getDimensionPixelSize(R.dimen.margin_4)
+    return SpannableStringBuilder().apply {
+        val start = length
+        append(text)
+        setSpan(
+            BulletSpan(gap),
+            start,
+            length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+        colorForItem(text)?.let { color ->
+            setSpan(
+                ForegroundColorSpan(color),
+                start,
+                length,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+    }
+}
+
+fun bindListToBullets(
+    listToBind: List<String>,
+    resources: Resources,
+    onItemClick: ((String) -> Unit)? = null,
+    colorForItem: (String) -> Int? = { null }
+): SpannableStringBuilder {
     val gap = resources.getDimensionPixelSize(R.dimen.margin_4)
 
     return SpannableStringBuilder().apply {
-        skills.forEachIndexed { index, skill ->
+        listToBind.forEachIndexed { index, el ->
             if (index > 0) append('\n')
 
             val start = length
-            append(skill)
+            append(el)
             setSpan(BulletSpan(gap), start, length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+            colorForItem(el)?.let { color ->
+                setSpan(
+                    ForegroundColorSpan(color),
+                    start,
+                    length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            }
+
+            onItemClick?.let { listener ->
+                val clickableSpan = object : ClickableSpan() {
+                    override fun onClick(widget: View) {
+                        listener(el)
+                    }
+
+                    override fun updateDrawState(ds: TextPaint) {
+                        ds.isUnderlineText = false
+                    }
+                }
+
+                setSpan(
+                    clickableSpan,
+                    start,
+                    length,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            }
         }
     }
 }

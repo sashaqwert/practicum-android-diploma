@@ -10,5 +10,7 @@
         <item name="colorSecondaryVariant">@color/black</item>
         <item name="colorOnSecondary">@color/white</item>
         <item name="elevationOverlayEnabled">false</item>
+
+        <item name="colorOnContainer">@color/white</item>
     </style>
 </resources>

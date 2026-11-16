@@ -19,5 +19,6 @@ data class VacancyDetail(
     val schedule: Schedule?,
     val skills: List<String>,
     val url: String,
+    @Suppress("DataClassShouldBeImmutable")
     var isFavorite: Boolean = false
 )
