@@ -41,4 +41,6 @@
     <string name="dont_show_without_salary">Не показывать без зарплаты</string>
     <string name="throw_off">Сбросить</string>
     <string name="apply">Применить</string>
+    <string name="choose_industry">Выбор отрасли</string>
+    <string name="print_industry">Введите отрасль</string>
 </resources>
