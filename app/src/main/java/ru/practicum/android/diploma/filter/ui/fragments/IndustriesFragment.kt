@@ -1,15 +1,17 @@
 package ru.practicum.android.diploma.filter.ui.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.practicum.android.diploma.common.domain.models.FilterIndustry
 import ru.practicum.android.diploma.databinding.FragmentIndustriesBinding
+import ru.practicum.android.diploma.filter.presentation.state.IndustriesState
 import ru.practicum.android.diploma.filter.presentation.viewmodels.IndustriesViewModel
 
 class IndustriesFragment : Fragment() {
@@ -41,8 +43,58 @@ class IndustriesFragment : Fragment() {
 
         viewModel.fillData()
 
-        viewModel.observeState().observe(viewLifecycleOwner) {
+        viewModel.observeState().observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is IndustriesState.Content -> {
+                    showContent(state.industries)
+                }
 
+                is IndustriesState.Error -> {
+                    showError()
+                }
+
+                is IndustriesState.Loading -> {
+                    showLoading()
+                }
+            }
+        }
+    }
+
+    private fun showContent(industries: List<FilterIndustry>) {
+        handleVisibilities(
+            isContent = true,
+            isLoading = false,
+            isError = false
+        )
+
+        with(viewBinding) {
+            // здесь потом нужно прописать примерно эти строки, когда адаптер будет готов:
+            // industriesRecyclerView.adapter = industriesAdapter
+            // industriesAdapter.updateList()
+        }
+    }
+
+    private fun showError() {
+        handleVisibilities(
+            isContent = false,
+            isLoading = false,
+            isError = true
+        )
+    }
+
+    private fun showLoading() {
+        handleVisibilities(
+            isContent = false,
+            isLoading = true,
+            isError = false
+        )
+    }
+
+    private fun handleVisibilities(isContent: Boolean, isLoading: Boolean, isError: Boolean) {
+        with(viewBinding) {
+            loadingBar.isVisible = isLoading
+            errorLayout.isVisible = isError
+            industriesRecyclerView.isVisible = isContent
         }
     }
 
