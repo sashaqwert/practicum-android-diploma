@@ -13,7 +13,9 @@ class FilterViewModel : ViewModel() {
 
     fun applyButtonClicked() {}
 
-    fun resetButtonClicked() {}
+    fun resetButtonClicked() {
+        stateLiveData.value = FilterState.Default()
+    }
 
     fun setFilterArea(filterArea: FilterArea) {
         val v = stateLiveData.value
