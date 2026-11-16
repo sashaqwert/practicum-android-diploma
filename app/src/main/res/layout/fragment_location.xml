@@ -50,7 +50,7 @@
         android:id="@+id/chosen_region"
         style="@style/Text.Regular16"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="@dimen/height_60"
         android:gravity="center_vertical"
         android:paddingStart="@dimen/margin_16"
         android:paddingEnd="@dimen/margin_24"
@@ -61,5 +61,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/chosen_country" />
 
-
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/workplace_chose_button"
+        style="@style/Text.Medium16"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_59"
+        android:layout_marginHorizontal="@dimen/margin_17"
+        android:backgroundTint="@color/blue"
+        android:text="@string/chose"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        app:cornerRadius="@dimen/corners_12"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

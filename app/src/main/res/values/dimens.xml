@@ -30,4 +30,7 @@
     <dimen name="margin_46">46dp</dimen>
     <dimen name="margin_2">2dp</dimen>
     <dimen name="margin_17">17dp</dimen>
+    <dimen name="height_60">60dp</dimen>
+    <dimen name="height_59">59dp</dimen>
+    <dimen name="corners_12">12dp</dimen>
 </resources>
