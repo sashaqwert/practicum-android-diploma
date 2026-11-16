@@ -43,9 +43,11 @@ class DetailsRepositoryImpl(
             HTTP_OK -> {
                 if (response is VacancyDetailResponse) {
                     val vacancyDetail = converter.toVacancyDetail(response)
-                    val favorite: Boolean =
-                        favoriteRepository.getVacancyById(vacancyDetail.id) is Resource.Success<VacancyDetail>
-                    vacancyDetail.isFavorite = favorite
+                    val fromRoom = checkFromRoom(vacancyId)
+                    when (fromRoom) {
+                        is Resource.Error -> vacancyDetail.isFavorite = false
+                        is Resource.Success -> vacancyDetail.isFavorite = true
+                    }
                     Resource.Success(vacancyDetail)
                 } else {
                     Resource.Error(NO_DETAIL_RESPONSE)
@@ -53,14 +55,23 @@ class DetailsRepositoryImpl(
             }
 
             NO_INTERNET -> {
-                Resource.Error(NO_INTERNET)
+                checkFromRoom(vacancyId)
             }
 
             NOT_FOUND -> {
+                favoriteRepository.deleteVacancyBYId(vacancyId)
                 Resource.Error(NOT_FOUND)
             }
 
             else -> Resource.Error(response.code)
+        }
+    }
+
+    private suspend fun checkFromRoom(vacancyId: String): Resource<VacancyDetail> {
+        val fromRoom = favoriteRepository.getVacancyById(vacancyId)
+        return when (fromRoom) {
+            is Resource.Success -> fromRoom
+            else -> Resource.Error(NO_INTERNET)
         }
     }
 

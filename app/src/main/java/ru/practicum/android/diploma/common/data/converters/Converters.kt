@@ -111,7 +111,7 @@ class Converters(private val gson: Gson) {
         }
     }
 
-    private fun toFilterIndustry(industryDto: FilterIndustryDto): FilterIndustry {
+    fun toFilterIndustry(industryDto: FilterIndustryDto): FilterIndustry {
         return FilterIndustry(
             id = industryDto.id,
             name = industryDto.name
