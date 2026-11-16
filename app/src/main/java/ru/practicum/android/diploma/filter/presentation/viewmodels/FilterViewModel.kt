@@ -52,4 +52,9 @@ class FilterViewModel : ViewModel() {
             stateLiveData.value = FilterState.Changed(v.filterArea, v.filterIndustry, v.salary, doNotShoeWithoutSalary)
         }
     }
+
+    fun compare(filterState: FilterState) : Boolean {
+        val v = stateLiveData.value
+        return filterState.equals(v)
+    }
 }
