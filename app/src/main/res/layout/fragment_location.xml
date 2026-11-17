@@ -13,12 +13,12 @@
         android:layout_height="@dimen/height_48"
         android:layout_marginHorizontal="@dimen/margin_4"
         android:layout_marginVertical="@dimen/margin_8"
+        android:background="@null"
         android:backgroundTint="?attr/colorPrimary"
         android:src="@drawable/ic_back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="?attr/colorOnPrimary"
-        android:background="@null"/>
+        app:tint="?attr/colorOnPrimary" />
 
     <TextView
         android:id="@+id/workplace_tool_bar"
@@ -129,18 +129,18 @@
         android:id="@+id/workplace_chose_button"
         style="@style/Text.Medium16"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/height_59"
+        android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_17"
         android:layout_marginBottom="@dimen/margin_24"
         android:backgroundTint="@color/blue"
+        android:paddingVertical="20dp"
+        android:stateListAnimator="@null"
         android:text="@string/chose"
         android:textAllCaps="false"
         android:textColor="@color/white"
         app:cornerRadius="@dimen/corners_12"
+        app:elevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:elevation="0dp"
-        android:stateListAnimator="@null"
-        />
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
