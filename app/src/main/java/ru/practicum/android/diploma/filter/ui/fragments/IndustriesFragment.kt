@@ -24,7 +24,7 @@ class IndustriesFragment : Fragment() {
     private var _viewBinding: FragmentIndustriesBinding? = null
     private val viewBinding get() = _viewBinding!!
     private val viewModel by viewModel<IndustriesViewModel>()
-    private lateinit var industryAdapter: IndustryAdapter
+    private var industryAdapter: IndustryAdapter? = null
     private var selectedIndustryId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,9 +68,13 @@ class IndustriesFragment : Fragment() {
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, enabled = true) {
+            val filter = industryAdapter?.getIndustryById(selectedIndustryId ?: "")
             parentFragmentManager.setFragmentResult(
                 INDUSTRY_KEY,
-                bundleOf(INDUSTRY_ARG_KEY to selectedIndustryId)
+                Bundle().apply {
+                    putString(INDUSTRY_ARG_KEY, filter?.id)
+                    putString(INDUSTRY_NAME_ARG_KEY, filter?.name)
+                }
             )
 
             findNavController().navigateUp()
@@ -87,7 +91,7 @@ class IndustriesFragment : Fragment() {
         setAdapter(industries)
 
         viewBinding.searchEditText.doOnTextChanged { text, start, before, count ->
-            industryAdapter.filterIndustries(text.toString())
+            industryAdapter!!.filterIndustries(text.toString())
         }
     }
 
@@ -95,11 +99,11 @@ class IndustriesFragment : Fragment() {
         with(viewBinding) {
             industryAdapter = IndustryAdapter { filterIndustry ->
                 selectedIndustryId = filterIndustry.id
-                industryAdapter.submitIndustries(industries, selectedIndustryId)
+                industryAdapter!!.submitIndustries(industries, selectedIndustryId)
             }
 
             industriesRecyclerView.adapter = industryAdapter
-            industryAdapter.submitIndustries(industries, selectedIndustryId)
+            industryAdapter!!.submitIndustries(industries, selectedIndustryId)
         }
     }
 
@@ -158,5 +162,6 @@ class IndustriesFragment : Fragment() {
         private const val NO_INDUSTRY_RESPONSE = -2
         const val INDUSTRY_KEY = "industry_key"
         const val INDUSTRY_ARG_KEY = "industry_arg_key"
+        const val INDUSTRY_NAME_ARG_KEY = "industry_name"
     }
 }
