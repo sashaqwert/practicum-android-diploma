@@ -17,7 +17,8 @@
         android:src="@drawable/ic_back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="?attr/colorOnPrimary" />
+        app:tint="?attr/colorOnPrimary"
+        android:background="@null"/>
 
     <TextView
         android:id="@+id/workplace_tool_bar"
@@ -138,5 +139,8 @@
         app:cornerRadius="@dimen/corners_12"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:elevation="0dp"
+        android:stateListAnimator="@null"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
