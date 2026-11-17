@@ -4,5 +4,5 @@ data class FilterArea(
     val id: String,
     val name: String,
     val parentId: Int?,
-    val areas: List<FilterArea>
+    val areas: List<FilterArea> = emptyList()
 )
