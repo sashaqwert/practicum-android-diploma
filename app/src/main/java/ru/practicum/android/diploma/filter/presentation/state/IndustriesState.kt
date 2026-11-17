@@ -7,5 +7,5 @@ sealed interface IndustriesState {
 
     data class Content(val industries: List<FilterIndustry>): IndustriesState
 
-    object Error : IndustriesState
+    data class Error(val code: Int) : IndustriesState
 }

@@ -6,6 +6,6 @@ import ru.practicum.android.diploma.filter.presentation.viewmodels.IndustriesVie
 
 val filterViewModelModule = module {
     viewModel {
-        IndustriesViewModel()
+        IndustriesViewModel(get())
     }
 }

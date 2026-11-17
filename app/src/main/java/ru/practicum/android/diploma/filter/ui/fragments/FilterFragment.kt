@@ -60,6 +60,17 @@ class FilterFragment : Fragment() {
                 findNavController().navigate(R.id.action_filterFragment_to_locationFragment)
             }
         }
+
+        parentFragmentManager.setFragmentResultListener(
+            IndustriesFragment.INDUSTRY_KEY,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            val result =
+                bundle.getString(IndustriesFragment.INDUSTRY_ARG_KEY) ?: return@setFragmentResultListener
+
+            // вот это нужно будет доработать, чтобы вью модель шла в интернет и искала отрасль по айди
+            viewBinding.industryValue.setText(result)
+        }
     }
 
     private fun showButtons(isFiltersChanged: Int) {
