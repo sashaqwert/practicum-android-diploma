@@ -2,19 +2,27 @@ package ru.practicum.android.diploma.filter.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import ru.practicum.android.diploma.common.domain.models.FilterIndustry
 import ru.practicum.android.diploma.databinding.ItemIndustryBinding
 
 class IndustryAdapter(
     private val onIndustryClick: (FilterIndustry) -> Unit
-) : ListAdapter<IndustryAdapter.Item, IndustryViewHolder>(IndustryDiffCallback) {
+) : RecyclerView.Adapter<IndustryViewHolder>() {
+    private var allIndustries = emptyList<FilterIndustry>()
+    private var visibleIndustries = emptyList<FilterIndustry>()
+    private var selectedIndustryId: String? = null
+    private var searchQuery = ""
 
     fun submitIndustries(industries: List<FilterIndustry>, selectedIndustryId: String?) {
-        submitList(industries.map { industry ->
-            Item(industry, industry.id == selectedIndustryId)
-        })
+        allIndustries = industries.toList()
+        this.selectedIndustryId = selectedIndustryId
+        updateVisibleIndustries()
+    }
+
+    fun filterIndustries(query: String) {
+        searchQuery = query.trim()
+        updateVisibleIndustries()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IndustryViewHolder {
@@ -23,16 +31,16 @@ class IndustryAdapter(
     }
 
     override fun onBindViewHolder(holder: IndustryViewHolder, position: Int) {
-        val item = getItem(position)
-        holder.bind(item.industry, item.isSelected, onIndustryClick)
+        val industry = visibleIndustries[position]
+        holder.bind(industry, industry.id == selectedIndustryId, onIndustryClick)
     }
 
-    data class Item(val industry: FilterIndustry, val isSelected: Boolean)
+    override fun getItemCount(): Int = visibleIndustries.size
 
-    private object IndustryDiffCallback : DiffUtil.ItemCallback<Item>() {
-        override fun areItemsTheSame(oldItem: Item, newItem: Item): Boolean =
-            oldItem.industry.id == newItem.industry.id
-
-        override fun areContentsTheSame(oldItem: Item, newItem: Item): Boolean = oldItem == newItem
+    private fun updateVisibleIndustries() {
+        visibleIndustries = allIndustries.filter { industry ->
+            industry.name.contains(searchQuery, ignoreCase = true)
+        }
+        notifyDataSetChanged()
     }
 }
