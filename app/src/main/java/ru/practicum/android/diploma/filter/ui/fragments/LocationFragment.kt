@@ -1,6 +1,7 @@
 package ru.practicum.android.diploma.filter.ui.fragments
 
 import android.os.Bundle
+import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,6 +55,28 @@ class LocationFragment : Fragment() {
         viewBinding.fromWorkPlace.setOnClickListener {
             findNavController().navigateUp()
         }
+        val resultToFilter = Bundle().apply {
+            putString(COUNTRY, viewBinding.chosenCountry.text.toString())
+            putString(REGION, viewBinding.chosenRegion.text.toString())
+        }
+        parentFragmentManager.setFragmentResult(LOCATION, resultToFilter)
+        getCountry()
+        getRegion()
+    }
+
+    private fun getCountry() {
+        parentFragmentManager.setFragmentResultListener(GET_COUNTRY, viewLifecycleOwner) { requestKey, result ->
+            val country = result.getString(CURRENT_COUNTRY)
+            val editable = Editable.Factory.getInstance().newEditable(country)
+            viewBinding.chosenCountry.text = editable
+        }
+    }
+    private fun getRegion() {
+        parentFragmentManager.setFragmentResultListener(GET_REGION, viewLifecycleOwner) { requestKey, result ->
+            val region = result.getString(CURRENT_REGION)
+            val editable = Editable.Factory.getInstance().newEditable(region)
+            viewBinding.chosenRegion.text = editable
+        }
     }
 
     override fun onDestroyView() {
@@ -62,6 +85,14 @@ class LocationFragment : Fragment() {
     }
 
     companion object {
+        private const val LOCATION = "LOCATION"
+        private const val COUNTRY = "COUNTRY"
+        private const val REGION = "REGION"
+        private const val GET_COUNTRY = "GET_COUNTRY"
+        private const val CURRENT_COUNTRY = "CURRENT_COUNTRY"
+        private const val GET_REGION = "GET_REGION"
+        private const val CURRENT_REGION = "CURRENT_REGION"
+
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
