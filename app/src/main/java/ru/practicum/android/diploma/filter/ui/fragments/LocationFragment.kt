@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentLocationBinding
 
 /**
@@ -31,10 +33,34 @@ class LocationFragment : Fragment() {
         return viewBinding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewBinding.chosenCountryLayout.setEndIconOnClickListener {
+            findNavController().navigate(R.id.action_locationFragment_to_countryFragment)
+        }
+        viewBinding.countryClear.setOnClickListener {
+            viewBinding.chosenCountry.text = null
+        }
+        viewBinding.chosenRegionLayout.setEndIconOnClickListener {
+            findNavController().navigate(R.id.action_locationFragment_to_regionFragment)
+        }
+        viewBinding.regionClear.setOnClickListener {
+            viewBinding.chosenRegion.text = null
+        }
+        viewBinding.workplaceChoseButton.setOnClickListener {
+            findNavController().popBackStack(R.id.filterFragment, false)
+        }
+        viewBinding.fromWorkPlace.setOnClickListener {
+            findNavController().navigateUp()
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _viewBinding = null
     }
+
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -42,6 +68,7 @@ class LocationFragment : Fragment() {
          *
          * @return A new instance of fragment LocationFragment.
          */
+        //вот тут как вариант можно создавать экран с последним выбором пользователя
         @JvmStatic
         fun newInstance() =
             LocationFragment().apply {

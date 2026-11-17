@@ -30,36 +30,99 @@
         app:layout_constraintStart_toEndOf="@id/from_work_place"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/chosen_country"
-        style="@style/Text.Regular16"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_marginTop="@dimen/margin_16"
-        android:gravity="center_vertical"
-        android:paddingStart="@dimen/margin_16"
-        android:paddingEnd="@dimen/margin_24"
-        android:text="@string/country"
-        android:textColor="@color/gray"
-        app:drawableEndCompat="@drawable/ic_chose_8"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/workplace_tool_bar" />
-
-    <TextView
-        android:id="@+id/chosen_region"
-        style="@style/Text.Regular16"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/chosen_country_layout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/height_60"
-        android:gravity="center_vertical"
-        android:paddingStart="@dimen/margin_16"
-        android:paddingEnd="@dimen/margin_24"
-        android:text="@string/region"
-        android:textColor="@color/gray"
-        app:drawableEndCompat="@drawable/ic_chose_8"
+        android:layout_marginTop="@dimen/margin_16"
+        android:hint="@string/country"
+        app:boxBackgroundMode="filled"
+        app:boxStrokeWidth="0dp"
+        app:boxStrokeWidthFocused="0dp"
+        app:endIconDrawable="@drawable/ic_chose_8"
+        app:endIconMode="custom"
+        app:endIconTint="?attr/colorOnPrimary"
+        app:hintTextColor="@color/gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/chosen_country" />
+        app:layout_constraintTop_toBottomOf="@id/workplace_tool_bar">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/chosen_country"
+            style="@style/Text.Regular16"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:backgroundTint="?attr/colorPrimary"
+            android:clickable="false"
+            android:cursorVisible="false"
+            android:drawablePadding="@dimen/margin_4"
+            android:focusable="false"
+            android:gravity="center_vertical"
+            android:inputType="none"
+            android:paddingStart="@dimen/margin_16"
+            android:textColor="?attr/colorOnPrimary"
+            app:drawableEndCompat="@drawable/ic_chose_8"
+            tools:text="@string/country" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageButton
+        android:id="@+id/country_clear"
+        android:layout_width="@dimen/width_48"
+        android:layout_height="@dimen/height_48"
+        android:layout_marginEnd="@dimen/margin_4"
+        android:backgroundTint="?attr/colorPrimary"
+        android:src="@drawable/ic_clear_14"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/chosen_country_layout"
+        app:layout_constraintEnd_toEndOf="@id/chosen_country_layout"
+        app:layout_constraintTop_toTopOf="@id/chosen_country_layout" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/chosen_region_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_60"
+        android:hint="@string/region"
+        app:boxBackgroundMode="filled"
+        app:boxStrokeWidth="0dp"
+        app:boxStrokeWidthFocused="0dp"
+        app:endIconDrawable="@drawable/ic_chose_8"
+        app:endIconMode="custom"
+        app:endIconTint="?attr/colorOnPrimary"
+        app:hintTextColor="@color/gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chosen_country_layout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/chosen_region"
+            style="@style/Text.Regular16"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:backgroundTint="?attr/colorPrimary"
+            android:clickable="false"
+            android:cursorVisible="false"
+            android:drawablePadding="@dimen/margin_4"
+            android:focusable="false"
+            android:gravity="center_vertical"
+            android:inputType="none"
+            android:paddingStart="@dimen/margin_16"
+            android:textColor="?attr/colorOnPrimary"
+            app:drawableEndCompat="@drawable/ic_chose_8"
+            tools:text="@string/region" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageButton
+        android:id="@+id/region_clear"
+        android:layout_width="@dimen/width_48"
+        android:layout_height="@dimen/height_48"
+        android:layout_marginEnd="@dimen/margin_4"
+        android:backgroundTint="?attr/colorPrimary"
+        android:src="@drawable/ic_clear_14"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/chosen_region_layout"
+        app:layout_constraintEnd_toEndOf="@id/chosen_region_layout"
+        app:layout_constraintTop_toTopOf="@id/chosen_region_layout" />
+
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/workplace_chose_button"
@@ -67,6 +130,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/height_59"
         android:layout_marginHorizontal="@dimen/margin_17"
+        android:layout_marginBottom="@dimen/margin_24"
         android:backgroundTint="@color/blue"
         android:text="@string/chose"
         android:textAllCaps="false"
