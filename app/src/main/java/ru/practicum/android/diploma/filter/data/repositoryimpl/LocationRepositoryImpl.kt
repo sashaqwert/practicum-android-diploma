@@ -21,7 +21,7 @@ class LocationRepositoryImpl(
         val isConnected = connectionCheck.isConnected()
 
         val response = try {
-            networkClient.doRequest(RequestIntent.GetIndustries, isConnected)
+            networkClient.doRequest(RequestIntent.GetAreas, isConnected)
         } catch (e: CancellationException) {
             throw e
         } catch (e: IOException) {
