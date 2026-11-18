@@ -64,18 +64,6 @@ class CountryFragment : Fragment() {
                 }
             }
         }
-
-//        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, enabled = true) {
-//            parentFragmentManager.setFragmentResult(
-//                GET_COUNTRY,
-//                Bundle().apply {
-//                    putString(CURRENT_COUNTRY, area?.id ?: "")
-//                    putString(CURRENT_COUNTRY_NAME, area?.name ?: "")
-//                }
-//            )
-//
-//            findNavController().navigateUp()
-//        }
     }
 
     private fun showContent(filterAreas: List<FilterArea>) {
