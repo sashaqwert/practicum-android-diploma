@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheckedTextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Text.Regular16"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:checkMark="?android:attr/listChoiceIndicatorSingle"
+    android:checkMarkTint="@color/blue"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:includeFontPadding="false"
+    android:minHeight="60dp"
+    android:paddingHorizontal="@dimen/margin_16"
+    android:paddingVertical="14.5dp"
+    tools:text="Авиаперевозки" />

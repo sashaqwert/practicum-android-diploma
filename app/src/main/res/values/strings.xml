@@ -50,4 +50,5 @@
     <string name="choose_region">Выбор региона</string>
     <string name="print_region">Введите регион</string>
     <string name="tools_region">Москва</string>
+    <string name="choose_country">Выбор страны</string>
 </resources>

@@ -53,7 +53,7 @@ class Converters(private val gson: Gson) {
         )
     }
 
-    private fun toFilterAreas(areas: List<FilterAreaDto>): List<FilterArea> {
+    fun toFilterAreas(areas: List<FilterAreaDto>): List<FilterArea> {
         return areas.map { dto ->
             toFilterArea(dto)
         }
