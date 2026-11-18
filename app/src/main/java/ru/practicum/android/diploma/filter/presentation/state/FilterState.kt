@@ -9,12 +9,12 @@ sealed interface FilterState {
         val filterIndustry: FilterIndustry? = null,
         val salary: Int? = null,
         val doNotShoeWithoutSalary: Boolean = false
-    ): FilterState
+    ) : FilterState
 
     data class Changed(
         val filterArea: FilterArea? = null,
         val filterIndustry: FilterIndustry? = null,
         val salary: Int? = null,
         val doNotShoeWithoutSalary: Boolean = false
-    ): FilterState
+    ) : FilterState
 }
