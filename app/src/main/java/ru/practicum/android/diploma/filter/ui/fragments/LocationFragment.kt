@@ -5,6 +5,7 @@ import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import ru.practicum.android.diploma.R
@@ -37,17 +38,19 @@ class LocationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewBinding.chosenCountryLayout.setEndIconOnClickListener {
+        viewBinding.chosenCountry.setOnClickListener {
             findNavController().navigate(R.id.action_locationFragment_to_countryFragment)
         }
         viewBinding.countryClear.setOnClickListener {
             viewBinding.chosenCountry.text = null
+            viewBinding.countryClear.isVisible = !viewBinding.chosenCountry.text.isNullOrEmpty()
         }
-        viewBinding.chosenRegionLayout.setEndIconOnClickListener {
+        viewBinding.chosenRegion.setOnClickListener {
             findNavController().navigate(R.id.action_locationFragment_to_regionFragment)
         }
         viewBinding.regionClear.setOnClickListener {
             viewBinding.chosenRegion.text = null
+            viewBinding.regionClear.isVisible = !viewBinding.chosenRegion.text.isNullOrEmpty()
         }
         viewBinding.workplaceChoseButton.setOnClickListener {
             findNavController().popBackStack(R.id.filterFragment, false)
@@ -69,13 +72,16 @@ class LocationFragment : Fragment() {
             val country = result.getString(CURRENT_COUNTRY)
             val editable = Editable.Factory.getInstance().newEditable(country)
             viewBinding.chosenCountry.text = editable
+            viewBinding.countryClear.isVisible = !viewBinding.chosenCountry.text.isNullOrEmpty()
         }
     }
+
     private fun getRegion() {
         parentFragmentManager.setFragmentResultListener(GET_REGION, viewLifecycleOwner) { requestKey, result ->
             val region = result.getString(CURRENT_REGION)
             val editable = Editable.Factory.getInstance().newEditable(region)
             viewBinding.chosenRegion.text = editable
+            viewBinding.regionClear.isVisible = !viewBinding.chosenRegion.text.isNullOrEmpty()
         }
     }
 
