@@ -77,10 +77,10 @@ class CountryFragment : Fragment() {
             area = filterArea
 
             parentFragmentManager.setFragmentResult(
-                GET_COUNTRY,
+                LocationFragment.GET_COUNTRY,
                 Bundle().apply {
-                    putString(CURRENT_COUNTRY, area?.name ?: "")
-                    putString(CURRENT_COUNTRY_ID, area?.id ?: "")
+                    putString(LocationFragment.CURRENT_COUNTRY, area?.name ?: "")
+                    putInt(LocationFragment.CURRENT_COUNTRY_ID, area?.id ?: 0)
                 }
             )
 
@@ -141,9 +141,6 @@ class CountryFragment : Fragment() {
     }
 
     companion object {
-        private const val GET_COUNTRY = "GET_COUNTRY"
-        private const val CURRENT_COUNTRY = "CURRENT_COUNTRY"
-        private const val CURRENT_COUNTRY_ID = "CURRENT_COUNTRY_NAME"
         private const val NO_INTERNET = -1
         private const val NO_AREA_RESPONSE = -2
     }
