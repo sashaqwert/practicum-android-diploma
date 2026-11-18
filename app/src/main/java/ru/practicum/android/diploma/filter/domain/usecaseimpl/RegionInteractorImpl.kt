@@ -23,14 +23,8 @@ class RegionInteractorImpl(
                 if (countryId == null || countryId == 0) {
                     Resource.Success(regions)
                 } else {
-                    val countryRegions = allCountries.data.find {
+                    val countryRegions = regions.filter {
                         it.parentId == countryId
-                    }!!.areas
-                    val nameRegionsCountry = allCountries.data.find {
-                        it.parentId == countryId
-                    }!!.name
-                    countryRegions.forEach { region ->
-                        region.parentName = nameRegionsCountry
                     }
                     Resource.Success(countryRegions)
                 }
