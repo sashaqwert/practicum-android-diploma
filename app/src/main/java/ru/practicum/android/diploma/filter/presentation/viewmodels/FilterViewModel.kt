@@ -11,8 +11,6 @@ class FilterViewModel : ViewModel() {
     private val stateLiveData = MutableLiveData<FilterState>(FilterState.Default())
     fun observeState(): LiveData<FilterState> = stateLiveData
 
-    fun applyButtonClicked() {}
-
     fun resetButtonClicked() {
         stateLiveData.value = FilterState.Default()
     }
@@ -35,7 +33,7 @@ class FilterViewModel : ViewModel() {
         }
     }
 
-    fun setSalary(salary : Int?) {
+    fun setSalary(salary: Int?) {
         val v = stateLiveData.value
         if (v is FilterState.Default) {
             stateLiveData.value = FilterState.Changed(v.filterArea, v.filterIndustry, salary, v.doNotShoeWithoutSalary)
@@ -44,7 +42,7 @@ class FilterViewModel : ViewModel() {
         }
     }
 
-    fun setDoNotShoeWithoutSalary(doNotShoeWithoutSalary : Boolean) {
+    fun setDoNotShoeWithoutSalary(doNotShoeWithoutSalary: Boolean) {
         val v = stateLiveData.value
         if (v is FilterState.Default) {
             stateLiveData.value = FilterState.Changed(v.filterArea, v.filterIndustry, v.salary, doNotShoeWithoutSalary)
@@ -53,7 +51,7 @@ class FilterViewModel : ViewModel() {
         }
     }
 
-    fun compare(filterState: FilterState) : Boolean {
+    fun compare(filterState: FilterState): Boolean {
         val v = stateLiveData.value
         return filterState.equals(v)
     }

@@ -8,10 +8,10 @@ import ru.practicum.android.diploma.filter.domain.repository.LocationRepository
 
 val filterDataModule = module {
 
-    single <IndustryRepository> {
+    single<IndustryRepository> {
         IndustryRepositoryImpl(get(), get(), get())
     }
-    single <LocationRepository> {
+    single<LocationRepository> {
         LocationRepositoryImpl(get(), get(), get())
     }
 }

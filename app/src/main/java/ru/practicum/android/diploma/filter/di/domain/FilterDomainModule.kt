@@ -15,7 +15,7 @@ val filterDomainModule = module {
     single<CountryInteractor> {
         CountryInteractorImpl(get())
     }
-    single <RegionInteractor> {
+    single<RegionInteractor> {
         RegionInteractorImpl(get())
     }
 }

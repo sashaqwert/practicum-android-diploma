@@ -75,7 +75,4 @@ class FilterFragment : Fragment() {
         super.onDestroyView()
         _viewBinding = null
     }
-
-    companion object {
-    }
 }

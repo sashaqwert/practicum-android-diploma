@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentLocationBinding
+
 class LocationFragment : Fragment() {
     private var _viewBinding: FragmentLocationBinding? = null
     private val viewBinding get() = _viewBinding!!
