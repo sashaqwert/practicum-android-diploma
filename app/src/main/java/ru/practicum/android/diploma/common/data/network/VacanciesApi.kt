@@ -4,9 +4,8 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.QueryMap
 import ru.practicum.android.diploma.common.data.dto.FilterAreaDto
+import ru.practicum.android.diploma.common.data.dto.FilterIndustryDto
 import ru.practicum.android.diploma.details.data.response.VacancyDetailResponse
-import ru.practicum.android.diploma.filter.data.response.AreaResponse
-import ru.practicum.android.diploma.filter.data.response.IndustryResponse
 import ru.practicum.android.diploma.search.data.response.VacancyResponse
 
 interface VacanciesApi {
@@ -14,7 +13,7 @@ interface VacanciesApi {
     suspend fun getAreas(): List<FilterAreaDto>
 
     @GET("/industries")
-    suspend fun getIndustries(): IndustryResponse
+    suspend fun getIndustries(): List<FilterIndustryDto>
 
     @GET("/vacancies")
     suspend fun getFilteredVacancies(@QueryMap options: Map<String, String>): VacancyResponse

@@ -14,17 +14,15 @@ import ru.practicum.android.diploma.databinding.FragmentLocationBinding
 class LocationFragment : Fragment() {
     private var _viewBinding: FragmentLocationBinding? = null
     private val viewBinding get() = _viewBinding!!
+    private var countryId: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-        }
+        arguments?.let {}
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         _viewBinding = FragmentLocationBinding.inflate(inflater, container, false)
         return viewBinding.root
@@ -44,6 +42,12 @@ class LocationFragment : Fragment() {
             viewBinding.countryClear.isVisible = !viewBinding.chosenCountry.text.isNullOrEmpty()
         }
         viewBinding.chosenRegion.setOnClickListener {
+            if (countryId != null && countryId != 0) {
+                val result = Bundle().apply {
+                    putInt(SEND_COUNTRY_ID, countryId ?: 0)
+                }
+                parentFragmentManager.setFragmentResult(SEND_COUNTRY_RESULT, result)
+            }
             findNavController().navigate(R.id.action_locationFragment_to_regionFragment)
         }
         viewBinding.regionClear.setOnClickListener {
@@ -53,6 +57,7 @@ class LocationFragment : Fragment() {
         viewBinding.workplaceChoseButton.setOnClickListener {
             val resultToFilter = Bundle().apply {
                 putString(COUNTRY, viewBinding.chosenCountry.text.toString())
+                putInt(CURRENT_COUNTRY_ID, countryId ?: 0)
                 putString(REGION, viewBinding.chosenRegion.text.toString())
             }
             parentFragmentManager.setFragmentResult(LOCATION, resultToFilter)
@@ -65,8 +70,9 @@ class LocationFragment : Fragment() {
 
     private fun getCountry() {
         parentFragmentManager.setFragmentResultListener(GET_COUNTRY, viewLifecycleOwner) { requestKey, result ->
-            val country = result.getString(CURRENT_COUNTRY)
-            val editable = Editable.Factory.getInstance().newEditable(country)
+            val countryName = result.getString(CURRENT_COUNTRY)
+            countryId = result.getInt(CURRENT_COUNTRY_ID)
+            val editable = Editable.Factory.getInstance().newEditable(countryName)
             viewBinding.chosenCountry.text = editable
             viewBinding.countryClear.isVisible = !viewBinding.chosenCountry.text.isNullOrEmpty()
         }
@@ -79,9 +85,10 @@ class LocationFragment : Fragment() {
             viewBinding.chosenRegion.text = editable
             viewBinding.regionClear.isVisible = !viewBinding.chosenRegion.text.isNullOrEmpty()
             if (viewBinding.chosenCountry.text.isNullOrEmpty()) {
-                val country = result.getString(REGION_COUNTRY)
+                val country = result.getString(CURRENT_COUNTRY)
                 val editable = Editable.Factory.getInstance().newEditable(country)
                 viewBinding.chosenCountry.text = editable
+                countryId = result.getInt(CURRENT_COUNTRY_ID)
             }
         }
     }
@@ -89,17 +96,20 @@ class LocationFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _viewBinding = null
+        countryId = null
     }
 
     companion object {
         private const val LOCATION = "LOCATION"
         private const val COUNTRY = "COUNTRY"
         private const val REGION = "REGION"
-        private const val GET_COUNTRY = "GET_COUNTRY"
-        private const val CURRENT_COUNTRY = "CURRENT_COUNTRY"
-        private const val GET_REGION = "GET_REGION"
+        const val GET_COUNTRY = "GET_COUNTRY"
+        const val CURRENT_COUNTRY = "CURRENT_COUNTRY"
+        const val CURRENT_COUNTRY_ID = "CURRENT_COUNTRY_ID"
+        const val GET_REGION = "GET_REGION"
         private const val CURRENT_REGION = "CURRENT_REGION"
-        private const val REGION_COUNTRY = "REGION_COUNTRY"
+        private const val SEND_COUNTRY_ID = "SEND_COUNTRY_ID"
+        private const val SEND_COUNTRY_RESULT = "SEND_COUNTRY_RESULT"
 
         /**
          * Use this factory method to create a new instance of
@@ -107,13 +117,11 @@ class LocationFragment : Fragment() {
          *
          * @return A new instance of fragment LocationFragment.
          */
-       /* @JvmStatic
-        fun newInstance() =
-            LocationFragment().apply {
-                arguments = Bundle().apply {
-                }
-            }
+        /* @JvmStatic
+         fun newInstance() = LocationFragment().apply {
+             arguments = Bundle().apply {}
+         }
 
-        */
+         */
     }
 }

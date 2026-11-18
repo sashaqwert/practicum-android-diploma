@@ -14,15 +14,18 @@ class RegionInteractorImpl(
             is Resource.Error -> return Resource.Error(allCountries.code)
             is Resource.Success<List<FilterArea>> -> {
                 val regions = allCountries.data.flatMap { country ->
+                    country.areas.forEach { region ->
+                        region.parentName = country.name
+                    }
                     country.areas
                 }
 
                 if (countryId == null || countryId == 0) {
                     Resource.Success(regions)
                 } else {
-                    val countryRegions = allCountries.data.find {
+                    val countryRegions = regions.filter {
                         it.parentId == countryId
-                    }!!.areas
+                    }
                     Resource.Success(countryRegions)
                 }
             }
