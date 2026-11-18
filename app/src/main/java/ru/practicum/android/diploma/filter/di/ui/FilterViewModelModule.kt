@@ -7,7 +7,6 @@ import ru.practicum.android.diploma.filter.presentation.viewmodels.FilterViewMod
 import ru.practicum.android.diploma.filter.presentation.viewmodels.IndustriesViewModel
 import ru.practicum.android.diploma.filter.presentation.viewmodels.RegionViewModel
 
-
 val filterViewModelModule = module {
     viewModel {
         FilterViewModel()

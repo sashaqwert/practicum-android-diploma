@@ -5,5 +5,5 @@ data class FilterArea(
     val name: String,
     val parentId: Int?,
     val areas: List<FilterArea> = emptyList(),
-    var parentName: String? = null
+    @Suppress("DataClassShouldBeImmutable") var parentName: String? = null
 )

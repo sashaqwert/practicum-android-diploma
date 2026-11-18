@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -14,7 +13,6 @@ import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.domain.models.FilterArea
 import ru.practicum.android.diploma.databinding.FragmentCountryBinding
 import ru.practicum.android.diploma.filter.presentation.state.CountryState
-import ru.practicum.android.diploma.filter.presentation.state.IndustriesState
 import ru.practicum.android.diploma.filter.presentation.viewmodels.CountryViewModel
 import ru.practicum.android.diploma.filter.ui.adapter.AreaAdapter
 

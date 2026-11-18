@@ -22,7 +22,9 @@ class LocationFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View? {
         _viewBinding = FragmentLocationBinding.inflate(inflater, container, false)
         return viewBinding.root
