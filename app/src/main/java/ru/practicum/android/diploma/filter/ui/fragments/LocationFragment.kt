@@ -10,12 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentLocationBinding
-
-/**
- * A simple [Fragment] subclass.
- * Use the [LocationFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class LocationFragment : Fragment() {
     private var _viewBinding: FragmentLocationBinding? = null
     private val viewBinding get() = _viewBinding!!
@@ -112,12 +106,13 @@ class LocationFragment : Fragment() {
          *
          * @return A new instance of fragment LocationFragment.
          */
-        //вот тут как вариант можно создавать экран с последним выбором пользователя
-        @JvmStatic
+       /* @JvmStatic
         fun newInstance() =
             LocationFragment().apply {
                 arguments = Bundle().apply {
                 }
             }
+
+        */
     }
 }
