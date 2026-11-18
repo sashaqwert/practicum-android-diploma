@@ -10,6 +10,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.domain.models.FilterArea
 import ru.practicum.android.diploma.databinding.FragmentCountryBinding
 import ru.practicum.android.diploma.filter.presentation.state.CountryState
@@ -64,17 +65,17 @@ class CountryFragment : Fragment() {
             }
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, enabled = true) {
-            parentFragmentManager.setFragmentResult(
-                GET_COUNTRY,
-                Bundle().apply {
-                    putString(CURRENT_COUNTRY, area?.id)
-                    putString(CURRENT_COUNTRY_NAME, area?.name)
-                }
-            )
-
-            findNavController().navigateUp()
-        }
+//        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, enabled = true) {
+//            parentFragmentManager.setFragmentResult(
+//                GET_COUNTRY,
+//                Bundle().apply {
+//                    putString(CURRENT_COUNTRY, area?.id ?: "")
+//                    putString(CURRENT_COUNTRY_NAME, area?.name ?: "")
+//                }
+//            )
+//
+//            findNavController().navigateUp()
+//        }
     }
 
     private fun showContent(filterAreas: List<FilterArea>) {
@@ -86,6 +87,16 @@ class CountryFragment : Fragment() {
 
         areaAdapter = AreaAdapter { filterArea ->
             area = filterArea
+
+            parentFragmentManager.setFragmentResult(
+                GET_COUNTRY,
+                Bundle().apply {
+                    putString(CURRENT_COUNTRY, area?.name ?: "")
+                    putString(CURRENT_COUNTRY_ID, area?.id ?: "")
+                }
+            )
+
+            findNavController().navigateUp()
         }
         viewBinding.countriesRecyclerView.adapter = areaAdapter
         areaAdapter!!.submitAreas(filterAreas)
@@ -97,6 +108,27 @@ class CountryFragment : Fragment() {
             isLoading = false,
             isError = true
         )
+
+        with(viewBinding) {
+            val drawable: Int
+
+            val text: Int
+
+            when (code) {
+                NO_AREA_RESPONSE, NO_INTERNET -> {
+                    drawable = R.drawable.img_not_internet_search_state_328
+                    text = R.string.no_internet
+                }
+
+                else -> {
+                    drawable = R.drawable.img_server_error
+                    text = R.string.server_error
+                }
+            }
+
+            errorImg.setImageResource(drawable)
+            errorText.setText(text)
+        }
     }
 
     private fun showLoading() {
@@ -123,6 +155,8 @@ class CountryFragment : Fragment() {
     companion object {
         private const val GET_COUNTRY = "GET_COUNTRY"
         private const val CURRENT_COUNTRY = "CURRENT_COUNTRY"
-        private const val CURRENT_COUNTRY_NAME = "CURRENT_COUNTRY_NAME"
+        private const val CURRENT_COUNTRY_ID = "CURRENT_COUNTRY_NAME"
+        private const val NO_INTERNET = -1
+        private const val NO_AREA_RESPONSE = -2
     }
 }

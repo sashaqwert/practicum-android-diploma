@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import ru.practicum.android.diploma.common.data.network.VacanciesApi
+import ru.practicum.android.diploma.filter.data.response.AreaResponse
 
 class RetrofitNetworkClient(private val vacanciesApi: VacanciesApi) : NetworkClient {
     override suspend fun doRequest(
@@ -16,7 +17,7 @@ class RetrofitNetworkClient(private val vacanciesApi: VacanciesApi) : NetworkCli
             } else {
                 try {
                     val response = when (intent) {
-                        is RequestIntent.GetAreas -> vacanciesApi.getAreas()
+                        is RequestIntent.GetAreas -> AreaResponse(vacanciesApi.getAreas())
                         is RequestIntent.GetFilteredVacancies -> vacanciesApi.getFilteredVacancies(intent.options)
                         is RequestIntent.GetIndustries -> vacanciesApi.getIndustries()
                         is RequestIntent.GetVacancyById -> vacanciesApi.getVacancyById(intent.id)
