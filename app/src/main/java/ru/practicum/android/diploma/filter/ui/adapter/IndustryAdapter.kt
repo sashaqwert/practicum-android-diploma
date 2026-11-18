@@ -25,6 +25,10 @@ class IndustryAdapter(
         updateVisibleIndustries()
     }
 
+    fun getIndustryById(id: String): FilterIndustry? {
+        return allIndustries.find { it.id == id }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IndustryViewHolder {
         val binding = ItemIndustryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return IndustryViewHolder(binding)
