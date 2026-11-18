@@ -5,7 +5,7 @@ import ru.practicum.android.diploma.common.domain.models.FilterArea
 sealed interface CountryState {
     object Loading : CountryState
 
-    data class Content(val filterArea: List<FilterArea>) : CountryState
+    data class Content(val filterAreas: List<FilterArea>) : CountryState
 
-    object Error : CountryState
+    data class Error(val code: Int) : CountryState
 }
