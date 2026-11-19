@@ -5,7 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.databinding.FragmentRegionBinding
+import ru.practicum.android.diploma.filter.presentation.viewmodels.IndustriesViewModel
+import ru.practicum.android.diploma.filter.presentation.viewmodels.RegionViewModel
 
 /**
  * A simple [Fragment] subclass.
@@ -15,6 +18,7 @@ import ru.practicum.android.diploma.databinding.FragmentRegionBinding
 class RegionFragment : Fragment() {
     private var _viewBinding: FragmentRegionBinding? = null
     private val viewBinding get() = _viewBinding!!
+    private val viewModel by viewModel<RegionViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
