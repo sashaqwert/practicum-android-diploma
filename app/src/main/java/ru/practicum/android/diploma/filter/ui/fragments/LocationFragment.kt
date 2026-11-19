@@ -15,6 +15,7 @@ class LocationFragment : Fragment() {
     private var _viewBinding: FragmentLocationBinding? = null
     private val viewBinding get() = _viewBinding!!
     private var countryId: Int? = null
+    private var regionId: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,7 +60,7 @@ class LocationFragment : Fragment() {
         viewBinding.workplaceChoseButton.setOnClickListener {
             val resultToFilter = Bundle().apply {
                 putString(COUNTRY, viewBinding.chosenCountry.text.toString())
-                putInt(CURRENT_COUNTRY_ID, countryId ?: 0)
+                putInt(CURRENT_ID, regionId ?: countryId ?: 0)
                 putString(REGION, viewBinding.chosenRegion.text.toString())
             }
             parentFragmentManager.setFragmentResult(LOCATION, resultToFilter)
@@ -90,15 +91,17 @@ class LocationFragment : Fragment() {
                 val country = result.getString(CURRENT_COUNTRY)
                 val editable = Editable.Factory.getInstance().newEditable(country)
                 viewBinding.chosenCountry.text = editable
-                countryId = result.getInt(CURRENT_COUNTRY_ID)
+                regionId = result.getInt(CURRENT_REGION_ID)
             }
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
         _viewBinding = null
         countryId = null
+        regionId = null
     }
 
     companion object {
@@ -108,6 +111,8 @@ class LocationFragment : Fragment() {
         const val GET_COUNTRY = "GET_COUNTRY"
         const val CURRENT_COUNTRY = "CURRENT_COUNTRY"
         const val CURRENT_COUNTRY_ID = "CURRENT_COUNTRY_ID"
+        const val CURRENT_ID = "CURRENT_ID"
+        const val CURRENT_REGION_ID = "CURRENT_REGION_ID"
         const val GET_REGION = "GET_REGION"
         private const val CURRENT_REGION = "CURRENT_REGION"
         private const val SEND_COUNTRY_ID = "SEND_COUNTRY_ID"
