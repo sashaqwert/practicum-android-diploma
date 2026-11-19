@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.core.view.ViewCompat.getRootWindowInsets
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
@@ -64,8 +65,18 @@ class FilterFragment : Fragment() {
                     .show(WindowInsetsCompat.Type.ime())
             }
 
+            ViewCompat.setOnApplyWindowInsetsListener(root) { _, insets ->
+                val imeVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
+                salaryEditTextHeader.setTextColor(getSalaryColor(salaryEditText.text, imeVisible))
+                insets
+            }
+
             salaryEditText.doOnTextChanged { text, _, _, _ ->
                 viewModel.setSalary(text?.toString()?.toLongOrNull())
+                val imeVisible = getRootWindowInsets(root)
+                    ?.isVisible(WindowInsetsCompat.Type.ime()) == true
+
+                salaryEditTextHeader.setTextColor(getSalaryColor(text, imeVisible))
             }
 
             industryValue.setOnClickListener {
@@ -116,7 +127,7 @@ class FilterFragment : Fragment() {
         }
 
         parentFragmentManager.setFragmentResultListener(LOCATION, viewLifecycleOwner) { _, bundle ->
-            val id = bundle.getInt(CURRENT_COUNTRY_ID)
+            val id = bundle.getInt(LocationFragment.CURRENT_ID)
             val countryName = bundle.getString(COUNTRY) ?: ""
             val regionName = bundle.getString(REGION) ?: ""
 
@@ -216,17 +227,13 @@ class FilterFragment : Fragment() {
         }
     }
 
-    private fun getSalaryColor(text: CharSequence?): Int {
-        val isKeyboardVisible =
-            ViewCompat.getRootWindowInsets(viewBinding.root)
-                ?.isVisible(WindowInsetsCompat.Type.ime()) == true
-
+    private fun getSalaryColor(text: CharSequence?, imeVisible: Boolean): Int {
         return if (text.isNullOrEmpty()) {
             MaterialColors.getColor(
                 viewBinding.salaryEditTextHeader,
                 com.google.android.material.R.attr.colorOnContainer
             )
-        } else if (isKeyboardVisible) {
+        } else if (imeVisible) {
             ContextCompat.getColor(requireContext(), R.color.blue)
         } else {
             ContextCompat.getColor(requireContext(), R.color.black)
