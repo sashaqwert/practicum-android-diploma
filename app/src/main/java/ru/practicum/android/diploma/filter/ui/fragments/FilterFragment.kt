@@ -13,6 +13,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.color.MaterialColors
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -27,6 +28,7 @@ class FilterFragment : Fragment() {
     private val viewBinding get() = _viewBinding!!
 
     private val viewModel by viewModel<FilterViewModel>()
+    private var industryId = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,6 +82,11 @@ class FilterFragment : Fragment() {
             }
 
             industryValue.setOnClickListener {
+                setFragmentResult(SEND_INDUSTRY_ID,
+                    Bundle().apply {
+                        putInt(SEND_INDUSTRY_ID_ARG, industryId)
+                    }
+                )
                 findNavController().navigate(R.id.action_filterFragment_to_industryFragment)
             }
 
@@ -150,6 +157,8 @@ class FilterFragment : Fragment() {
             showButtons()
 
             setIcons(state)
+
+            industryId = state.filterIndustry?.id ?: 0
         }
     }
 
@@ -258,6 +267,7 @@ class FilterFragment : Fragment() {
         private const val LOCATION = "LOCATION"
         private const val COUNTRY = "COUNTRY"
         private const val REGION = "REGION"
-        private const val CURRENT_COUNTRY_ID = "CURRENT_COUNTRY_ID"
+        const val SEND_INDUSTRY_ID = "SEND_INDUSTRY_ID"
+        const val SEND_INDUSTRY_ID_ARG = "SEND_INDUSTRY_ID_ARG"
     }
 }

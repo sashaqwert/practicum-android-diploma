@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
@@ -76,6 +77,13 @@ class IndustriesFragment : Fragment() {
             )
 
             findNavController().navigateUp()
+        }
+
+        parentFragmentManager.setFragmentResultListener(
+            FilterFragment.SEND_INDUSTRY_ID,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            selectedIndustryId = bundle.getInt(FilterFragment.SEND_INDUSTRY_ID_ARG)
         }
     }
 
