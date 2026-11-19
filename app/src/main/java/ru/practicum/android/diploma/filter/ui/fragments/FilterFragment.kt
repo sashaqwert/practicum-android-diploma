@@ -82,7 +82,8 @@ class FilterFragment : Fragment() {
             }
 
             industryValue.setOnClickListener {
-                setFragmentResult(SEND_INDUSTRY_ID,
+                parentFragmentManager.setFragmentResult(
+                    SEND_INDUSTRY_ID,
                     Bundle().apply {
                         putInt(SEND_INDUSTRY_ID_ARG, industryId)
                     }
@@ -159,6 +160,8 @@ class FilterFragment : Fragment() {
             setIcons(state)
 
             industryId = state.filterIndustry?.id ?: 0
+
+            setApplyButtonListener(state)
         }
     }
 
@@ -225,6 +228,24 @@ class FilterFragment : Fragment() {
         }
     }
 
+    private fun setApplyButtonListener(state: FilterState) {
+        viewBinding.applyFilter.setOnClickListener {
+            val area = state.filterArea
+            val industry = state.filterIndustry
+            val salary = state.salary
+            val doNotShowWithSalary = state.doNotShowWithoutSalary
+
+            parentFragmentManager.setFragmentResult(SEND_FILTERS, Bundle().apply {
+                putInt(SEND_AREA, area?.id ?: 0)
+                putInt(SEND_INDUSTRY, industry?.id ?: 0)
+                putLong(SEND_SALARY, salary ?: 0L)
+                putBoolean(SEND_SALARY_CHECKBOX, doNotShowWithSalary)
+            })
+
+            findNavController().popBackStack()
+        }
+    }
+
     private fun getColor(text: CharSequence?): Int {
         return if (text.isNullOrEmpty()) {
             ContextCompat.getColor(requireContext(), R.color.gray)
@@ -264,10 +285,19 @@ class FilterFragment : Fragment() {
     }
 
     companion object {
+        // с экрана выбора работы
         private const val LOCATION = "LOCATION"
         private const val COUNTRY = "COUNTRY"
         private const val REGION = "REGION"
+        // на экран отраслей
         const val SEND_INDUSTRY_ID = "SEND_INDUSTRY_ID"
         const val SEND_INDUSTRY_ID_ARG = "SEND_INDUSTRY_ID_ARG"
+
+        // на экран поиска
+        const val SEND_FILTERS = "SEND_FILTERS"
+        const val SEND_AREA = "SEND_AREA"
+        const val SEND_INDUSTRY = "SEND_INDUSTRY"
+        const val SEND_SALARY = "SEND_SALARY"
+        const val SEND_SALARY_CHECKBOX = "SEND_SALARY_CHECKBOX"
     }
 }
