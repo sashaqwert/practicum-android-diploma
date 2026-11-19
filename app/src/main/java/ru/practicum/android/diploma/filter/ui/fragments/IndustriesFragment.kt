@@ -23,7 +23,7 @@ class IndustriesFragment : Fragment() {
     private val viewBinding get() = _viewBinding!!
     private val viewModel by viewModel<IndustriesViewModel>()
     private var industryAdapter: IndustryAdapter? = null
-    private var selectedIndustryId: String? = null
+    private var selectedIndustryId: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,11 +66,11 @@ class IndustriesFragment : Fragment() {
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, enabled = true) {
-            val filter = industryAdapter?.getIndustryById(selectedIndustryId ?: "")
+            val filter = industryAdapter?.getIndustryById(selectedIndustryId ?: 0)
             parentFragmentManager.setFragmentResult(
                 INDUSTRY_KEY,
                 Bundle().apply {
-                    putString(INDUSTRY_ARG_KEY, filter?.id)
+                    putInt(INDUSTRY_ARG_KEY, filter?.id ?: 0)
                     putString(INDUSTRY_NAME_ARG_KEY, filter?.name)
                 }
             )

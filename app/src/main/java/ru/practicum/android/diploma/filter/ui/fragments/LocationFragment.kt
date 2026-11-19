@@ -112,18 +112,5 @@ class LocationFragment : Fragment() {
         private const val CURRENT_REGION = "CURRENT_REGION"
         private const val SEND_COUNTRY_ID = "SEND_COUNTRY_ID"
         private const val SEND_COUNTRY_RESULT = "SEND_COUNTRY_RESULT"
-
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @return A new instance of fragment LocationFragment.
-         */
-        /* @JvmStatic
-         fun newInstance() = LocationFragment().apply {
-             arguments = Bundle().apply {}
-         }
-
-         */
     }
 }
