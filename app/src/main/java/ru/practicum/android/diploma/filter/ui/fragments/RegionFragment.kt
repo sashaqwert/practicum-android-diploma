@@ -58,7 +58,7 @@ class RegionFragment : Fragment() {
         viewModel.observeState().observe(viewLifecycleOwner) { state ->
             when (state) {
                 is RegionState.Content -> {
-                    showContent(state.filterArea)
+                    showContent(state.regions)
                 }
 
                 is RegionState.Empty -> {
