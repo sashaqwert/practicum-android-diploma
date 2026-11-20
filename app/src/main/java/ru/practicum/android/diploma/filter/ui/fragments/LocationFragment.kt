@@ -114,7 +114,7 @@ class LocationFragment : Fragment() {
         const val CURRENT_ID = "CURRENT_ID"
         const val CURRENT_REGION_ID = "CURRENT_REGION_ID"
         const val GET_REGION = "GET_REGION"
-        private const val CURRENT_REGION = "CURRENT_REGION"
+        const val CURRENT_REGION = "CURRENT_REGION"
         private const val SEND_COUNTRY_ID = "SEND_COUNTRY_ID"
         private const val SEND_COUNTRY_RESULT = "SEND_COUNTRY_RESULT"
     }

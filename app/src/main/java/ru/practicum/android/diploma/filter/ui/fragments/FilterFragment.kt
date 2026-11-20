@@ -13,7 +13,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.color.MaterialColors
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -79,20 +78,6 @@ class FilterFragment : Fragment() {
                     ?.isVisible(WindowInsetsCompat.Type.ime()) == true
 
                 salaryEditTextHeader.setTextColor(getSalaryColor(text, imeVisible))
-            }
-
-            industryValue.setOnClickListener {
-                parentFragmentManager.setFragmentResult(
-                    SEND_INDUSTRY_ID,
-                    Bundle().apply {
-                        putInt(SEND_INDUSTRY_ID_ARG, industryId)
-                    }
-                )
-                findNavController().navigate(R.id.action_filterFragment_to_industryFragment)
-            }
-
-            workPlaceValue.setOnClickListener {
-                findNavController().navigate(R.id.action_filterFragment_to_locationFragment)
             }
 
             industryValue.doOnTextChanged { text, _, _, _ ->
@@ -162,6 +147,8 @@ class FilterFragment : Fragment() {
             industryId = state.filterIndustry?.id ?: 0
 
             setApplyButtonListener(state)
+
+            setLocationsListeners(state)
         }
     }
 
@@ -246,6 +233,41 @@ class FilterFragment : Fragment() {
         }
     }
 
+    private fun setLocationsListeners(state: FilterState) {
+        with(viewBinding) {
+            industryValue.setOnClickListener {
+                parentFragmentManager.setFragmentResult(
+                    SEND_INDUSTRY_ID,
+                    Bundle().apply {
+                        putInt(SEND_INDUSTRY_ID_ARG, state.filterIndustry?.id ?: 0)
+                    }
+                )
+                findNavController().navigate(R.id.action_filterFragment_to_industryFragment)
+            }
+
+            workPlaceValue.setOnClickListener {
+                if (state.filterArea?.parentName != null) {
+                    parentFragmentManager.setFragmentResult(
+                        LocationFragment.GET_COUNTRY,
+                        Bundle().apply {
+                            putString(LocationFragment.CURRENT_COUNTRY, state.filterArea.parentName)
+                            putInt(LocationFragment.CURRENT_COUNTRY_ID, state.filterArea.id)
+                        }
+                    )
+                } else {
+                    parentFragmentManager.setFragmentResult(
+                        LocationFragment.GET_REGION,
+                        Bundle().apply {
+                            putString(LocationFragment.CURRENT_REGION, state.filterArea?.name)
+                            putInt(LocationFragment.CURRENT_REGION_ID, state.filterArea?.id ?: 0)
+                        }
+                    )
+                }
+                findNavController().navigate(R.id.action_filterFragment_to_locationFragment)
+            }
+        }
+    }
+
     private fun getColor(text: CharSequence?): Int {
         return if (text.isNullOrEmpty()) {
             ContextCompat.getColor(requireContext(), R.color.gray)
@@ -289,6 +311,7 @@ class FilterFragment : Fragment() {
         private const val LOCATION = "LOCATION"
         private const val COUNTRY = "COUNTRY"
         private const val REGION = "REGION"
+
         // на экран отраслей
         const val SEND_INDUSTRY_ID = "SEND_INDUSTRY_ID"
         const val SEND_INDUSTRY_ID_ARG = "SEND_INDUSTRY_ID_ARG"
