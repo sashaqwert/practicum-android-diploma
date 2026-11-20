@@ -8,51 +8,63 @@ import ru.practicum.android.diploma.common.domain.models.FilterIndustry
 import ru.practicum.android.diploma.filter.presentation.state.FilterState
 
 class FilterViewModel : ViewModel() {
-    private val stateLiveData = MutableLiveData<FilterState>(FilterState.Default())
+    private val stateLiveData = MutableLiveData<FilterState>(FilterState())
     fun observeState(): LiveData<FilterState> = stateLiveData
 
+    private val defaultState = FilterState()
+    private var lastSavedState = FilterState()
+
     fun resetButtonClicked() {
-        stateLiveData.value = FilterState.Default()
+        stateLiveData.value = FilterState()
     }
 
-    fun setFilterArea(filterArea: FilterArea) {
-        val v = stateLiveData.value
-        if (v is FilterState.Default) {
-            stateLiveData.value = FilterState.Changed(filterArea, v.filterIndustry, v.salary, v.doNotShoeWithoutSalary)
-        } else if (v is FilterState.Changed) {
-            stateLiveData.value = FilterState.Changed(filterArea, v.filterIndustry, v.salary, v.doNotShoeWithoutSalary)
-        }
+    fun fillData(state: FilterState) {
+        lastSavedState = state
+        stateLiveData.value = state
     }
 
-    fun setFilterIndustry(filterIndustry: FilterIndustry) {
-        val v = stateLiveData.value
-        if (v is FilterState.Default) {
-            stateLiveData.value = FilterState.Changed(v.filterArea, filterIndustry, v.salary, v.doNotShoeWithoutSalary)
-        } else if (v is FilterState.Changed) {
-            stateLiveData.value = FilterState.Changed(v.filterArea, filterIndustry, v.salary, v.doNotShoeWithoutSalary)
-        }
+    fun setFilterArea(id: Int, name: String, parentName: String) {
+        val v = stateLiveData.value ?: return
+        val filterArea = FilterArea(id, name, null, parentName = parentName)
+        stateLiveData.value = FilterState(filterArea, v.filterIndustry, v.salary, v.doNotShowWithoutSalary)
     }
 
-    fun setSalary(salary: Int?) {
-        val v = stateLiveData.value
-        if (v is FilterState.Default) {
-            stateLiveData.value = FilterState.Changed(v.filterArea, v.filterIndustry, salary, v.doNotShoeWithoutSalary)
-        } else if (v is FilterState.Changed) {
-            stateLiveData.value = FilterState.Changed(v.filterArea, v.filterIndustry, salary, v.doNotShoeWithoutSalary)
-        }
+    fun setFilterIndustry(id: Int, name: String) {
+        val v = stateLiveData.value ?: return
+        val filterIndustry = FilterIndustry(id, name)
+        stateLiveData.value = FilterState(v.filterArea, filterIndustry, v.salary, v.doNotShowWithoutSalary)
     }
 
-    fun setDoNotShoeWithoutSalary(doNotShoeWithoutSalary: Boolean) {
-        val v = stateLiveData.value
-        if (v is FilterState.Default) {
-            stateLiveData.value = FilterState.Changed(v.filterArea, v.filterIndustry, v.salary, doNotShoeWithoutSalary)
-        } else if (v is FilterState.Changed) {
-            stateLiveData.value = FilterState.Changed(v.filterArea, v.filterIndustry, v.salary, doNotShoeWithoutSalary)
-        }
+    fun setSalary(salary: Long?) {
+        val state = stateLiveData.value ?: return
+        if (state.salary == salary) return
+        stateLiveData.value = state.copy(salary = salary)
     }
 
-    fun compare(filterState: FilterState): Boolean {
+    fun setDoNotShowWithoutSalary(doNotShowWithoutSalary: Boolean) {
+        val v = stateLiveData.value ?: return
+        stateLiveData.value = FilterState(v.filterArea, v.filterIndustry, v.salary, doNotShowWithoutSalary)
+    }
+
+    fun deleteLocation() {
+        val state = stateLiveData.value ?: return
+
+        stateLiveData.value = state.copy(filterArea = null)
+    }
+
+    fun deleteIndustry() {
+        val state = stateLiveData.value ?: return
+
+        stateLiveData.value = state.copy(filterIndustry = null)
+    }
+
+    fun compareWithDefault(): Boolean {
         val v = stateLiveData.value
-        return filterState.equals(v)
+        return !(defaultState.equals(v))
+    }
+
+    fun compareWithLast(): Boolean {
+        val state = stateLiveData.value ?: return false
+        return !(state.equals(lastSavedState))
     }
 }

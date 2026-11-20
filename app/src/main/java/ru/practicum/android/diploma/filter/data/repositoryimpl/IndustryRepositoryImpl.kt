@@ -20,15 +20,14 @@ class IndustryRepositoryImpl(
     override suspend fun getIndustry(): Resource<List<FilterIndustry>> {
         val isConnected = connectionCheck.isConnected()
 
-        val response = try {
+        val response = runCatching {
             networkClient.doRequest(RequestIntent.GetIndustries, isConnected)
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: IOException) {
-            Log.e("IndustryRepository", "Network error", e)
-            null
-        } catch (e: Throwable) {
-            Log.e("IndustryRepository", "Unexpected error", e)
+        }.getOrElse { error ->
+            if (error is CancellationException) {
+                throw error
+            }
+            val message = if (error is IOException) "Network error" else "Unexpected error"
+            Log.e("IndustryRepository", message, error)
             null
         }
 

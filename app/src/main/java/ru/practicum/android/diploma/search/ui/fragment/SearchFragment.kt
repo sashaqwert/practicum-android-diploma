@@ -20,6 +20,7 @@ import ru.practicum.android.diploma.common.domain.models.VacancyCard
 import ru.practicum.android.diploma.common.ui.forrecyclerview.VacancyAdapter
 import ru.practicum.android.diploma.databinding.FragmentSearchBinding
 import ru.practicum.android.diploma.details.ui.fragment.DetailsFragment
+import ru.practicum.android.diploma.filter.ui.fragments.FilterFragment
 import ru.practicum.android.diploma.search.presentation.state.SearchState
 import ru.practicum.android.diploma.search.presentation.viewmodel.SearchViewModel
 
@@ -64,6 +65,10 @@ class SearchFragment : Fragment() {
             default()
         }
         viewBinding.filerButton.setOnClickListener {
+            parentFragmentManager.setFragmentResult(
+                FilterFragment.RESTORE_FILTERS,
+                FilterFragment.createFilterBundle(viewModel.appliedFilters)
+            )
             findNavController().navigate(R.id.action_searchFragment_to_filterFragment)
         }
 
@@ -86,20 +91,24 @@ class SearchFragment : Fragment() {
                         (viewBinding.vacancyList.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
                     val itemsCount = adapter.itemCount
                     if (pos >= itemsCount - 1) {
-                        val currentState = viewModel.state.value as? SearchState.Content
-                        if (currentState != null) {
-                            if (currentState.paginationError == null) {
-                                val nextPage = currentState.page + 1
-                                viewModel.loadPage(nextPage)
-                            } else {
-                                Toast.makeText(requireContext(), R.string.no_wifi, Toast.LENGTH_LONG).show()
-                                viewModel.onPaginationErrorShown()
-                            }
-                        }
+                        loadNextPage()
                     }
                 }
             }
         })
+
+        setFilterListener()
+    }
+
+    private fun loadNextPage() {
+        val currentState = viewModel.state.value as? SearchState.Content ?: return
+        if (currentState.paginationError == null) {
+            val nextPage = currentState.page + 1
+            viewModel.loadPage(nextPage)
+        } else {
+            Toast.makeText(requireContext(), R.string.no_wifi, Toast.LENGTH_LONG).show()
+            viewModel.onPaginationErrorShown()
+        }
     }
 
     private fun initAdapter() {
@@ -126,6 +135,16 @@ class SearchFragment : Fragment() {
                 SearchState.Loading -> loading()
             }
         }
+    }
+
+    private fun setFilterListener() {
+        parentFragmentManager
+            .setFragmentResultListener(
+                FilterFragment.SEND_FILTERS,
+                viewLifecycleOwner
+            ) { _, bundle ->
+                viewModel.searchWithFilters(FilterFragment.readFilterBundle(bundle))
+            }
     }
 
     override fun onDestroyView() {

@@ -23,15 +23,14 @@ class DetailsRepositoryImpl(
     override suspend fun getDetailsInfo(vacancyId: String): Resource<VacancyDetail> {
         val isConnected = connectionCheck.isConnected()
 
-        val response = try {
+        val response = runCatching {
             client.doRequest(RequestIntent.GetVacancyById(vacancyId), isConnected)
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: IOException) {
-            Log.e("DetailsRepository", "Network error", e)
-            null
-        } catch (e: Throwable) {
-            Log.e("DetailsRepository", "Unexpected error", e)
+        }.getOrElse { error ->
+            if (error is CancellationException) {
+                throw error
+            }
+            val message = if (error is IOException) "Network error" else "Unexpected error"
+            Log.e("DetailsRepository", message, error)
             null
         }
 
