@@ -4,12 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
@@ -28,8 +26,8 @@ class IndustriesFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-        }
+        val selection = savedInstanceState ?: arguments
+        selectedIndustryId = selection?.getInt(FilterFragment.SEND_INDUSTRY_ID_ARG)?.takeIf { it != 0 }
     }
 
     override fun onCreateView(
@@ -66,25 +64,27 @@ class IndustriesFragment : Fragment() {
             }
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, enabled = true) {
-            val filter = industryAdapter?.getIndustryById(selectedIndustryId ?: 0)
-            parentFragmentManager.setFragmentResult(
-                INDUSTRY_KEY,
-                Bundle().apply {
-                    putInt(INDUSTRY_ARG_KEY, filter?.id ?: 0)
-                    putString(INDUSTRY_NAME_ARG_KEY, filter?.name)
-                }
-            )
-
-            findNavController().navigateUp()
+        viewBinding.searchEditText.doOnTextChanged { text, _, _, _ ->
+            industryAdapter?.filterIndustries(text.toString())
+            updateChooseButton()
         }
-
-        parentFragmentManager.setFragmentResultListener(
-            FilterFragment.SEND_INDUSTRY_ID,
-            viewLifecycleOwner
-        ) { _, bundle ->
-            selectedIndustryId = bundle.getInt(FilterFragment.SEND_INDUSTRY_ID_ARG)
+        viewBinding.chooseIndustry.setOnClickListener {
+            selectedIndustry()?.let { industry ->
+                parentFragmentManager.setFragmentResult(
+                    INDUSTRY_KEY,
+                    Bundle().apply {
+                        putInt(INDUSTRY_ARG_KEY, industry.id)
+                        putString(INDUSTRY_NAME_ARG_KEY, industry.name)
+                    }
+                )
+                findNavController().navigateUp()
+            }
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt(FilterFragment.SEND_INDUSTRY_ID_ARG, selectedIndustryId ?: 0)
     }
 
     private fun showContent(industries: List<FilterIndustry>) {
@@ -95,10 +95,7 @@ class IndustriesFragment : Fragment() {
         )
 
         setAdapter(industries)
-
-        viewBinding.searchEditText.doOnTextChanged { text, start, before, count ->
-            industryAdapter!!.filterIndustries(text.toString())
-        }
+        updateChooseButton()
     }
 
     private fun setAdapter(industries: List<FilterIndustry>) {
@@ -106,11 +103,21 @@ class IndustriesFragment : Fragment() {
             industryAdapter = IndustryAdapter { filterIndustry ->
                 selectedIndustryId = filterIndustry.id
                 industryAdapter!!.submitIndustries(industries, selectedIndustryId)
+                updateChooseButton()
             }
 
             industriesRecyclerView.adapter = industryAdapter
+            industryAdapter!!.filterIndustries(searchEditText.text.toString())
             industryAdapter!!.submitIndustries(industries, selectedIndustryId)
         }
+    }
+
+    private fun selectedIndustry(): FilterIndustry? =
+        selectedIndustryId?.let { industryAdapter?.getIndustryById(it) }
+
+    private fun updateChooseButton() {
+        viewBinding.chooseIndustry.isVisible =
+            viewBinding.industriesRecyclerView.isVisible && selectedIndustry() != null
     }
 
     private fun showError(code: Int) {
@@ -155,11 +162,13 @@ class IndustriesFragment : Fragment() {
             loadingBar.isVisible = isLoading
             errorLayout.isVisible = isError
             industriesRecyclerView.isVisible = isContent
+            updateChooseButton()
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        industryAdapter = null
         _viewBinding = null
     }
 

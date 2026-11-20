@@ -5,4 +5,5 @@ import ru.practicum.android.diploma.common.domain.models.FilterArea
 
 interface LocationRepository {
     suspend fun getLocation(): Resource<List<FilterArea>>
+    suspend fun getRegions(countryId: Int?): Resource<List<FilterArea>>
 }

@@ -3,11 +3,12 @@ package ru.practicum.android.diploma.filter.data.repositoryimpl
 import android.util.Log
 import okio.IOException
 import ru.practicum.android.diploma.common.data.converters.Converters
+import ru.practicum.android.diploma.common.data.dto.FilterRequest
+import ru.practicum.android.diploma.common.data.dto.IndustryResponse
 import ru.practicum.android.diploma.common.data.network.client.NetworkClient
 import ru.practicum.android.diploma.common.data.network.client.RequestIntent
 import ru.practicum.android.diploma.common.domain.Resource
 import ru.practicum.android.diploma.common.domain.models.FilterIndustry
-import ru.practicum.android.diploma.filter.data.response.IndustryResponse
 import ru.practicum.android.diploma.filter.domain.repository.IndustryRepository
 import ru.practicum.android.diploma.util.NetworkConnectedCheck
 import kotlin.coroutines.cancellation.CancellationException
@@ -21,7 +22,7 @@ class IndustryRepositoryImpl(
         val isConnected = connectionCheck.isConnected()
 
         val response = runCatching {
-            networkClient.doRequest(RequestIntent.GetIndustries, isConnected)
+            networkClient.doRequest(RequestIntent.GetFilterOptions(FilterRequest.GetIndustries), isConnected)
         }.getOrElse { error ->
             if (error is CancellationException) {
                 throw error

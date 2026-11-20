@@ -60,6 +60,7 @@
             android:focusable="false"
             android:gravity="center_vertical"
             android:inputType="none"
+            android:saveEnabled="false"
             android:paddingStart="@dimen/margin_16"
             android:textColor="?attr/colorOnPrimary"
             app:drawableEndCompat="@drawable/ic_chose_8"
@@ -106,6 +107,7 @@
             android:focusable="false"
             android:gravity="center_vertical"
             android:inputType="none"
+            android:saveEnabled="false"
             android:paddingStart="@dimen/margin_16"
             android:textColor="?attr/colorOnPrimary"
             app:drawableEndCompat="@drawable/ic_chose_8"
@@ -138,9 +140,10 @@
         android:text="@string/chose"
         android:textAllCaps="false"
         android:textColor="@color/white"
+        android:visibility="gone"
         app:cornerRadius="@dimen/corners_12"
         app:elevation="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

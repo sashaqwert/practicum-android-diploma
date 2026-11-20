@@ -5,57 +5,56 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import ru.practicum.android.diploma.common.domain.models.FilterArea
 import ru.practicum.android.diploma.common.domain.models.FilterIndustry
+import ru.practicum.android.diploma.filter.domain.model.FilterSettings
+import ru.practicum.android.diploma.filter.domain.usecase.FilterSettingsInteractor
 import ru.practicum.android.diploma.filter.presentation.state.FilterState
 
-class FilterViewModel : ViewModel() {
-    private val stateLiveData = MutableLiveData<FilterState>(FilterState())
+class FilterViewModel(private val settingsInteractor: FilterSettingsInteractor) : ViewModel() {
+    private val stateLiveData = MutableLiveData(
+        settingsInteractor.read().let {
+            FilterState(it.filterArea, it.filterIndustry, it.salary, it.doNotShowWithoutSalary)
+        }
+    )
     fun observeState(): LiveData<FilterState> = stateLiveData
 
     private val defaultState = FilterState()
-    private var lastSavedState = FilterState()
 
     fun resetButtonClicked() {
-        stateLiveData.value = FilterState()
+        saveState(FilterState())
     }
 
-    fun fillData(state: FilterState) {
-        lastSavedState = state
-        stateLiveData.value = state
-    }
-
-    fun setFilterArea(id: Int, name: String, parentName: String) {
+    fun setFilterArea(id: Int, name: String, parentName: String?, countryId: Int?) {
         val v = stateLiveData.value ?: return
-        val filterArea = FilterArea(id, name, null, parentName = parentName)
-        stateLiveData.value = FilterState(filterArea, v.filterIndustry, v.salary, v.doNotShowWithoutSalary)
+        val filterArea = FilterArea(id, name, null, parentName = parentName, countryId = countryId)
+        saveState(FilterState(filterArea, v.filterIndustry, v.salary, v.doNotShowWithoutSalary))
     }
 
     fun setFilterIndustry(id: Int, name: String) {
         val v = stateLiveData.value ?: return
         val filterIndustry = FilterIndustry(id, name)
-        stateLiveData.value = FilterState(v.filterArea, filterIndustry, v.salary, v.doNotShowWithoutSalary)
+        saveState(FilterState(v.filterArea, filterIndustry, v.salary, v.doNotShowWithoutSalary))
     }
 
     fun setSalary(salary: Long?) {
         val state = stateLiveData.value ?: return
-        if (state.salary == salary) return
-        stateLiveData.value = state.copy(salary = salary)
+        saveState(state.copy(salary = salary))
     }
 
     fun setDoNotShowWithoutSalary(doNotShowWithoutSalary: Boolean) {
         val v = stateLiveData.value ?: return
-        stateLiveData.value = FilterState(v.filterArea, v.filterIndustry, v.salary, doNotShowWithoutSalary)
+        saveState(FilterState(v.filterArea, v.filterIndustry, v.salary, doNotShowWithoutSalary))
     }
 
     fun deleteLocation() {
         val state = stateLiveData.value ?: return
 
-        stateLiveData.value = state.copy(filterArea = null)
+        saveState(state.copy(filterArea = null))
     }
 
     fun deleteIndustry() {
         val state = stateLiveData.value ?: return
 
-        stateLiveData.value = state.copy(filterIndustry = null)
+        saveState(state.copy(filterIndustry = null))
     }
 
     fun compareWithDefault(): Boolean {
@@ -63,8 +62,11 @@ class FilterViewModel : ViewModel() {
         return !(defaultState.equals(v))
     }
 
-    fun compareWithLast(): Boolean {
-        val state = stateLiveData.value ?: return false
-        return !(state.equals(lastSavedState))
+    private fun saveState(state: FilterState) {
+        if (state == stateLiveData.value) return
+        settingsInteractor.save(
+            FilterSettings(state.filterArea, state.filterIndustry, state.salary, state.doNotShowWithoutSalary)
+        )
+        stateLiveData.value = state
     }
 }

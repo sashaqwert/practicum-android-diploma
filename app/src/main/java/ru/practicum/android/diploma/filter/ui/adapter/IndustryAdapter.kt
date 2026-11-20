@@ -26,7 +26,7 @@ class IndustryAdapter(
     }
 
     fun getIndustryById(id: Int): FilterIndustry? {
-        return allIndustries.find { it.id == id }
+        return visibleIndustries.find { it.id == id }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IndustryViewHolder {

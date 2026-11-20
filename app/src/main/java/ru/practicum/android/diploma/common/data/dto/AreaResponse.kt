@@ -1,6 +1,5 @@
-package ru.practicum.android.diploma.filter.data.response
+package ru.practicum.android.diploma.common.data.dto
 
-import ru.practicum.android.diploma.common.data.dto.FilterAreaDto
 import ru.practicum.android.diploma.common.data.network.client.Response
 
 class AreaResponse(
