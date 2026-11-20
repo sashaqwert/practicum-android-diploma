@@ -20,15 +20,14 @@ class LocationRepositoryImpl(
     override suspend fun getLocation(): Resource<List<FilterArea>> {
         val isConnected = connectionCheck.isConnected()
 
-        val response = try {
+        val response = runCatching {
             networkClient.doRequest(RequestIntent.GetAreas, isConnected)
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: IOException) {
-            Log.e("LocationRepository", "Network error", e)
-            null
-        } catch (e: Throwable) {
-            Log.e("LocationRepository", "Unexpected error", e)
+        }.getOrElse { error ->
+            if (error is CancellationException) {
+                throw error
+            }
+            val message = if (error is IOException) "Network error" else "Unexpected error"
+            Log.e("LocationRepository", message, error)
             null
         }
 

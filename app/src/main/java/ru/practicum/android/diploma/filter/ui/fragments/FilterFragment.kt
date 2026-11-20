@@ -84,6 +84,10 @@ class FilterFragment : Fragment() {
             }
         }
 
+        setIndustryResultListener()
+    }
+
+    private fun setIndustryResultListener() {
         parentFragmentManager.setFragmentResultListener(
             IndustriesFragment.INDUSTRY_KEY,
             viewLifecycleOwner
