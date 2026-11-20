@@ -69,6 +69,16 @@ class LocationFragment : Fragment() {
         viewBinding.fromWorkPlace.setOnClickListener {
             findNavController().navigateUp()
         }
+
+        when (regionId) {
+            null -> {
+                viewBinding.workplaceChoseButton.isVisible = false
+            }
+
+            else -> {
+                viewBinding.workplaceChoseButton.isVisible = true
+            }
+        }
     }
 
     private fun getCountry() {
@@ -91,8 +101,8 @@ class LocationFragment : Fragment() {
                 val country = result.getString(CURRENT_COUNTRY)
                 val editable = Editable.Factory.getInstance().newEditable(country)
                 viewBinding.chosenCountry.text = editable
-                regionId = result.getInt(CURRENT_REGION_ID)
             }
+            regionId = result.getInt(CURRENT_REGION_ID)
         }
     }
 
