@@ -73,7 +73,7 @@ class LocationFragment : Fragment() {
 
     private fun getCountry() {
         parentFragmentManager.setFragmentResultListener(GET_COUNTRY, viewLifecycleOwner) { requestKey, result ->
-            val countryName = result.getString(CURRENT_COUNTRY)
+            val countryName = result.getString(CURRENT_COUNTRY) ?: return@setFragmentResultListener
             countryId = result.getInt(CURRENT_COUNTRY_ID)
             val editable = Editable.Factory.getInstance().newEditable(countryName)
             viewBinding.chosenCountry.text = editable
@@ -83,15 +83,15 @@ class LocationFragment : Fragment() {
 
     private fun getRegion() {
         parentFragmentManager.setFragmentResultListener(GET_REGION, viewLifecycleOwner) { requestKey, result ->
-            val region = result.getString(CURRENT_REGION)
+            val region = result.getString(CURRENT_REGION) ?: ""
+            regionId = result.getInt(CURRENT_REGION_ID)
             val editable = Editable.Factory.getInstance().newEditable(region)
             viewBinding.chosenRegion.text = editable
             viewBinding.regionClear.isVisible = !viewBinding.chosenRegion.text.isNullOrEmpty()
             if (viewBinding.chosenCountry.text.isNullOrEmpty()) {
-                val country = result.getString(CURRENT_COUNTRY)
+                val country = result.getString(CURRENT_COUNTRY) ?: return@setFragmentResultListener
                 val editable = Editable.Factory.getInstance().newEditable(country)
                 viewBinding.chosenCountry.text = editable
-                regionId = result.getInt(CURRENT_REGION_ID)
             }
         }
     }
@@ -114,9 +114,9 @@ class LocationFragment : Fragment() {
         const val CURRENT_ID = "CURRENT_ID"
         const val CURRENT_REGION_ID = "CURRENT_REGION_ID"
         const val GET_REGION = "GET_REGION"
-        private const val CURRENT_REGION = "CURRENT_REGION"
+        const val CURRENT_REGION = "CURRENT_REGION"
         private const val SEND_COUNTRY_ID = "SEND_COUNTRY_ID"
-        private const val SEND_COUNTRY_RESULT = "SEND_COUNTRY_RESULT"
+        const val SEND_COUNTRY_RESULT = "SEND_COUNTRY_RESULT"
 
         /**
          * Use this factory method to create a new instance of

@@ -87,10 +87,11 @@ class RegionFragment : Fragment() {
             area = filterArea
 
             parentFragmentManager.setFragmentResult(
-                LocationFragment.GET_COUNTRY,
+                LocationFragment.GET_REGION,
                 Bundle().apply {
-                    putString(LocationFragment.CURRENT_COUNTRY, area?.name ?: "")
-                    putInt(LocationFragment.CURRENT_COUNTRY_ID, area?.id ?: 0)
+                    putString(LocationFragment.CURRENT_REGION, area?.name ?: "")
+                    putInt(LocationFragment.CURRENT_REGION_ID, area?.id ?: 0)
+                    putString(LocationFragment.CURRENT_COUNTRY, area?.parentName)
                 }
             )
 
@@ -118,13 +119,13 @@ class RegionFragment : Fragment() {
 
             when (code) {
                 NO_AREA_RESPONSE, NO_INTERNET -> {
-                    drawable = R.drawable.img_empty_search_state_328
-                    text = R.string.region_not_found
+                    drawable = R.drawable.cant_get_region_list
+                    text = R.string.cant_get_region_list
                 }
 
                 else -> {
-                    drawable = R.drawable.cant_get_region_list
-                    text = R.string.cant_get_region_list
+                    drawable = R.drawable.img_empty_search_state_328
+                    text = R.string.region_not_found
                 }
             }
 
