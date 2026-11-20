@@ -5,9 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import ru.practicum.android.diploma.filter.domain.usecase.CountryInteractor
 import ru.practicum.android.diploma.filter.presentation.state.CountryState
 
-class CountryViewModel : ViewModel() {
+class CountryViewModel(countryInteractor: CountryInteractor) : ViewModel() {
     private val stateLiveData = MutableLiveData<CountryState>()
     fun observeState(): LiveData<CountryState> = stateLiveData
 
