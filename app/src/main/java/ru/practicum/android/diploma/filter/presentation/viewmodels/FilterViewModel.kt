@@ -37,6 +37,7 @@ class FilterViewModel : ViewModel() {
         )
 
         lastSavedState = state
+        stateLiveData.value = state
     }
 
     fun setFilterArea(id: Int, name: String, parentName: String) {

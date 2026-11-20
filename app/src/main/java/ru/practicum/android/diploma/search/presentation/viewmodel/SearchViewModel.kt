@@ -15,6 +15,7 @@ import ru.practicum.android.diploma.common.domain.Resource
 import ru.practicum.android.diploma.search.domain.usecase.SearchInteractor
 import ru.practicum.android.diploma.search.presentation.state.SearchState
 import java.io.IOException
+import kotlin.collections.filterKeys
 
 class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewModel() {
     private val mutableState = MutableLiveData<SearchState>(SearchState.Default)
@@ -22,6 +23,8 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
 
     private var currentQuery = ""
     private var searchJob: Job? = null
+    private var savedOptions = mutableMapOf<String, String>()
+    private var savedOptionsNames = mutableMapOf<String, String>()
 
     fun retrySearch() {
         val query = currentQuery.trim()
@@ -99,9 +102,23 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
                 areaId = areaId,
                 industryId = industryId,
                 salary = salary,
-                doNotShowWithSalary = doNotShowWithSalary
+                doNotShowWithSalary = doNotShowWithSalary,
+                searchFromFilter = true
             )
         }
+    }
+
+    fun getSavedOptions(): Map<String, String> {
+        return savedOptions
+    }
+
+    fun getSavedOptionsNames(): Map<String, String> {
+        return savedOptionsNames
+    }
+
+    fun saveOptionsName(areaName: String, industryName: String) {
+        savedOptionsNames["area"] = areaName
+        savedOptionsNames["industry"] = industryName
     }
 
     private suspend fun searchPage(
@@ -111,24 +128,33 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
         areaId: Int? = null,
         industryId: Int? = null,
         salary: Long? = null,
-        doNotShowWithSalary: Boolean? = null
+        doNotShowWithSalary: Boolean? = null,
+        searchFromFilter: Boolean = false
     ) {
         mutableState.value =
             previous?.copy(isLoadingMore = true, paginationError = null) ?: SearchState.Loading
+        
+        var options = mutableMapOf("text" to query, "page" to page.toString())
 
-        val options = mutableMapOf("text" to query, "page" to page.toString())
-
-        areaId?.let {
-            options["area"] = it.toString()
-        }
-        industryId?.let {
-            options["industry"] = it.toString()
-        }
-        salary?.let {
-            options["salary"] = it.toString()
-        }
-        doNotShowWithSalary?.let {
-            options["only_with_salary"] = it.toString()
+        if (searchFromFilter) {
+            areaId?.let {
+                options["area"] = it.toString()
+                savedOptions["area"] = it.toString()
+            }
+            industryId?.let {
+                options["industry"] = it.toString()
+                savedOptions["industry"] = it.toString()
+            }
+            salary?.let {
+                options["salary"] = it.toString()
+                savedOptions["salary"] = it.toString()
+            }
+            doNotShowWithSalary?.let {
+                options["only_with_salary"] = it.toString()
+                savedOptions["only_with_salary"] = it.toString()
+            }
+        } else {
+            options += savedOptions
         }
 
         val result = try {

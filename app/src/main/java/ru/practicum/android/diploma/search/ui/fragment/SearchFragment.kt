@@ -65,6 +65,18 @@ class SearchFragment : Fragment() {
             default()
         }
         viewBinding.filerButton.setOnClickListener {
+            val filters = viewModel.getSavedOptions()
+            val filtersNames = viewModel.getSavedOptionsNames()
+
+            parentFragmentManager.setFragmentResult(FilterFragment.SEND_FILTERS, Bundle().apply {
+                putInt(FilterFragment.SEND_AREA, filters["area"]?.toInt() ?: 0)
+                putInt(FilterFragment.SEND_INDUSTRY, filters["industry"]?.toInt() ?: 0)
+                putLong(FilterFragment.SEND_SALARY, filters["salary"]?.toLong() ?: 0L)
+                putBoolean(FilterFragment.SEND_SALARY_CHECKBOX, filters["only_with_salary"].toBoolean())
+                putString(FilterFragment.SEND_AREA_NAME, filtersNames["area"])
+                putString(FilterFragment.SEND_INDUSTRY_NAME, filtersNames["industry"])
+            })
+
             findNavController().navigate(R.id.action_searchFragment_to_filterFragment)
         }
 
@@ -141,6 +153,8 @@ class SearchFragment : Fragment() {
                 val industryId = bundle.getInt(FilterFragment.SEND_INDUSTRY)
                 val salary = bundle.getLong(FilterFragment.SEND_SALARY)
                 val doNotShowWithSalary = bundle.getBoolean(FilterFragment.SEND_SALARY_CHECKBOX)
+                val areaName = bundle.getString(FilterFragment.SEND_AREA_NAME)
+                val industryName = bundle.getString(FilterFragment.SEND_INDUSTRY_NAME)
 
                 viewModel.searchWithFilters(
                     if (areaId != 0) areaId else null,
@@ -148,6 +162,8 @@ class SearchFragment : Fragment() {
                     if (salary != 0L) salary else null,
                     doNotShowWithSalary
                 )
+
+                viewModel.saveOptionsName(areaName ?: "", industryName ?: "")
             }
     }
 

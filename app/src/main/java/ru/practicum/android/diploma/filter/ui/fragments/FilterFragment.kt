@@ -52,6 +52,8 @@ class FilterFragment : Fragment() {
         (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(true)
         viewBinding.toolBar.setNavigationOnClickListener { findNavController().popBackStack() }
 
+        acceptFiltersFromSearch()
+
         observeState()
         setListeners()
         setFragmentResultListeners()
@@ -159,6 +161,16 @@ class FilterFragment : Fragment() {
 
     private fun setLocationName(state: FilterState) {
         val countryName = state.filterArea?.parentName ?: ""
+
+        if (countryName.isNotEmpty() && countryName.isNotBlank()) {
+            val text = getLocationName(state, countryName)
+            viewBinding.workPlaceValue.setText(text)
+        } else {
+            viewBinding.workPlaceValue.text?.clear()
+        }
+    }
+
+    private fun getLocationName(state: FilterState, countryName: String): String {
         val regionName = state.filterArea?.name ?: ""
         val regionText = if (regionName.isNotBlank() && regionName.isNotEmpty()) {
             ", $regionName"
@@ -166,12 +178,7 @@ class FilterFragment : Fragment() {
             ""
         }
 
-        if (countryName.isNotEmpty() && countryName.isNotBlank()) {
-            val text = "$countryName$regionText"
-            viewBinding.workPlaceValue.setText(text)
-        } else {
-            viewBinding.workPlaceValue.text?.clear()
-        }
+        return "$countryName$regionText"
     }
 
     private fun setIndustryName(state: FilterState) {
@@ -231,12 +238,15 @@ class FilterFragment : Fragment() {
             val industry = state.filterIndustry
             val salary = state.salary
             val doNotShowWithSalary = state.doNotShowWithoutSalary
+            val countryName = state.filterArea?.parentName ?: ""
 
             parentFragmentManager.setFragmentResult(SEND_FILTERS, Bundle().apply {
                 putInt(SEND_AREA, area?.id ?: 0)
                 putInt(SEND_INDUSTRY, industry?.id ?: 0)
                 putLong(SEND_SALARY, salary ?: 0L)
                 putBoolean(SEND_SALARY_CHECKBOX, doNotShowWithSalary)
+                putString(SEND_AREA_NAME, getLocationName(state, countryName))
+                putString(SEND_INDUSTRY_NAME, industry?.name)
             })
 
             findNavController().popBackStack()
@@ -311,6 +321,30 @@ class FilterFragment : Fragment() {
         }
     }
 
+    private fun acceptFiltersFromSearch() {
+        parentFragmentManager
+            .setFragmentResultListener(
+                SEND_FILTERS,
+                viewLifecycleOwner
+            ) { _, bundle ->
+                val areaId = bundle.getInt(SEND_AREA)
+                val industryId = bundle.getInt(SEND_INDUSTRY)
+                val salary = bundle.getLong(SEND_SALARY)
+                val doNotShowWithSalary = bundle.getBoolean(SEND_SALARY_CHECKBOX)
+                val areaName = bundle.getString(SEND_AREA_NAME) ?: ""
+                val industryName = bundle.getString(SEND_INDUSTRY_NAME) ?: ""
+
+                viewModel.fillData(
+                    idArea = areaId,
+                    nameArea = areaName,
+                    idIndustry = industryId,
+                    nameIndustry = industryName,
+                    salary = salary,
+                    doNotShowWithoutSalary = doNotShowWithSalary
+                )
+            }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _viewBinding = null
@@ -326,11 +360,13 @@ class FilterFragment : Fragment() {
         const val SEND_INDUSTRY_ID = "SEND_INDUSTRY_ID"
         const val SEND_INDUSTRY_ID_ARG = "SEND_INDUSTRY_ID_ARG"
 
-        // на экран поиска
+        // на или с экрана поиска
         const val SEND_FILTERS = "SEND_FILTERS"
         const val SEND_AREA = "SEND_AREA"
         const val SEND_INDUSTRY = "SEND_INDUSTRY"
         const val SEND_SALARY = "SEND_SALARY"
         const val SEND_SALARY_CHECKBOX = "SEND_SALARY_CHECKBOX"
+        const val SEND_AREA_NAME = "SEND_AREA_NAME"
+        const val SEND_INDUSTRY_NAME = "SEND_INDUSTRY_NAME"
     }
 }
