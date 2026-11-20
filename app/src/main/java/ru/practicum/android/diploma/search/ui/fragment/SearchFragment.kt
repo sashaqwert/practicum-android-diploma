@@ -86,20 +86,22 @@ class SearchFragment : Fragment() {
                         (viewBinding.vacancyList.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
                     val itemsCount = adapter.itemCount
                     if (pos >= itemsCount - 1) {
-                        val currentState = viewModel.state.value as? SearchState.Content
-                        if (currentState != null) {
-                            if (currentState.paginationError == null) {
-                                val nextPage = currentState.page + 1
-                                viewModel.loadPage(nextPage)
-                            } else {
-                                Toast.makeText(requireContext(), R.string.no_wifi, Toast.LENGTH_LONG).show()
-                                viewModel.onPaginationErrorShown()
-                            }
-                        }
+                        loadNextPage()
                     }
                 }
             }
         })
+    }
+
+    private fun loadNextPage() {
+        val currentState = viewModel.state.value as? SearchState.Content ?: return
+        if (currentState.paginationError == null) {
+            val nextPage = currentState.page + 1
+            viewModel.loadPage(nextPage)
+        } else {
+            Toast.makeText(requireContext(), R.string.no_wifi, Toast.LENGTH_LONG).show()
+            viewModel.onPaginationErrorShown()
+        }
     }
 
     private fun initAdapter() {

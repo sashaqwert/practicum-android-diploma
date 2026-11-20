@@ -57,15 +57,7 @@ class LocationFragment : Fragment() {
             viewBinding.chosenRegion.text = null
             viewBinding.regionClear.isVisible = !viewBinding.chosenRegion.text.isNullOrEmpty()
         }
-        viewBinding.workplaceChoseButton.setOnClickListener {
-            val resultToFilter = Bundle().apply {
-                putString(COUNTRY, viewBinding.chosenCountry.text.toString())
-                putInt(CURRENT_ID, regionId ?: countryId ?: 0)
-                putString(REGION, viewBinding.chosenRegion.text.toString())
-            }
-            parentFragmentManager.setFragmentResult(LOCATION, resultToFilter)
-            findNavController().popBackStack(R.id.filterFragment, false)
-        }
+        setWorkplaceChooseListener()
         viewBinding.fromWorkPlace.setOnClickListener {
             findNavController().navigateUp()
         }
@@ -78,6 +70,18 @@ class LocationFragment : Fragment() {
             else -> {
                 viewBinding.workplaceChoseButton.isVisible = true
             }
+        }
+    }
+
+    private fun setWorkplaceChooseListener() {
+        viewBinding.workplaceChoseButton.setOnClickListener {
+            val resultToFilter = Bundle().apply {
+                putString(COUNTRY, viewBinding.chosenCountry.text.toString())
+                putInt(CURRENT_ID, regionId ?: countryId ?: 0)
+                putString(REGION, viewBinding.chosenRegion.text.toString())
+            }
+            parentFragmentManager.setFragmentResult(LOCATION, resultToFilter)
+            findNavController().popBackStack(R.id.filterFragment, false)
         }
     }
 
@@ -105,7 +109,6 @@ class LocationFragment : Fragment() {
             regionId = result.getInt(CURRENT_REGION_ID)
         }
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()
