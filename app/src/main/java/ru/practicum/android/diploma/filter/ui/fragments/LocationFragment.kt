@@ -12,6 +12,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.color.MaterialColors
+import com.google.android.material.textfield.TextInputLayout
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentLocationBinding
 
@@ -58,8 +59,10 @@ class LocationFragment : Fragment() {
             findNavController().navigate(R.id.action_locationFragment_to_regionFragment)
         }
         viewBinding.regionClear.setOnClickListener {
+            regionId = null
             viewBinding.chosenRegion.text = null
             viewBinding.regionClear.isVisible = !viewBinding.chosenRegion.text.isNullOrEmpty()
+            viewBinding.workplaceChoseButton.isVisible = false
         }
         setWorkplaceChooseListener()
         viewBinding.fromWorkPlace.setOnClickListener {
@@ -70,6 +73,7 @@ class LocationFragment : Fragment() {
     }
 
     private fun setWorkplaceChooseListener() {
+        viewBinding.workplaceChoseButton.isVisible = regionId != null
         viewBinding.workplaceChoseButton.setOnClickListener {
             val resultToFilter = Bundle().apply {
                 putString(COUNTRY, viewBinding.chosenCountry.text.toString())
@@ -94,6 +98,7 @@ class LocationFragment : Fragment() {
     private fun getRegion() {
         parentFragmentManager.setFragmentResultListener(GET_REGION, viewLifecycleOwner) { requestKey, result ->
             val region = result.getString(CURRENT_REGION) ?: ""
+            regionId = result.getInt(CURRENT_REGION_ID).takeIf { it != 0 && region.isNotBlank() }
             val editable = Editable.Factory.getInstance().newEditable(region)
             viewBinding.chosenRegion.text = editable
             viewBinding.regionClear.isVisible = !viewBinding.chosenRegion.text.isNullOrEmpty()
@@ -101,38 +106,33 @@ class LocationFragment : Fragment() {
                 val country = result.getString(CURRENT_COUNTRY) ?: ""
                 val editable = Editable.Factory.getInstance().newEditable(country)
                 viewBinding.chosenCountry.text = editable
-                regionId = result.getInt(CURRENT_REGION_ID)
             }
+            viewBinding.workplaceChoseButton.isVisible = regionId != null
         }
     }
 
     private fun setLocationsListeners() {
         with(viewBinding) {
-            chosenCountry.doOnTextChanged { text, _, _, _ ->
-                val color = getColor(text)
+            updateHintColor(chosenCountryLayout, chosenCountry.text)
+            updateHintColor(chosenRegionLayout, chosenRegion.text)
 
-                chosenRegionLayout.defaultHintTextColor =
-                    ColorStateList.valueOf(color)
+            chosenCountry.doOnTextChanged { text, _, _, _ ->
+                updateHintColor(chosenCountryLayout, text)
             }
 
             chosenRegion.doOnTextChanged { text, _, _, _ ->
-                val color = getColor(text)
-
-                chosenRegionLayout.defaultHintTextColor =
-                    ColorStateList.valueOf(color)
+                updateHintColor(chosenRegionLayout, text)
             }
         }
     }
 
-    private fun getColor(text: CharSequence?): Int {
-        return if (text.isNullOrEmpty()) {
+    private fun updateHintColor(layout: TextInputLayout, text: CharSequence?) {
+        val color = if (text.isNullOrEmpty()) {
             ContextCompat.getColor(requireContext(), R.color.gray)
         } else {
-            MaterialColors.getColor(
-                viewBinding.chosenCountry,
-                com.google.android.material.R.attr.colorOnPrimary
-            )
+            MaterialColors.getColor(layout, com.google.android.material.R.attr.colorOnPrimary)
         }
+        layout.defaultHintTextColor = ColorStateList.valueOf(color)
     }
 
     override fun onDestroyView() {
