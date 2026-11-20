@@ -67,6 +67,16 @@ class LocationFragment : Fragment() {
         viewBinding.fromWorkPlace.setOnClickListener {
             findNavController().navigateUp()
         }
+
+        when (regionId) {
+            null -> {
+                viewBinding.workplaceChoseButton.isVisible = false
+            }
+
+            else -> {
+                viewBinding.workplaceChoseButton.isVisible = true
+            }
+        }
     }
 
     private fun getCountry() {

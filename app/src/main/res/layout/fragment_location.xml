@@ -43,7 +43,7 @@
         app:endIconDrawable="@drawable/ic_chose_8"
         app:endIconMode="custom"
         app:endIconTint="?attr/colorOnPrimary"
-        app:hintTextColor="@color/gray"
+        app:hintTextColor="@color/for_location_hint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/workplace_tool_bar">
@@ -89,7 +89,7 @@
         app:endIconDrawable="@drawable/ic_chose_8"
         app:endIconMode="custom"
         app:endIconTint="?attr/colorOnPrimary"
-        app:hintTextColor="@color/gray"
+        app:hintTextColor="@color/for_location_hint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/chosen_country_layout">
