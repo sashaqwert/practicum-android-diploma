@@ -1,5 +1,6 @@
 package ru.practicum.android.diploma.search.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -82,15 +83,54 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
         }
     }
 
+    fun searchWithFilters(
+        areaId: Int? = null,
+        industryId: Int? = null,
+        salary: Long? = null,
+        doNotShowWithSalary: Boolean? = null
+    ) {
+        val query = currentQuery.trim()
+        searchJob?.cancel()
+
+        searchJob = viewModelScope.launch {
+            searchPage(
+                query,
+                FIRST_PAGE,
+                areaId = areaId,
+                industryId = industryId,
+                salary = salary,
+                doNotShowWithSalary = doNotShowWithSalary
+            )
+        }
+    }
+
     private suspend fun searchPage(
         query: String,
         page: Int,
-        previous: SearchState.Content? = null
+        previous: SearchState.Content? = null,
+        areaId: Int? = null,
+        industryId: Int? = null,
+        salary: Long? = null,
+        doNotShowWithSalary: Boolean? = null
     ) {
         mutableState.value =
             previous?.copy(isLoadingMore = true, paginationError = null) ?: SearchState.Loading
 
-        val options = mapOf("text" to query, "page" to page.toString())
+        val options = mutableMapOf("text" to query, "page" to page.toString())
+
+        areaId?.let {
+            options["area"] = it.toString()
+        }
+        industryId?.let {
+            options["industry"] = it.toString()
+        }
+        salary?.let {
+            options["salary"] = it.toString()
+        }
+        doNotShowWithSalary?.let {
+            options["only_with_salary"] = it.toString()
+        }
+
         val result = try {
             searchInteractor.searchVacancies(options)
         } catch (_: IOException) {

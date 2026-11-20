@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.ViewCompat.getRootWindowInsets
@@ -46,6 +47,10 @@ class FilterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        (requireActivity() as AppCompatActivity).setSupportActionBar(viewBinding.toolBar)
+        (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(true)
+        viewBinding.toolBar.setNavigationOnClickListener { findNavController().popBackStack() }
 
         observeState()
         setListeners()
@@ -155,9 +160,14 @@ class FilterFragment : Fragment() {
     private fun setLocationName(state: FilterState) {
         val countryName = state.filterArea?.parentName ?: ""
         val regionName = state.filterArea?.name ?: ""
+        val regionText = if (regionName.isNotBlank() && regionName.isNotEmpty()) {
+            ", $regionName"
+        } else {
+            ""
+        }
 
         if (countryName.isNotEmpty() && countryName.isNotBlank()) {
-            val text = "$countryName, $regionName"
+            val text = "$countryName$regionText"
             viewBinding.workPlaceValue.setText(text)
         } else {
             viewBinding.workPlaceValue.text?.clear()
@@ -250,7 +260,7 @@ class FilterFragment : Fragment() {
                     parentFragmentManager.setFragmentResult(
                         LocationFragment.GET_COUNTRY,
                         Bundle().apply {
-                            putString(LocationFragment.CURRENT_COUNTRY, state.filterArea.parentName)
+                            putString(LocationFragment.CURRENT_COUNTRY, state.filterArea.parentName ?: "")
                             putInt(LocationFragment.CURRENT_COUNTRY_ID, state.filterArea.id)
                         }
                     )

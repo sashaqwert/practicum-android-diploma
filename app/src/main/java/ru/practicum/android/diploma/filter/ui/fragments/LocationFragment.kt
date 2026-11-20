@@ -73,7 +73,7 @@ class LocationFragment : Fragment() {
 
     private fun getCountry() {
         parentFragmentManager.setFragmentResultListener(GET_COUNTRY, viewLifecycleOwner) { requestKey, result ->
-            val countryName = result.getString(CURRENT_COUNTRY)
+            val countryName = result.getString(CURRENT_COUNTRY) ?: ""
             countryId = result.getInt(CURRENT_COUNTRY_ID)
             val editable = Editable.Factory.getInstance().newEditable(countryName)
             viewBinding.chosenCountry.text = editable
@@ -83,12 +83,12 @@ class LocationFragment : Fragment() {
 
     private fun getRegion() {
         parentFragmentManager.setFragmentResultListener(GET_REGION, viewLifecycleOwner) { requestKey, result ->
-            val region = result.getString(CURRENT_REGION)
+            val region = result.getString(CURRENT_REGION) ?: ""
             val editable = Editable.Factory.getInstance().newEditable(region)
             viewBinding.chosenRegion.text = editable
             viewBinding.regionClear.isVisible = !viewBinding.chosenRegion.text.isNullOrEmpty()
             if (viewBinding.chosenCountry.text.isNullOrEmpty()) {
-                val country = result.getString(CURRENT_COUNTRY)
+                val country = result.getString(CURRENT_COUNTRY) ?: ""
                 val editable = Editable.Factory.getInstance().newEditable(country)
                 viewBinding.chosenCountry.text = editable
                 regionId = result.getInt(CURRENT_REGION_ID)

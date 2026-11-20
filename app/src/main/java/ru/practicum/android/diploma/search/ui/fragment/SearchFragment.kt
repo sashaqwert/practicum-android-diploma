@@ -20,6 +20,7 @@ import ru.practicum.android.diploma.common.domain.models.VacancyCard
 import ru.practicum.android.diploma.common.ui.forrecyclerview.VacancyAdapter
 import ru.practicum.android.diploma.databinding.FragmentSearchBinding
 import ru.practicum.android.diploma.details.ui.fragment.DetailsFragment
+import ru.practicum.android.diploma.filter.ui.fragments.FilterFragment
 import ru.practicum.android.diploma.search.presentation.state.SearchState
 import ru.practicum.android.diploma.search.presentation.viewmodel.SearchViewModel
 
@@ -100,6 +101,8 @@ class SearchFragment : Fragment() {
                 }
             }
         })
+
+        setFilterListener()
     }
 
     private fun initAdapter() {
@@ -126,6 +129,26 @@ class SearchFragment : Fragment() {
                 SearchState.Loading -> loading()
             }
         }
+    }
+
+    private fun setFilterListener() {
+        parentFragmentManager
+            .setFragmentResultListener(
+                FilterFragment.SEND_FILTERS,
+                viewLifecycleOwner
+            ) { _, bundle ->
+                val areaId = bundle.getInt(FilterFragment.SEND_AREA)
+                val industryId = bundle.getInt(FilterFragment.SEND_INDUSTRY)
+                val salary = bundle.getLong(FilterFragment.SEND_SALARY)
+                val doNotShowWithSalary = bundle.getBoolean(FilterFragment.SEND_SALARY_CHECKBOX)
+
+                viewModel.searchWithFilters(
+                    if (areaId != 0) areaId else null,
+                    if (industryId != 0) industryId else null,
+                    if (salary != 0L) salary else null,
+                    doNotShowWithSalary
+                )
+            }
     }
 
     override fun onDestroyView() {
