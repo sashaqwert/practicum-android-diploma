@@ -18,24 +18,7 @@ class FilterViewModel : ViewModel() {
         stateLiveData.value = FilterState()
     }
 
-    fun fillData(
-        idArea: Int,
-        nameArea: String,
-        idIndustry: Int,
-        nameIndustry: String,
-        salary: Long,
-        doNotShowWithoutSalary: Boolean
-    ) {
-        val filterArea = FilterArea(idArea, nameArea, null)
-        val filterIndustry = FilterIndustry(idIndustry, nameIndustry)
-
-        val state = FilterState(
-            filterArea = filterArea,
-            filterIndustry = filterIndustry,
-            salary = salary,
-            doNotShowWithoutSalary = doNotShowWithoutSalary
-        )
-
+    fun fillData(state: FilterState) {
         lastSavedState = state
         stateLiveData.value = state
     }
@@ -53,8 +36,9 @@ class FilterViewModel : ViewModel() {
     }
 
     fun setSalary(salary: Long?) {
-        val v = stateLiveData.value ?: return
-        stateLiveData.value = FilterState(v.filterArea, v.filterIndustry, salary, v.doNotShowWithoutSalary)
+        val state = stateLiveData.value ?: return
+        if (state.salary == salary) return
+        stateLiveData.value = state.copy(salary = salary)
     }
 
     fun setDoNotShowWithoutSalary(doNotShowWithoutSalary: Boolean) {

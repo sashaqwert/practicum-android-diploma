@@ -1,6 +1,5 @@
 package ru.practicum.android.diploma.search.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,10 +11,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.common.domain.Resource
+import ru.practicum.android.diploma.filter.presentation.state.FilterState
 import ru.practicum.android.diploma.search.domain.usecase.SearchInteractor
 import ru.practicum.android.diploma.search.presentation.state.SearchState
 import java.io.IOException
-import kotlin.collections.filterKeys
 
 class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewModel() {
     private val mutableState = MutableLiveData<SearchState>(SearchState.Default)
@@ -23,8 +22,8 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
 
     private var currentQuery = ""
     private var searchJob: Job? = null
-    private var savedOptions = mutableMapOf<String, String>()
-    private var savedOptionsNames = mutableMapOf<String, String>()
+    var appliedFilters = FilterState()
+        private set
 
     fun retrySearch() {
         val query = currentQuery.trim()
@@ -86,75 +85,32 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
         }
     }
 
-    fun searchWithFilters(
-        areaId: Int? = null,
-        industryId: Int? = null,
-        salary: Long? = null,
-        doNotShowWithSalary: Boolean? = null
-    ) {
+    fun searchWithFilters(filters: FilterState) {
+        appliedFilters = filters
         val query = currentQuery.trim()
         searchJob?.cancel()
 
         searchJob = viewModelScope.launch {
-            searchPage(
-                query,
-                FIRST_PAGE,
-                areaId = areaId,
-                industryId = industryId,
-                salary = salary,
-                doNotShowWithSalary = doNotShowWithSalary,
-                searchFromFilter = true
-            )
+            searchPage(query, FIRST_PAGE)
         }
-    }
-
-    fun getSavedOptions(): Map<String, String> {
-        return savedOptions
-    }
-
-    fun getSavedOptionsNames(): Map<String, String> {
-        return savedOptionsNames
-    }
-
-    fun saveOptionsName(areaName: String, industryName: String) {
-        savedOptionsNames["area"] = areaName
-        savedOptionsNames["industry"] = industryName
     }
 
     private suspend fun searchPage(
         query: String,
         page: Int,
-        previous: SearchState.Content? = null,
-        areaId: Int? = null,
-        industryId: Int? = null,
-        salary: Long? = null,
-        doNotShowWithSalary: Boolean? = null,
-        searchFromFilter: Boolean = false
+        previous: SearchState.Content? = null
     ) {
+        val filters = appliedFilters
         mutableState.value =
             previous?.copy(isLoadingMore = true, paginationError = null) ?: SearchState.Loading
-        
-        var options = mutableMapOf("text" to query, "page" to page.toString())
 
-        if (searchFromFilter) {
-            areaId?.let {
-                options["area"] = it.toString()
-                savedOptions["area"] = it.toString()
-            }
-            industryId?.let {
-                options["industry"] = it.toString()
-                savedOptions["industry"] = it.toString()
-            }
-            salary?.let {
-                options["salary"] = it.toString()
-                savedOptions["salary"] = it.toString()
-            }
-            doNotShowWithSalary?.let {
-                options["only_with_salary"] = it.toString()
-                savedOptions["only_with_salary"] = it.toString()
-            }
-        } else {
-            options += savedOptions
+        val options = buildMap {
+            put("text", query)
+            put("page", page.toString())
+            filters.filterArea?.let { put("area", it.id.toString()) }
+            filters.filterIndustry?.let { put("industry", it.id.toString()) }
+            filters.salary?.let { put("salary", it.toString()) }
+            if (filters.doNotShowWithoutSalary) put("only_with_salary", "true")
         }
 
         val result = try {

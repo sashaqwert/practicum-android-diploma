@@ -18,6 +18,8 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.color.MaterialColors
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
+import ru.practicum.android.diploma.common.domain.models.FilterArea
+import ru.practicum.android.diploma.common.domain.models.FilterIndustry
 import ru.practicum.android.diploma.databinding.FragmentFilterBinding
 import ru.practicum.android.diploma.filter.presentation.state.FilterState
 import ru.practicum.android.diploma.filter.presentation.viewmodels.FilterViewModel
@@ -193,13 +195,9 @@ class FilterFragment : Fragment() {
 
     private fun setSalary(state: FilterState) {
         with(viewBinding) {
-            val salary = state.salary ?: 0
-            if (salary == 0L) {
-                salaryEditText.text.clear()
-            } else if (state.salary == salary) {
-                return
-            } else {
-                salaryEditText.setText(salary.toString())
+            val salaryText = state.salary?.takeIf { it != 0L }?.toString().orEmpty()
+            if (salaryEditText.text.toString() != salaryText) {
+                salaryEditText.setText(salaryText)
             }
         }
     }
@@ -234,21 +232,7 @@ class FilterFragment : Fragment() {
 
     private fun setApplyButtonListener(state: FilterState) {
         viewBinding.applyFilter.setOnClickListener {
-            val area = state.filterArea
-            val industry = state.filterIndustry
-            val salary = state.salary
-            val doNotShowWithSalary = state.doNotShowWithoutSalary
-            val countryName = state.filterArea?.parentName ?: ""
-
-            parentFragmentManager.setFragmentResult(SEND_FILTERS, Bundle().apply {
-                putInt(SEND_AREA, area?.id ?: 0)
-                putInt(SEND_INDUSTRY, industry?.id ?: 0)
-                putLong(SEND_SALARY, salary ?: 0L)
-                putBoolean(SEND_SALARY_CHECKBOX, doNotShowWithSalary)
-                putString(SEND_AREA_NAME, getLocationName(state, countryName))
-                putString(SEND_INDUSTRY_NAME, industry?.name)
-            })
-
+            parentFragmentManager.setFragmentResult(SEND_FILTERS, createFilterBundle(state))
             findNavController().popBackStack()
         }
     }
@@ -322,27 +306,9 @@ class FilterFragment : Fragment() {
     }
 
     private fun acceptFiltersFromSearch() {
-        parentFragmentManager
-            .setFragmentResultListener(
-                SEND_FILTERS,
-                viewLifecycleOwner
-            ) { _, bundle ->
-                val areaId = bundle.getInt(SEND_AREA)
-                val industryId = bundle.getInt(SEND_INDUSTRY)
-                val salary = bundle.getLong(SEND_SALARY)
-                val doNotShowWithSalary = bundle.getBoolean(SEND_SALARY_CHECKBOX)
-                val areaName = bundle.getString(SEND_AREA_NAME) ?: ""
-                val industryName = bundle.getString(SEND_INDUSTRY_NAME) ?: ""
-
-                viewModel.fillData(
-                    idArea = areaId,
-                    nameArea = areaName,
-                    idIndustry = industryId,
-                    nameIndustry = industryName,
-                    salary = salary,
-                    doNotShowWithoutSalary = doNotShowWithSalary
-                )
-            }
+        parentFragmentManager.setFragmentResultListener(RESTORE_FILTERS, viewLifecycleOwner) { _, bundle ->
+            viewModel.fillData(readFilterBundle(bundle))
+        }
     }
 
     override fun onDestroyView() {
@@ -360,13 +326,45 @@ class FilterFragment : Fragment() {
         const val SEND_INDUSTRY_ID = "SEND_INDUSTRY_ID"
         const val SEND_INDUSTRY_ID_ARG = "SEND_INDUSTRY_ID_ARG"
 
-        // на или с экрана поиска
+        // с или на экран поиска
         const val SEND_FILTERS = "SEND_FILTERS"
-        const val SEND_AREA = "SEND_AREA"
-        const val SEND_INDUSTRY = "SEND_INDUSTRY"
-        const val SEND_SALARY = "SEND_SALARY"
-        const val SEND_SALARY_CHECKBOX = "SEND_SALARY_CHECKBOX"
-        const val SEND_AREA_NAME = "SEND_AREA_NAME"
-        const val SEND_INDUSTRY_NAME = "SEND_INDUSTRY_NAME"
+        const val RESTORE_FILTERS = "RESTORE_FILTERS"
+        private const val SEND_AREA = "SEND_AREA"
+        private const val SEND_INDUSTRY = "SEND_INDUSTRY"
+        private const val SEND_SALARY = "SEND_SALARY"
+        private const val SEND_SALARY_CHECKBOX = "SEND_SALARY_CHECKBOX"
+        private const val SEND_COUNTRY_NAME = "SEND_COUNTRY_NAME"
+        private const val SEND_REGION_NAME = "SEND_REGION_NAME"
+        private const val SEND_INDUSTRY_NAME = "SEND_INDUSTRY_NAME"
+
+        fun createFilterBundle(state: FilterState): Bundle = Bundle().apply {
+            putInt(SEND_AREA, state.filterArea?.id ?: 0)
+            putString(SEND_COUNTRY_NAME, state.filterArea?.parentName)
+            putString(SEND_REGION_NAME, state.filterArea?.name)
+            putInt(SEND_INDUSTRY, state.filterIndustry?.id ?: 0)
+            putString(SEND_INDUSTRY_NAME, state.filterIndustry?.name)
+            putLong(SEND_SALARY, state.salary ?: 0L)
+            putBoolean(SEND_SALARY_CHECKBOX, state.doNotShowWithoutSalary)
+        }
+
+        fun readFilterBundle(bundle: Bundle): FilterState {
+            val area = bundle.getInt(SEND_AREA).takeIf { it != 0 }?.let { id ->
+                FilterArea(
+                    id = id,
+                    name = bundle.getString(SEND_REGION_NAME).orEmpty(),
+                    parentId = null,
+                    parentName = bundle.getString(SEND_COUNTRY_NAME)
+                )
+            }
+            val industry = bundle.getInt(SEND_INDUSTRY).takeIf { it != 0 }?.let { id ->
+                FilterIndustry(id, bundle.getString(SEND_INDUSTRY_NAME).orEmpty())
+            }
+            return FilterState(
+                filterArea = area,
+                filterIndustry = industry,
+                salary = bundle.getLong(SEND_SALARY).takeIf { it != 0L },
+                doNotShowWithoutSalary = bundle.getBoolean(SEND_SALARY_CHECKBOX)
+            )
+        }
     }
 }
