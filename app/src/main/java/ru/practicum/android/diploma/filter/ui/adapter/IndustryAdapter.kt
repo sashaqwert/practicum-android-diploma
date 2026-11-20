@@ -11,10 +11,10 @@ class IndustryAdapter(
 ) : RecyclerView.Adapter<IndustryViewHolder>() {
     private var allIndustries = emptyList<FilterIndustry>()
     private var visibleIndustries = emptyList<FilterIndustry>()
-    private var selectedIndustryId: String? = null
+    private var selectedIndustryId: Int? = null
     private var searchQuery = ""
 
-    fun submitIndustries(industries: List<FilterIndustry>, selectedIndustryId: String?) {
+    fun submitIndustries(industries: List<FilterIndustry>, selectedIndustryId: Int?) {
         allIndustries = industries.toList()
         this.selectedIndustryId = selectedIndustryId
         updateVisibleIndustries()
@@ -25,7 +25,7 @@ class IndustryAdapter(
         updateVisibleIndustries()
     }
 
-    fun getIndustryById(id: String): FilterIndustry? {
+    fun getIndustryById(id: Int): FilterIndustry? {
         return allIndustries.find { it.id == id }
     }
 

@@ -20,6 +20,7 @@ import ru.practicum.android.diploma.common.domain.models.VacancyCard
 import ru.practicum.android.diploma.common.ui.forrecyclerview.VacancyAdapter
 import ru.practicum.android.diploma.databinding.FragmentSearchBinding
 import ru.practicum.android.diploma.details.ui.fragment.DetailsFragment
+import ru.practicum.android.diploma.filter.ui.fragments.FilterFragment
 import ru.practicum.android.diploma.search.presentation.state.SearchState
 import ru.practicum.android.diploma.search.presentation.viewmodel.SearchViewModel
 
@@ -64,6 +65,10 @@ class SearchFragment : Fragment() {
             default()
         }
         viewBinding.filerButton.setOnClickListener {
+            parentFragmentManager.setFragmentResult(
+                FilterFragment.RESTORE_FILTERS,
+                FilterFragment.createFilterBundle(viewModel.appliedFilters)
+            )
             findNavController().navigate(R.id.action_searchFragment_to_filterFragment)
         }
 
@@ -91,6 +96,8 @@ class SearchFragment : Fragment() {
                 }
             }
         })
+
+        setFilterListener()
     }
 
     private fun loadNextPage() {
@@ -128,6 +135,16 @@ class SearchFragment : Fragment() {
                 SearchState.Loading -> loading()
             }
         }
+    }
+
+    private fun setFilterListener() {
+        parentFragmentManager
+            .setFragmentResultListener(
+                FilterFragment.SEND_FILTERS,
+                viewLifecycleOwner
+            ) { _, bundle ->
+                viewModel.searchWithFilters(FilterFragment.readFilterBundle(bundle))
+            }
     }
 
     override fun onDestroyView() {

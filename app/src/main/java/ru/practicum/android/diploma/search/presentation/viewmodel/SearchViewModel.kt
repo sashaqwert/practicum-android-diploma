@@ -11,6 +11,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.common.domain.Resource
+import ru.practicum.android.diploma.filter.presentation.state.FilterState
 import ru.practicum.android.diploma.search.domain.usecase.SearchInteractor
 import ru.practicum.android.diploma.search.presentation.state.SearchState
 import java.io.IOException
@@ -21,6 +22,8 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
 
     private var currentQuery = ""
     private var searchJob: Job? = null
+    var appliedFilters = FilterState()
+        private set
 
     fun retrySearch() {
         val query = currentQuery.trim()
@@ -82,15 +85,34 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
         }
     }
 
+    fun searchWithFilters(filters: FilterState) {
+        appliedFilters = filters
+        val query = currentQuery.trim()
+        searchJob?.cancel()
+
+        searchJob = viewModelScope.launch {
+            searchPage(query, FIRST_PAGE)
+        }
+    }
+
     private suspend fun searchPage(
         query: String,
         page: Int,
         previous: SearchState.Content? = null
     ) {
+        val filters = appliedFilters
         mutableState.value =
             previous?.copy(isLoadingMore = true, paginationError = null) ?: SearchState.Loading
 
-        val options = mapOf("text" to query, "page" to page.toString())
+        val options = buildMap {
+            put("text", query)
+            put("page", page.toString())
+            filters.filterArea?.let { put("area", it.id.toString()) }
+            filters.filterIndustry?.let { put("industry", it.id.toString()) }
+            filters.salary?.let { put("salary", it.toString()) }
+            if (filters.doNotShowWithoutSalary) put("only_with_salary", "true")
+        }
+
         val result = try {
             searchInteractor.searchVacancies(options)
         } catch (_: IOException) {

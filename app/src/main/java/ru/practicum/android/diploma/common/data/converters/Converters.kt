@@ -113,7 +113,7 @@ class Converters(private val gson: Gson) {
 
     fun toFilterIndustry(industryDto: FilterIndustryDto): FilterIndustry {
         return FilterIndustry(
-            id = industryDto.id,
+            id = industryDto.id.toInt(),
             name = industryDto.name
         )
     }
