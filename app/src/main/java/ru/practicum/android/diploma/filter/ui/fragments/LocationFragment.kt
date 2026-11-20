@@ -1,13 +1,17 @@
 package ru.practicum.android.diploma.filter.ui.fragments
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.color.MaterialColors
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.databinding.FragmentLocationBinding
 
@@ -69,6 +73,8 @@ class LocationFragment : Fragment() {
         viewBinding.fromWorkPlace.setOnClickListener {
             findNavController().navigateUp()
         }
+
+        setLocationsListeners()
     }
 
     private fun getCountry() {
@@ -93,6 +99,35 @@ class LocationFragment : Fragment() {
                 viewBinding.chosenCountry.text = editable
                 regionId = result.getInt(CURRENT_REGION_ID)
             }
+        }
+    }
+
+    private fun setLocationsListeners() {
+        with(viewBinding) {
+            chosenCountry.doOnTextChanged { text, _, _, _ ->
+                val color = getColor(text)
+
+                chosenRegionLayout.defaultHintTextColor =
+                    ColorStateList.valueOf(color)
+            }
+
+            chosenRegion.doOnTextChanged { text, _, _, _ ->
+                val color = getColor(text)
+
+                chosenRegionLayout.defaultHintTextColor =
+                    ColorStateList.valueOf(color)
+            }
+        }
+    }
+
+    private fun getColor(text: CharSequence?): Int {
+        return if (text.isNullOrEmpty()) {
+            ContextCompat.getColor(requireContext(), R.color.gray)
+        } else {
+            MaterialColors.getColor(
+                viewBinding.chosenCountry,
+                com.google.android.material.R.attr.colorOnPrimary
+            )
         }
     }
 
