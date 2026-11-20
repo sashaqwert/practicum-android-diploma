@@ -99,8 +99,8 @@ class LocationFragment : Fragment() {
                 val country = result.getString(CURRENT_COUNTRY)
                 val editable = Editable.Factory.getInstance().newEditable(country)
                 viewBinding.chosenCountry.text = editable
-                regionId = result.getInt(CURRENT_REGION_ID)
             }
+            regionId = result.getInt(CURRENT_REGION_ID)
         }
     }
 
