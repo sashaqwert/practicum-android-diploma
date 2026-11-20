@@ -100,7 +100,9 @@ class RegionFragment : Fragment() {
         areaAdapter!!.submitAreas(filterAreas)
     }
 
-    private fun showEmpty() {}
+    private fun showEmpty() {
+        showError(NO_AREA_RESPONSE)
+    }
 
     private fun showError(code: Int) {
         handleVisibilities(
@@ -116,13 +118,13 @@ class RegionFragment : Fragment() {
 
             when (code) {
                 NO_AREA_RESPONSE, NO_INTERNET -> {
-                    drawable = R.drawable.img_not_internet_search_state_328
-                    text = R.string.no_internet
+                    drawable = R.drawable.img_empty_search_state_328
+                    text = R.string.region_not_found
                 }
 
                 else -> {
-                    drawable = R.drawable.img_server_error
-                    text = R.string.server_error
+                    drawable = R.drawable.cant_get_region_list
+                    text = R.string.cant_get_region_list
                 }
             }
 

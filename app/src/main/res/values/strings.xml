@@ -51,4 +51,6 @@
     <string name="print_region">Введите регион</string>
     <string name="tools_region">Москва</string>
     <string name="choose_country">Выбор страны</string>
+    <string name="region_not_found">Такого региона нет</string>
+    <string name="cant_get_region_list">Не удалось получить список</string>
 </resources>
