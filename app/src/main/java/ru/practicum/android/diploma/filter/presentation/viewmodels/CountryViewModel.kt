@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.filter.domain.usecase.CountryInteractor
 import ru.practicum.android.diploma.filter.presentation.state.CountryState
 
-class CountryViewModel(countryInteractor: CountryInteractor) : ViewModel() {
+class CountryViewModel(private val countryInteractor: CountryInteractor) : ViewModel() {
     private val stateLiveData = MutableLiveData<CountryState>()
     fun observeState(): LiveData<CountryState> = stateLiveData
 
