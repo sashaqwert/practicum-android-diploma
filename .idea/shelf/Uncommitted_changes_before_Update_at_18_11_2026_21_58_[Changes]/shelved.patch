@@ -1,0 +1,152 @@
+Index: app/src/main/java/ru/practicum/android/diploma/common/domain/models/FilterArea.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ru.practicum.android.diploma.common.domain.models\r\n\r\ndata class FilterArea(\r\n    val id: String,\r\n    val name: String,\r\n    val parentId: Int?,\r\n    val areas: List<FilterArea>\r\n)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/ru/practicum/android/diploma/common/domain/models/FilterArea.kt b/app/src/main/java/ru/practicum/android/diploma/common/domain/models/FilterArea.kt
+--- a/app/src/main/java/ru/practicum/android/diploma/common/domain/models/FilterArea.kt	(revision b848fb05603fe1f2067cf5ae723bf74bde6fd2dd)
++++ b/app/src/main/java/ru/practicum/android/diploma/common/domain/models/FilterArea.kt	(date 1795028239669)
+@@ -1,7 +1,7 @@
+ package ru.practicum.android.diploma.common.domain.models
+ 
+ data class FilterArea(
+-    val id: String,
++    val id: Int,
+     val name: String,
+     val parentId: Int?,
+     val areas: List<FilterArea>
+Index: app/src/main/java/ru/practicum/android/diploma/common/data/dto/FilterAreaDto.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ru.practicum.android.diploma.common.data.dto\r\n\r\ndata class FilterAreaDto(\r\n    val id: String,\r\n    val name: String,\r\n    val parentId: Int?,\r\n    val areas: List<FilterAreaDto>\r\n)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/ru/practicum/android/diploma/common/data/dto/FilterAreaDto.kt b/app/src/main/java/ru/practicum/android/diploma/common/data/dto/FilterAreaDto.kt
+--- a/app/src/main/java/ru/practicum/android/diploma/common/data/dto/FilterAreaDto.kt	(revision b848fb05603fe1f2067cf5ae723bf74bde6fd2dd)
++++ b/app/src/main/java/ru/practicum/android/diploma/common/data/dto/FilterAreaDto.kt	(date 1795028239668)
+@@ -1,7 +1,7 @@
+ package ru.practicum.android.diploma.common.data.dto
+ 
+ data class FilterAreaDto(
+-    val id: String,
++    val id: Int,
+     val name: String,
+     val parentId: Int?,
+     val areas: List<FilterAreaDto>
+Index: app/src/main/java/ru/practicum/android/diploma/filter/ui/fragments/LocationFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package ru.practicum.android.diploma.filter.ui.fragments\r\n\r\nimport android.os.Bundle\r\nimport android.text.Editable\r\nimport android.view.LayoutInflater\r\nimport android.view.View\r\nimport android.view.ViewGroup\r\nimport androidx.core.view.isVisible\r\nimport androidx.fragment.app.Fragment\r\nimport androidx.navigation.fragment.findNavController\r\nimport ru.practicum.android.diploma.R\r\nimport ru.practicum.android.diploma.databinding.FragmentLocationBinding\r\n\r\n/**\r\n * A simple [Fragment] subclass.\r\n * Use the [LocationFragment.newInstance] factory method to\r\n * create an instance of this fragment.\r\n */\r\nclass LocationFragment : Fragment() {\r\n    private var _viewBinding: FragmentLocationBinding? = null\r\n    private val viewBinding get() = _viewBinding!!\r\n\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n        arguments?.let {\r\n        }\r\n    }\r\n\r\n    override fun onCreateView(\r\n        inflater: LayoutInflater,\r\n        container: ViewGroup?,\r\n        savedInstanceState: Bundle?\r\n    ): View? {\r\n        _viewBinding = FragmentLocationBinding.inflate(inflater, container, false)\r\n        return viewBinding.root\r\n    }\r\n\r\n    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {\r\n        super.onViewCreated(view, savedInstanceState)\r\n\r\n        getCountry()\r\n        getRegion()\r\n\r\n        viewBinding.chosenCountry.setOnClickListener {\r\n            findNavController().navigate(R.id.action_locationFragment_to_countryFragment)\r\n        }\r\n        viewBinding.countryClear.setOnClickListener {\r\n            viewBinding.chosenCountry.text = null\r\n            viewBinding.countryClear.isVisible = !viewBinding.chosenCountry.text.isNullOrEmpty()\r\n        }\r\n        viewBinding.chosenRegion.setOnClickListener {\r\n            findNavController().navigate(R.id.action_locationFragment_to_regionFragment)\r\n        }\r\n        viewBinding.regionClear.setOnClickListener {\r\n            viewBinding.chosenRegion.text = null\r\n            viewBinding.regionClear.isVisible = !viewBinding.chosenRegion.text.isNullOrEmpty()\r\n        }\r\n        viewBinding.workplaceChoseButton.setOnClickListener {\r\n            val resultToFilter = Bundle().apply {\r\n                putString(COUNTRY, viewBinding.chosenCountry.text.toString())\r\n                putString(REGION, viewBinding.chosenRegion.text.toString())\r\n            }\r\n            parentFragmentManager.setFragmentResult(LOCATION, resultToFilter)\r\n            findNavController().popBackStack(R.id.filterFragment, false)\r\n        }\r\n        viewBinding.fromWorkPlace.setOnClickListener {\r\n            findNavController().navigateUp()\r\n        }\r\n    }\r\n\r\n    private fun getCountry() {\r\n        parentFragmentManager.setFragmentResultListener(GET_COUNTRY, viewLifecycleOwner) { requestKey, result ->\r\n            val country = result.getString(CURRENT_COUNTRY)\r\n            val editable = Editable.Factory.getInstance().newEditable(country)\r\n            viewBinding.chosenCountry.text = editable\r\n            viewBinding.countryClear.isVisible = !viewBinding.chosenCountry.text.isNullOrEmpty()\r\n        }\r\n    }\r\n\r\n    private fun getRegion() {\r\n        parentFragmentManager.setFragmentResultListener(GET_REGION, viewLifecycleOwner) { requestKey, result ->\r\n            val region = result.getString(CURRENT_REGION)\r\n            val editable = Editable.Factory.getInstance().newEditable(region)\r\n            viewBinding.chosenRegion.text = editable\r\n            viewBinding.regionClear.isVisible = !viewBinding.chosenRegion.text.isNullOrEmpty()\r\n            if (viewBinding.chosenCountry.text.isNullOrEmpty()) {\r\n                val country = result.getString(REGION_COUNTRY)\r\n                val editable = Editable.Factory.getInstance().newEditable(country)\r\n                viewBinding.chosenCountry.text = editable\r\n            }\r\n        }\r\n    }\r\n\r\n    override fun onDestroyView() {\r\n        super.onDestroyView()\r\n        _viewBinding = null\r\n    }\r\n\r\n    companion object {\r\n        private const val LOCATION = \"LOCATION\"\r\n        private const val COUNTRY = \"COUNTRY\"\r\n        private const val REGION = \"REGION\"\r\n        private const val GET_COUNTRY = \"GET_COUNTRY\"\r\n        private const val CURRENT_COUNTRY = \"CURRENT_COUNTRY\"\r\n        private const val GET_REGION = \"GET_REGION\"\r\n        private const val CURRENT_REGION = \"CURRENT_REGION\"\r\n        private const val REGION_COUNTRY = \"REGION_COUNTRY\"\r\n\r\n        /**\r\n         * Use this factory method to create a new instance of\r\n         * this fragment using the provided parameters.\r\n         *\r\n         * @return A new instance of fragment LocationFragment.\r\n         */\r\n        //вот тут как вариант можно создавать экран с последним выбором пользователя\r\n        @JvmStatic\r\n        fun newInstance() =\r\n            LocationFragment().apply {\r\n                arguments = Bundle().apply {\r\n                }\r\n            }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/ru/practicum/android/diploma/filter/ui/fragments/LocationFragment.kt b/app/src/main/java/ru/practicum/android/diploma/filter/ui/fragments/LocationFragment.kt
+--- a/app/src/main/java/ru/practicum/android/diploma/filter/ui/fragments/LocationFragment.kt	(revision b848fb05603fe1f2067cf5ae723bf74bde6fd2dd)
++++ b/app/src/main/java/ru/practicum/android/diploma/filter/ui/fragments/LocationFragment.kt	(date 1795028239669)
+@@ -19,17 +19,15 @@
+ class LocationFragment : Fragment() {
+     private var _viewBinding: FragmentLocationBinding? = null
+     private val viewBinding get() = _viewBinding!!
++    private var countryId: String? = null
+ 
+     override fun onCreate(savedInstanceState: Bundle?) {
+         super.onCreate(savedInstanceState)
+-        arguments?.let {
+-        }
++        arguments?.let {}
+     }
+ 
+     override fun onCreateView(
+-        inflater: LayoutInflater,
+-        container: ViewGroup?,
+-        savedInstanceState: Bundle?
++        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+     ): View? {
+         _viewBinding = FragmentLocationBinding.inflate(inflater, container, false)
+         return viewBinding.root
+@@ -49,6 +47,12 @@
+             viewBinding.countryClear.isVisible = !viewBinding.chosenCountry.text.isNullOrEmpty()
+         }
+         viewBinding.chosenRegion.setOnClickListener {
++            if (!countryId.isNullOrEmpty()) {
++                val result = Bundle().apply {
++                    putString(SEND_COUNTRY_ID, countryId)
++                }
++                parentFragmentManager.setFragmentResult(LOCATION, resultToFilter)
++            }
+             findNavController().navigate(R.id.action_locationFragment_to_regionFragment)
+         }
+         viewBinding.regionClear.setOnClickListener {
+@@ -58,6 +62,7 @@
+         viewBinding.workplaceChoseButton.setOnClickListener {
+             val resultToFilter = Bundle().apply {
+                 putString(COUNTRY, viewBinding.chosenCountry.text.toString())
++                putString(CURRENT_COUNTRY_ID, countryId)
+                 putString(REGION, viewBinding.chosenRegion.text.toString())
+             }
+             parentFragmentManager.setFragmentResult(LOCATION, resultToFilter)
+@@ -70,8 +75,9 @@
+ 
+     private fun getCountry() {
+         parentFragmentManager.setFragmentResultListener(GET_COUNTRY, viewLifecycleOwner) { requestKey, result ->
+-            val country = result.getString(CURRENT_COUNTRY)
+-            val editable = Editable.Factory.getInstance().newEditable(country)
++            val countryName = result.getString(CURRENT_COUNTRY)
++            countryId = result.getString(CURRENT_COUNTRY_ID)
++            val editable = Editable.Factory.getInstance().newEditable(countryName)
+             viewBinding.chosenCountry.text = editable
+             viewBinding.countryClear.isVisible = !viewBinding.chosenCountry.text.isNullOrEmpty()
+         }
+@@ -84,9 +90,10 @@
+             viewBinding.chosenRegion.text = editable
+             viewBinding.regionClear.isVisible = !viewBinding.chosenRegion.text.isNullOrEmpty()
+             if (viewBinding.chosenCountry.text.isNullOrEmpty()) {
+-                val country = result.getString(REGION_COUNTRY)
++                val country = result.getString(CURRENT_COUNTRY)
+                 val editable = Editable.Factory.getInstance().newEditable(country)
+                 viewBinding.chosenCountry.text = editable
++                countryId = result.getString(CURRENT_COUNTRY_ID)
+             }
+         }
+     }
+@@ -94,17 +101,19 @@
+     override fun onDestroyView() {
+         super.onDestroyView()
+         _viewBinding = null
++        countryId = null
+     }
+ 
+     companion object {
+         private const val LOCATION = "LOCATION"
+         private const val COUNTRY = "COUNTRY"
+         private const val REGION = "REGION"
+-        private const val GET_COUNTRY = "GET_COUNTRY"
+-        private const val CURRENT_COUNTRY = "CURRENT_COUNTRY"
+-        private const val GET_REGION = "GET_REGION"
++        const val GET_COUNTRY = "GET_COUNTRY"
++        const val CURRENT_COUNTRY = "CURRENT_COUNTRY"
++        const val CURRENT_COUNTRY_ID = "CURRENT_COUNTRY_ID"
++        const val GET_REGION = "GET_REGION"
+         private const val CURRENT_REGION = "CURRENT_REGION"
+-        private const val REGION_COUNTRY = "REGION_COUNTRY"
++        private const val SEND_COUNTRY_ID = "SEND_COUNTRY_ID"
+ 
+         /**
+          * Use this factory method to create a new instance of
+@@ -114,10 +123,8 @@
+          */
+         //вот тут как вариант можно создавать экран с последним выбором пользователя
+         @JvmStatic
+-        fun newInstance() =
+-            LocationFragment().apply {
+-                arguments = Bundle().apply {
+-                }
+-            }
++        fun newInstance() = LocationFragment().apply {
++            arguments = Bundle().apply {}
++        }
+     }
+ }

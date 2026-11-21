@@ -1,6 +1,7 @@
 package ru.practicum.android.diploma.search.ui.fragment
 
 import android.content.Context.INPUT_METHOD_SERVICE
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,12 +15,14 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.color.MaterialColors
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.domain.models.VacancyCard
 import ru.practicum.android.diploma.common.ui.forrecyclerview.VacancyAdapter
 import ru.practicum.android.diploma.databinding.FragmentSearchBinding
 import ru.practicum.android.diploma.details.ui.fragment.DetailsFragment
+import ru.practicum.android.diploma.filter.ui.fragments.FilterFragment
 import ru.practicum.android.diploma.search.presentation.state.SearchState
 import ru.practicum.android.diploma.search.presentation.viewmodel.SearchViewModel
 
@@ -86,20 +89,40 @@ class SearchFragment : Fragment() {
                         (viewBinding.vacancyList.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
                     val itemsCount = adapter.itemCount
                     if (pos >= itemsCount - 1) {
-                        val currentState = viewModel.state.value as? SearchState.Content
-                        if (currentState != null) {
-                            if (currentState.paginationError == null) {
-                                val nextPage = currentState.page + 1
-                                viewModel.loadPage(nextPage)
-                            } else {
-                                Toast.makeText(requireContext(), R.string.no_wifi, Toast.LENGTH_LONG).show()
-                                viewModel.onPaginationErrorShown()
-                            }
-                        }
+                        loadNextPage()
                     }
                 }
             }
         })
+
+        setFilterListener()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val hasFilters = viewModel.hasFilters()
+        with(viewBinding.filerButton) {
+            isSelected = hasFilters
+            if (hasFilters) {
+                iconTint = null
+                setIconResource(R.drawable.ic_filter_active_24)
+            } else {
+                val color = MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnPrimary)
+                iconTint = ColorStateList.valueOf(color)
+                setIconResource(R.drawable.ic_filter_18)
+            }
+        }
+    }
+
+    private fun loadNextPage() {
+        val currentState = viewModel.state.value as? SearchState.Content ?: return
+        if (currentState.paginationError == null) {
+            val nextPage = currentState.page + 1
+            viewModel.loadPage(nextPage)
+        } else {
+            Toast.makeText(requireContext(), R.string.no_wifi, Toast.LENGTH_LONG).show()
+            viewModel.onPaginationErrorShown()
+        }
     }
 
     private fun initAdapter() {
@@ -126,6 +149,16 @@ class SearchFragment : Fragment() {
                 SearchState.Loading -> loading()
             }
         }
+    }
+
+    private fun setFilterListener() {
+        parentFragmentManager
+            .setFragmentResultListener(
+                FilterFragment.SEND_FILTERS,
+                viewLifecycleOwner
+            ) { _, _ ->
+                viewModel.retrySearch()
+            }
     }
 
     override fun onDestroyView() {

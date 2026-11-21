@@ -142,77 +142,10 @@ class DetailsFragment : Fragment() {
                 vacancyDetail.schedule.name
             }
 
-        bindItems(vacancyDetail, textSalary, employmentText, scheduleText)
+        viewBinding.bindItems(vacancyDetail, textSalary, employmentText, scheduleText, this)
+        setContacts(vacancyDetail)
 
         setListeners(vacancyDetail)
-    }
-
-    private fun bindItems(
-        vacancyDetail: VacancyDetail,
-        textSalary: String,
-        employmentText: String,
-        scheduleText: String
-    ) {
-        setCoil(vacancyDetail)
-
-        viewBinding.apply {
-            vacancyName.setText(vacancyDetail.name)
-            salary.text = if (textSalary.isNotEmpty() && textSalary.isNotBlank()) {
-                textSalary
-            } else {
-                getString(R.string.salary_not_set)
-            }
-
-            employerName.text = vacancyDetail.employer.name
-            employerLocation.text = vacancyDetail.area.name
-            experienceValue.text =
-                if (vacancyDetail.experience == null) {
-                    getString(R.string.experience_not_set)
-                } else {
-                    vacancyDetail.experience.name
-                }
-            val text = "$employmentText$scheduleText"
-            conditions.text = text
-            description.setLineSpacing(0f, 1f)
-            description.text = bindDescription(vacancyDetail.description, resources, context)
-            skillsList.text = bindListToBullets(vacancyDetail.skills, resources)
-            likeButton.setImageResource(
-                if (vacancyDetail.isFavorite) {
-                    R.drawable.ic_like_pressed
-                } else {
-                    R.drawable.ic_like
-                }
-            )
-
-            skillsTitle.isVisible = vacancyDetail.skills.isNotEmpty()
-            skillsList.isVisible = vacancyDetail.skills.isNotEmpty()
-
-            setContacts(vacancyDetail)
-        }
-    }
-
-    private fun setCoil(vacancyDetail: VacancyDetail) {
-        viewBinding.employerIcon.load(vacancyDetail.employer.logo) {
-            setHeader(
-                "User-Agent",
-                "practicum-android-diploma/1.0 (https://github.com/sashaqwert/practicum-android-diploma)"
-            )
-
-            if (vacancyDetail.employer.logo.endsWith(".svg", ignoreCase = true)) {
-                decoderFactory(SvgDecoder.Factory())
-            }
-
-            scale(Scale.FIT)
-
-            placeholder(R.drawable.img_empty_logo_48_xml)
-            error(R.drawable.img_empty_logo_48_xml)
-
-            listener(
-                onError = { _, result ->
-                    Log.e("CoilError", "Failed to load: ${vacancyDetail.employer.logo}", result.throwable)
-                }
-            )
-        }
     }
 
     private fun setError(code: Int) {
@@ -314,5 +247,70 @@ class DetailsFragment : Fragment() {
                 putString(CURRENT_VACANCY_ID, id)
             }
         }
+    }
+}
+
+private fun FragmentDetailsBinding.bindItems(
+    vacancyDetail: VacancyDetail,
+    textSalary: String,
+    employmentText: String,
+    scheduleText: String,
+    fragment: Fragment
+) {
+    setCoil(vacancyDetail)
+
+    vacancyName.setText(vacancyDetail.name)
+    salary.text = if (textSalary.isNotEmpty() && textSalary.isNotBlank()) {
+        textSalary
+    } else {
+        fragment.getString(R.string.salary_not_set)
+    }
+
+    employerName.text = vacancyDetail.employer.name
+    employerLocation.text = vacancyDetail.area.name
+    experienceValue.text =
+        if (vacancyDetail.experience == null) {
+            fragment.getString(R.string.experience_not_set)
+        } else {
+            vacancyDetail.experience.name
+        }
+    val text = "$employmentText$scheduleText"
+    conditions.text = text
+    description.setLineSpacing(0f, 1f)
+    description.text = bindDescription(vacancyDetail.description, fragment.resources, fragment.context)
+    skillsList.text = bindListToBullets(vacancyDetail.skills, fragment.resources)
+    likeButton.setImageResource(
+        if (vacancyDetail.isFavorite) {
+            R.drawable.ic_like_pressed
+        } else {
+            R.drawable.ic_like
+        }
+    )
+
+    skillsTitle.isVisible = vacancyDetail.skills.isNotEmpty()
+    skillsList.isVisible = vacancyDetail.skills.isNotEmpty()
+}
+
+private fun FragmentDetailsBinding.setCoil(vacancyDetail: VacancyDetail) {
+    employerIcon.load(vacancyDetail.employer.logo) {
+        setHeader(
+            "User-Agent",
+            "practicum-android-diploma/1.0 (https://github.com/sashaqwert/practicum-android-diploma)"
+        )
+
+        if (vacancyDetail.employer.logo.endsWith(".svg", ignoreCase = true)) {
+            decoderFactory(SvgDecoder.Factory())
+        }
+
+        scale(Scale.FIT)
+
+        placeholder(R.drawable.img_empty_logo_48_xml)
+        error(R.drawable.img_empty_logo_48_xml)
+
+        listener(
+            onError = { _, result ->
+                Log.e("CoilError", "Failed to load: ${vacancyDetail.employer.logo}", result.throwable)
+            }
+        )
     }
 }
