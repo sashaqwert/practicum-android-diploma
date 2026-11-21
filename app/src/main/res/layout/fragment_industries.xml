@@ -50,8 +50,26 @@
         app:layout_constraintTop_toBottomOf="@id/searchEditText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/chooseIndustry"
         tools:listitem="@layout/item_industry"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/chooseIndustry"
+        style="@style/Text.Medium16"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_17"
+        android:layout_marginBottom="@dimen/margin_24"
+        android:backgroundTint="@color/blue"
+        android:paddingVertical="20dp"
+        android:text="@string/chose"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:visibility="gone"
+        app:cornerRadius="@dimen/corners_12"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <ProgressBar
         android:id="@+id/loadingBar"

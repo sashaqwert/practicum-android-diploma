@@ -111,7 +111,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_24"
         android:background="@drawable/edit_text_shape_12"
-        android:paddingHorizontal="@dimen/margin_16"
+        android:paddingStart="@dimen/margin_16"
+        android:paddingEnd="@dimen/width_48"
         android:paddingVertical="@dimen/margin_8"
         android:orientation="vertical"
         app:layout_constraintStart_toEndOf="@id/startGuideline"
@@ -133,11 +134,24 @@
             android:background="@null"
             android:inputType="number"
             android:maxLength="10"
+            android:saveEnabled="false"
             android:textColor="@color/black"
             android:textColorHint="?attr/colorOnContainer"
             style="@style/Text.Regular16"
             android:hint="@string/print_the_sum"/>
     </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/salaryClear"
+        android:layout_width="@dimen/width_48"
+        android:layout_height="@dimen/height_48"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/clear_salary"
+        android:src="@drawable/ic_clear_14"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/salaryEditTextContainer"
+        app:layout_constraintEnd_toEndOf="@id/salaryEditTextContainer"
+        app:layout_constraintTop_toTopOf="@id/salaryEditTextContainer" />
 
     <CheckedTextView
         android:id="@+id/salaryCheckBox"
@@ -167,6 +181,7 @@
         android:textColor="@color/white"
         android:background="@drawable/filter_apply_shape_12"
         android:clickable="true"
+        android:visibility="gone"
         android:foreground="?attr/selectableItemBackground"
         android:layout_marginBottom="@dimen/margin_8"
         app:layout_constraintStart_toStartOf="parent"
@@ -183,6 +198,7 @@
         android:textColor="@color/red"
         android:gravity="center"
         android:clickable="true"
+        android:visibility="gone"
         android:foreground="?attr/selectableItemBackground"
         android:background="@drawable/rounded_12"
         android:layout_marginBottom="@dimen/margin_24"

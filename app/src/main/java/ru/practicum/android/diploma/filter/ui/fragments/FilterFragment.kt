@@ -18,8 +18,6 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.color.MaterialColors
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
-import ru.practicum.android.diploma.common.domain.models.FilterArea
-import ru.practicum.android.diploma.common.domain.models.FilterIndustry
 import ru.practicum.android.diploma.databinding.FragmentFilterBinding
 import ru.practicum.android.diploma.filter.presentation.state.FilterState
 import ru.practicum.android.diploma.filter.presentation.viewmodels.FilterViewModel
@@ -54,11 +52,10 @@ class FilterFragment : Fragment() {
         (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(true)
         viewBinding.toolBar.setNavigationOnClickListener { findNavController().popBackStack() }
 
-        acceptFiltersFromSearch()
-
         observeState()
         setListeners()
         setFragmentResultListeners()
+        setApplyButtonListener()
     }
 
     private fun setListeners() {
@@ -82,12 +79,14 @@ class FilterFragment : Fragment() {
             }
 
             salaryEditText.doOnTextChanged { text, _, _, _ ->
+                salaryClear.isVisible = !text.isNullOrEmpty()
                 viewModel.setSalary(text?.toString()?.toLongOrNull())
                 val imeVisible = getRootWindowInsets(root)
                     ?.isVisible(WindowInsetsCompat.Type.ime()) == true
 
                 salaryEditTextHeader.setTextColor(getSalaryColor(text, imeVisible))
             }
+            salaryClear.setOnClickListener { salaryEditText.text.clear() }
 
             industryValue.doOnTextChanged { text, _, _, _ ->
                 val color = getColor(text)
@@ -128,16 +127,17 @@ class FilterFragment : Fragment() {
             viewModel.setFilterIndustry(id, name)
         }
 
-        parentFragmentManager.setFragmentResultListener(LOCATION, viewLifecycleOwner) { _, bundle ->
-            val id = bundle.getInt(LocationFragment.CURRENT_ID)
-            val countryName = bundle.getString(COUNTRY) ?: ""
-            val regionName = bundle.getString(REGION) ?: ""
-
-            if (id == 0) {
-                return@setFragmentResultListener
+        parentFragmentManager.setFragmentResultListener(LocationFragment.LOCATION, viewLifecycleOwner) { _, bundle ->
+            val countryId = bundle.getInt(LocationFragment.CURRENT_COUNTRY_ID)
+            val regionId = bundle.getInt(LocationFragment.CURRENT_REGION_ID)
+            if (countryId != 0 || regionId != 0) {
+                viewModel.setFilterArea(
+                    id = regionId.takeIf { it != 0 } ?: countryId,
+                    name = bundle.getString(LocationFragment.CURRENT_REGION).orEmpty(),
+                    parentName = bundle.getString(LocationFragment.CURRENT_COUNTRY),
+                    countryId = countryId.takeIf { it != 0 }
+                )
             }
-
-            viewModel.setFilterArea(id, regionName, countryName)
         }
     }
 
@@ -155,8 +155,6 @@ class FilterFragment : Fragment() {
 
             industryId = state.filterIndustry?.id ?: 0
 
-            setApplyButtonListener(state)
-
             setLocationsListeners(state)
         }
     }
@@ -168,7 +166,7 @@ class FilterFragment : Fragment() {
             val text = getLocationName(state, countryName)
             viewBinding.workPlaceValue.setText(text)
         } else {
-            viewBinding.workPlaceValue.text?.clear()
+            viewBinding.workPlaceValue.setText(state.filterArea?.name?.takeIf { it.isNotBlank() })
         }
     }
 
@@ -195,10 +193,10 @@ class FilterFragment : Fragment() {
 
     private fun setSalary(state: FilterState) {
         with(viewBinding) {
-            val salaryText = state.salary?.takeIf { it != 0L }?.toString().orEmpty()
-            if (salaryEditText.text.toString() != salaryText) {
-                salaryEditText.setText(salaryText)
+            if (salaryEditText.text.toString().toLongOrNull() != state.salary) {
+                salaryEditText.setText(state.salary?.toString().orEmpty())
             }
+            salaryClear.isVisible = !salaryEditText.text.isNullOrEmpty()
         }
     }
 
@@ -211,6 +209,7 @@ class FilterFragment : Fragment() {
                 }
                 R.drawable.ic_cancel
             } else {
+                workPlaceIcon.setOnClickListener { workPlaceValue.performClick() }
                 R.drawable.ic_select
             }
             workPlaceIcon.setImageResource(areaDrawable)
@@ -223,6 +222,7 @@ class FilterFragment : Fragment() {
                 }
                 R.drawable.ic_cancel
             } else {
+                industryIcon.setOnClickListener { industryValue.performClick() }
                 R.drawable.ic_select
             }
 
@@ -230,9 +230,9 @@ class FilterFragment : Fragment() {
         }
     }
 
-    private fun setApplyButtonListener(state: FilterState) {
+    private fun setApplyButtonListener() {
         viewBinding.applyFilter.setOnClickListener {
-            parentFragmentManager.setFragmentResult(SEND_FILTERS, createFilterBundle(state))
+            parentFragmentManager.setFragmentResult(SEND_FILTERS, Bundle.EMPTY)
             findNavController().popBackStack()
         }
     }
@@ -240,34 +240,26 @@ class FilterFragment : Fragment() {
     private fun setLocationsListeners(state: FilterState) {
         with(viewBinding) {
             industryValue.setOnClickListener {
-                parentFragmentManager.setFragmentResult(
-                    SEND_INDUSTRY_ID,
+                findNavController().navigate(
+                    R.id.action_filterFragment_to_industryFragment,
                     Bundle().apply {
-                        putInt(SEND_INDUSTRY_ID_ARG, state.filterIndustry?.id ?: 0)
+                        putInt(SEND_INDUSTRY_ID_ARG, industryId)
                     }
                 )
-                findNavController().navigate(R.id.action_filterFragment_to_industryFragment)
             }
 
             workPlaceValue.setOnClickListener {
-                if (state.filterArea?.parentName != null) {
-                    parentFragmentManager.setFragmentResult(
-                        LocationFragment.GET_COUNTRY,
-                        Bundle().apply {
-                            putString(LocationFragment.CURRENT_COUNTRY, state.filterArea.parentName ?: "")
-                            putInt(LocationFragment.CURRENT_COUNTRY_ID, state.filterArea.id)
-                        }
-                    )
-                } else {
-                    parentFragmentManager.setFragmentResult(
-                        LocationFragment.GET_REGION,
-                        Bundle().apply {
-                            putString(LocationFragment.CURRENT_REGION, state.filterArea?.name)
-                            putInt(LocationFragment.CURRENT_REGION_ID, state.filterArea?.id ?: 0)
-                        }
-                    )
-                }
-                findNavController().navigate(R.id.action_filterFragment_to_locationFragment)
+                val area = state.filterArea
+                val regionId = area?.takeIf { it.name.isNotEmpty() }?.id ?: 0
+                findNavController().navigate(
+                    R.id.action_filterFragment_to_locationFragment,
+                    Bundle().apply {
+                        putString(LocationFragment.CURRENT_COUNTRY, area?.parentName)
+                        putInt(LocationFragment.CURRENT_COUNTRY_ID, area?.countryId ?: 0)
+                        putString(LocationFragment.CURRENT_REGION, area?.name)
+                        putInt(LocationFragment.CURRENT_REGION_ID, regionId)
+                    }
+                )
             }
         }
     }
@@ -300,14 +292,8 @@ class FilterFragment : Fragment() {
         viewBinding.apply {
             applyFilter.clipToOutline = true
             cancelButton.clipToOutline = true
-            applyFilter.isVisible = viewModel.compareWithLast()
+            applyFilter.isVisible = viewModel.compareWithDefault()
             cancelButton.isVisible = viewModel.compareWithDefault()
-        }
-    }
-
-    private fun acceptFiltersFromSearch() {
-        parentFragmentManager.setFragmentResultListener(RESTORE_FILTERS, viewLifecycleOwner) { _, bundle ->
-            viewModel.fillData(readFilterBundle(bundle))
         }
     }
 
@@ -317,54 +303,10 @@ class FilterFragment : Fragment() {
     }
 
     companion object {
-        // с экрана выбора работы
-        private const val LOCATION = "LOCATION"
-        private const val COUNTRY = "COUNTRY"
-        private const val REGION = "REGION"
-
         // на экран отраслей
-        const val SEND_INDUSTRY_ID = "SEND_INDUSTRY_ID"
         const val SEND_INDUSTRY_ID_ARG = "SEND_INDUSTRY_ID_ARG"
 
-        // с или на экран поиска
+        // на экран поиска
         const val SEND_FILTERS = "SEND_FILTERS"
-        const val RESTORE_FILTERS = "RESTORE_FILTERS"
-        private const val SEND_AREA = "SEND_AREA"
-        private const val SEND_INDUSTRY = "SEND_INDUSTRY"
-        private const val SEND_SALARY = "SEND_SALARY"
-        private const val SEND_SALARY_CHECKBOX = "SEND_SALARY_CHECKBOX"
-        private const val SEND_COUNTRY_NAME = "SEND_COUNTRY_NAME"
-        private const val SEND_REGION_NAME = "SEND_REGION_NAME"
-        private const val SEND_INDUSTRY_NAME = "SEND_INDUSTRY_NAME"
-
-        fun createFilterBundle(state: FilterState): Bundle = Bundle().apply {
-            putInt(SEND_AREA, state.filterArea?.id ?: 0)
-            putString(SEND_COUNTRY_NAME, state.filterArea?.parentName)
-            putString(SEND_REGION_NAME, state.filterArea?.name)
-            putInt(SEND_INDUSTRY, state.filterIndustry?.id ?: 0)
-            putString(SEND_INDUSTRY_NAME, state.filterIndustry?.name)
-            putLong(SEND_SALARY, state.salary ?: 0L)
-            putBoolean(SEND_SALARY_CHECKBOX, state.doNotShowWithoutSalary)
-        }
-
-        fun readFilterBundle(bundle: Bundle): FilterState {
-            val area = bundle.getInt(SEND_AREA).takeIf { it != 0 }?.let { id ->
-                FilterArea(
-                    id = id,
-                    name = bundle.getString(SEND_REGION_NAME).orEmpty(),
-                    parentId = null,
-                    parentName = bundle.getString(SEND_COUNTRY_NAME)
-                )
-            }
-            val industry = bundle.getInt(SEND_INDUSTRY).takeIf { it != 0 }?.let { id ->
-                FilterIndustry(id, bundle.getString(SEND_INDUSTRY_NAME).orEmpty())
-            }
-            return FilterState(
-                filterArea = area,
-                filterIndustry = industry,
-                salary = bundle.getLong(SEND_SALARY).takeIf { it != 0L },
-                doNotShowWithoutSalary = bundle.getBoolean(SEND_SALARY_CHECKBOX)
-            )
-        }
     }
 }

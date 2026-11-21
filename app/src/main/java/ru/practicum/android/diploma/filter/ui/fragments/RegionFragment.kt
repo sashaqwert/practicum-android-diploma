@@ -54,7 +54,8 @@ class RegionFragment : Fragment() {
         (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayShowTitleEnabled(true)
         viewBinding.toolBar.setNavigationOnClickListener { requireActivity().onBackPressedDispatcher.onBackPressed() }
 
-        viewModel.fillData()
+        val countryId = arguments?.getInt(LocationFragment.CURRENT_COUNTRY_ID)?.takeIf { it != 0 }
+        viewModel.fillData(countryId)
         viewBinding.searchEditText.doOnTextChanged { text, _, _, _ ->
             viewModel.filterRegions(text?.toString().orEmpty())
         }
@@ -96,6 +97,7 @@ class RegionFragment : Fragment() {
                     putString(LocationFragment.CURRENT_REGION, area?.name ?: "")
                     putInt(LocationFragment.CURRENT_REGION_ID, area?.id ?: 0)
                     putString(LocationFragment.CURRENT_COUNTRY, area?.parentName)
+                    putInt(LocationFragment.CURRENT_COUNTRY_ID, area?.countryId ?: 0)
                 }
             )
 
@@ -122,7 +124,7 @@ class RegionFragment : Fragment() {
             val text: Int
 
             when (code) {
-                NO_AREA_RESPONSE, NO_INTERNET -> {
+                NO_INTERNET -> {
                     drawable = R.drawable.cant_get_region_list
                     text = R.string.cant_get_region_list
                 }

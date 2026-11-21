@@ -1,6 +1,7 @@
 package ru.practicum.android.diploma.search.ui.fragment
 
 import android.content.Context.INPUT_METHOD_SERVICE
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.color.MaterialColors
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.domain.models.VacancyCard
@@ -65,10 +67,6 @@ class SearchFragment : Fragment() {
             default()
         }
         viewBinding.filerButton.setOnClickListener {
-            parentFragmentManager.setFragmentResult(
-                FilterFragment.RESTORE_FILTERS,
-                FilterFragment.createFilterBundle(viewModel.appliedFilters)
-            )
             findNavController().navigate(R.id.action_searchFragment_to_filterFragment)
         }
 
@@ -98,6 +96,22 @@ class SearchFragment : Fragment() {
         })
 
         setFilterListener()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val hasFilters = viewModel.hasFilters()
+        with(viewBinding.filerButton) {
+            isSelected = hasFilters
+            if (hasFilters) {
+                iconTint = null
+                setIconResource(R.drawable.ic_filter_active_24)
+            } else {
+                val color = MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnPrimary)
+                iconTint = ColorStateList.valueOf(color)
+                setIconResource(R.drawable.ic_filter_18)
+            }
+        }
     }
 
     private fun loadNextPage() {
@@ -142,8 +156,8 @@ class SearchFragment : Fragment() {
             .setFragmentResultListener(
                 FilterFragment.SEND_FILTERS,
                 viewLifecycleOwner
-            ) { _, bundle ->
-                viewModel.searchWithFilters(FilterFragment.readFilterBundle(bundle))
+            ) { _, _ ->
+                viewModel.retrySearch()
             }
     }
 

@@ -2,9 +2,11 @@ package ru.practicum.android.diploma.filter.di.domain
 
 import org.koin.dsl.module
 import ru.practicum.android.diploma.filter.domain.usecase.CountryInteractor
+import ru.practicum.android.diploma.filter.domain.usecase.FilterSettingsInteractor
 import ru.practicum.android.diploma.filter.domain.usecase.IndustryInteractor
 import ru.practicum.android.diploma.filter.domain.usecase.RegionInteractor
 import ru.practicum.android.diploma.filter.domain.usecaseimpl.CountryInteractorImpl
+import ru.practicum.android.diploma.filter.domain.usecaseimpl.FilterSettingsInteractorImpl
 import ru.practicum.android.diploma.filter.domain.usecaseimpl.IndustryInteractorImpl
 import ru.practicum.android.diploma.filter.domain.usecaseimpl.RegionInteractorImpl
 
@@ -17,5 +19,8 @@ val filterDomainModule = module {
     }
     single<RegionInteractor> {
         RegionInteractorImpl(get())
+    }
+    single<FilterSettingsInteractor> {
+        FilterSettingsInteractorImpl(get())
     }
 }

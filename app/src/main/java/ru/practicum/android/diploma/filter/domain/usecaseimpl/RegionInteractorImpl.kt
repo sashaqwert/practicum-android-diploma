@@ -9,27 +9,6 @@ class RegionInteractorImpl(
     private val repository: LocationRepository
 ) : RegionInteractor {
     override suspend fun getRegions(countryId: Int?): Resource<List<FilterArea>> {
-        val allCountries = repository.getLocation()
-        val result = when (allCountries) {
-            is Resource.Error -> return Resource.Error(allCountries.code)
-            is Resource.Success<List<FilterArea>> -> {
-                val regions = allCountries.data.flatMap { country ->
-                    country.areas.forEach { region ->
-                        region.parentName = country.name
-                    }
-                    country.areas
-                }
-
-                if (countryId == null || countryId == 0) {
-                    Resource.Success(regions)
-                } else {
-                    val countryRegions = regions.filter {
-                        it.parentId == countryId
-                    }
-                    Resource.Success(countryRegions)
-                }
-            }
-        }
-        return result
+        return repository.getRegions(countryId)
     }
 }

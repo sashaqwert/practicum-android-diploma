@@ -11,33 +11,42 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.common.domain.Resource
-import ru.practicum.android.diploma.filter.presentation.state.FilterState
+import ru.practicum.android.diploma.filter.domain.model.FilterSettings
+import ru.practicum.android.diploma.filter.domain.usecase.FilterSettingsInteractor
 import ru.practicum.android.diploma.search.domain.usecase.SearchInteractor
 import ru.practicum.android.diploma.search.presentation.state.SearchState
 import java.io.IOException
 
-class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewModel() {
+class SearchViewModel(
+    private val searchInteractor: SearchInteractor,
+    private val settingsInteractor: FilterSettingsInteractor
+) : ViewModel() {
     private val mutableState = MutableLiveData<SearchState>(SearchState.Default)
     val state: LiveData<SearchState> = mutableState
 
     private var currentQuery = ""
     private var searchJob: Job? = null
-    var appliedFilters = FilterState()
-        private set
+    private var appliedFilters = FilterSettings()
+
+    fun hasFilters(): Boolean = settingsInteractor.read().hasFilters
 
     fun retrySearch() {
         val query = currentQuery.trim()
         if (query.isEmpty()) return
+        val filters = settingsInteractor.read()
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
-            searchPage(query, FIRST_PAGE)
+            searchPage(query, FIRST_PAGE, filters)
         }
     }
 
     fun retrySearchWithDebounce() {
+        val failedFilters = appliedFilters
         viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_MILLIS)
-            retrySearch()
+            if (mutableState.value == SearchState.Error.NoInternet && failedFilters == settingsInteractor.read()) {
+                retrySearch()
+            }
         }
     }
 
@@ -54,9 +63,10 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
             return
         }
 
+        val filters = settingsInteractor.read()
         searchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_MILLIS)
-            searchPage(searchQuery, FIRST_PAGE)
+            searchPage(searchQuery, FIRST_PAGE, filters)
         }
 
         val content = mutableState.value as? SearchState.Content
@@ -72,8 +82,9 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
         }
 
         val query = currentQuery.trim()
+        val filters = appliedFilters
         val job =
-            viewModelScope.launch(start = CoroutineStart.LAZY) { searchPage(query, page, content) }
+            viewModelScope.launch(start = CoroutineStart.LAZY) { searchPage(query, page, filters, content) }
         searchJob = job
         job.start()
     }
@@ -85,22 +96,13 @@ class SearchViewModel(private val searchInteractor: SearchInteractor) : ViewMode
         }
     }
 
-    fun searchWithFilters(filters: FilterState) {
-        appliedFilters = filters
-        val query = currentQuery.trim()
-        searchJob?.cancel()
-
-        searchJob = viewModelScope.launch {
-            searchPage(query, FIRST_PAGE)
-        }
-    }
-
     private suspend fun searchPage(
         query: String,
         page: Int,
+        filters: FilterSettings,
         previous: SearchState.Content? = null
     ) {
-        val filters = appliedFilters
+        appliedFilters = filters
         mutableState.value =
             previous?.copy(isLoadingMore = true, paginationError = null) ?: SearchState.Loading
 

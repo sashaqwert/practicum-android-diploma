@@ -1,6 +1,5 @@
-package ru.practicum.android.diploma.filter.data.response
+package ru.practicum.android.diploma.common.data.dto
 
-import ru.practicum.android.diploma.common.data.dto.FilterIndustryDto
 import ru.practicum.android.diploma.common.data.network.client.Response
 
 class IndustryResponse(
