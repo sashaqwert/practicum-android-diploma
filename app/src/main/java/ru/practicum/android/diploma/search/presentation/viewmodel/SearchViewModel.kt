@@ -34,13 +34,10 @@ class SearchViewModel(
 
     fun retrySearch() {
         val query = currentQuery.trim()
+        if (query.isEmpty()) return
         val filters = settingsInteractor.read()
         searchJob?.cancel()
         countJob?.cancel()
-        if (query.isEmpty() && filters.countrySearchId() == null) {
-            mutableState.value = SearchState.Default
-            return
-        }
         searchJob = viewModelScope.launch {
             searchPage(query, FIRST_PAGE, filters)
         }
@@ -159,7 +156,7 @@ class SearchViewModel(
     }
 
     private fun FilterSettings.searchOptions(query: String, page: Int): Map<String, String> = buildMap {
-        if (query.isNotEmpty()) put("text", query)
+        put("text", query)
         put("page", page.toString())
         filterArea?.let { put("area", it.id.toString()) }
         filterIndustry?.let { put("industry", it.id.toString()) }
@@ -167,10 +164,7 @@ class SearchViewModel(
         if (doNotShowWithoutSalary) put("only_with_salary", "true")
     }
 
-    private fun FilterSettings.countrySearchId(): Int? = filterArea?.takeIf { area ->
-        val legacyCountry = area.countryId == null && area.name.isBlank() && !area.parentName.isNullOrBlank()
-        area.id == area.countryId || legacyCountry
-    }?.id
+    private fun FilterSettings.countrySearchId(): Int? = filterArea?.takeIf { it.id == it.countryId }?.id
 
     companion object {
         private const val SEARCH_DEBOUNCE_MILLIS = 2000L

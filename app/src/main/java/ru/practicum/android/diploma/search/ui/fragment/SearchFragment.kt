@@ -186,20 +186,27 @@ class SearchFragment : Fragment() {
 
     private fun content(found: Int) {
         if (viewBinding.progressBar.isVisible) closeKeyboard()
-        val empty = found == 0
         viewBinding.spaceForImgInSearch.apply {
-            if (empty) setImageResource(R.drawable.img_empty_search_state_328)
-            isVisible = empty
+            if (found == 0) setImageResource(R.drawable.img_empty_search_state_328)
+            isVisible = found == 0
         }
         viewBinding.spaceForVacancyCount.apply {
-            text = if (empty) getString(R.string.empty_vacancy) else getString(R.string.found_vacancy, found)
+            if (found == 0) {
+                setText(R.string.empty_vacancy)
+            } else {
+                text = getString(R.string.found_vacancy, found)
+            }
             isVisible = true
         }
-        viewBinding.vacancyList.isVisible = !empty
+        viewBinding.vacancyList.isVisible = found > 0
         viewBinding.progressBar.isVisible = false
         viewBinding.textStateSpace.apply {
-            isVisible = empty
-            if (empty) setText(R.string.vacancy_empty)
+            if (found > 0) {
+                isVisible = false
+            } else {
+                setText(R.string.vacancy_empty)
+                isVisible = true
+            }
         }
     }
 
