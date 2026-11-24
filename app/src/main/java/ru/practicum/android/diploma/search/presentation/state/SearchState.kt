@@ -11,7 +11,7 @@ sealed interface SearchState {
         val vacancies: List<VacancyCard>,
         val found: Int,
         val page: Int,
-        val pages: Int,
+        val hasNextPage: Boolean,
         val isLoadingMore: Boolean = false,
         val paginationError: Error? = null
     ) : SearchState

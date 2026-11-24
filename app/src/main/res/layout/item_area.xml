@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/Text.Regular16"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:drawableEnd="@drawable/ic_chose_8"
+    android:drawablePadding="@dimen/margin_16"
+    android:focusable="true"
+    android:gravity="center_vertical"
+    android:includeFontPadding="false"
+    android:minHeight="@dimen/height_60"
+    android:paddingStart="@dimen/margin_16"
+    android:paddingEnd="@dimen/margin_24"
+    android:paddingVertical="14.5dp"
+    tools:text="Казахстан" />

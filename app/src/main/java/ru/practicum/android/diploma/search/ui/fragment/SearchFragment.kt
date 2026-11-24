@@ -1,6 +1,7 @@
 package ru.practicum.android.diploma.search.ui.fragment
 
 import android.content.Context.INPUT_METHOD_SERVICE
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,12 +15,14 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.color.MaterialColors
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import ru.practicum.android.diploma.R
 import ru.practicum.android.diploma.common.domain.models.VacancyCard
 import ru.practicum.android.diploma.common.ui.forrecyclerview.VacancyAdapter
 import ru.practicum.android.diploma.databinding.FragmentSearchBinding
 import ru.practicum.android.diploma.details.ui.fragment.DetailsFragment
+import ru.practicum.android.diploma.filter.ui.fragments.FilterFragment
 import ru.practicum.android.diploma.search.presentation.state.SearchState
 import ru.practicum.android.diploma.search.presentation.viewmodel.SearchViewModel
 
@@ -81,25 +84,45 @@ class SearchFragment : Fragment() {
         viewBinding.vacancyList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                if (dy > 0) {
-                    val pos =
-                        (viewBinding.vacancyList.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
-                    val itemsCount = adapter.itemCount
-                    if (pos >= itemsCount - 1) {
-                        val currentState = viewModel.state.value as? SearchState.Content
-                        if (currentState != null) {
-                            if (currentState.paginationError == null) {
-                                val nextPage = currentState.page + 1
-                                viewModel.loadPage(nextPage)
-                            } else {
-                                Toast.makeText(requireContext(), R.string.no_wifi, Toast.LENGTH_LONG).show()
-                                viewModel.onPaginationErrorShown()
-                            }
-                        }
-                    }
-                }
+                if (dy >= 0) recyclerView.post { loadPageAtListEnd(recyclerView, dy > 0) }
             }
         })
+
+        setFilterListener()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val hasFilters = viewModel.hasFilters()
+        with(viewBinding.filerButton) {
+            isSelected = hasFilters
+            if (hasFilters) {
+                iconTint = null
+                setIconResource(R.drawable.ic_filter_active_24)
+            } else {
+                val color = MaterialColors.getColor(this, com.google.android.material.R.attr.colorOnPrimary)
+                iconTint = ColorStateList.valueOf(color)
+                setIconResource(R.drawable.ic_filter_18)
+            }
+        }
+    }
+
+    private fun loadPageAtListEnd(recyclerView: RecyclerView, scrolledDown: Boolean) {
+        val currentState = viewModel.state.value as? SearchState.Content ?: return
+        if (_viewBinding?.vacancyList != recyclerView || !isAtListEnd(recyclerView, scrolledDown)) return
+        if (currentState.paginationError == null) {
+            viewModel.loadPage(currentState.page + 1)
+        } else if (scrolledDown) {
+            Toast.makeText(requireContext(), R.string.no_wifi, Toast.LENGTH_LONG).show()
+            viewModel.onPaginationErrorShown()
+        }
+    }
+
+    private fun isAtListEnd(recyclerView: RecyclerView, scrolledDown: Boolean): Boolean {
+        if (!scrolledDown && (recyclerView.canScrollVertically(-1) || recyclerView.canScrollVertically(1))) return false
+        val manager = recyclerView.layoutManager as LinearLayoutManager
+        val lastVisible = manager.findLastVisibleItemPosition()
+        return lastVisible != RecyclerView.NO_POSITION && lastVisible == adapter.itemCount - 1
     }
 
     private fun initAdapter() {
@@ -113,11 +136,14 @@ class SearchFragment : Fragment() {
 
     private fun observeViewModelState() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
+            viewBinding.paginationProgressBar.isVisible = (state as? SearchState.Content)?.isLoadingMore == true
             when (state) {
                 is SearchState.Content -> {
-                    adapter.updateList(state.vacancies)
+                    if (vacancies !== state.vacancies) {
+                        vacancies = state.vacancies
+                        adapter.updateList(vacancies)
+                    }
                     content(state.found)
-                    viewBinding.paginationProgressBar.isVisible = state.isLoadingMore
                 }
 
                 SearchState.Default -> default()
@@ -126,6 +152,16 @@ class SearchFragment : Fragment() {
                 SearchState.Loading -> loading()
             }
         }
+    }
+
+    private fun setFilterListener() {
+        parentFragmentManager
+            .setFragmentResultListener(
+                FilterFragment.SEND_FILTERS,
+                viewLifecycleOwner
+            ) { _, _ ->
+                viewModel.retrySearch()
+            }
     }
 
     override fun onDestroyView() {
@@ -149,9 +185,9 @@ class SearchFragment : Fragment() {
     }
 
     private fun content(found: Int) {
-        closeKeyboard()
+        if (viewBinding.progressBar.isVisible) closeKeyboard()
         viewBinding.spaceForImgInSearch.apply {
-            setImageResource(R.drawable.img_empty_search_state_328)
+            if (found == 0) setImageResource(R.drawable.img_empty_search_state_328)
             isVisible = found == 0
         }
         viewBinding.spaceForVacancyCount.apply {

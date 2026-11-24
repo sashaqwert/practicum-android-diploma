@@ -3,6 +3,9 @@ package ru.practicum.android.diploma.common.data.network.client
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
+import ru.practicum.android.diploma.common.data.dto.AreaResponse
+import ru.practicum.android.diploma.common.data.dto.FilterRequest
+import ru.practicum.android.diploma.common.data.dto.IndustryResponse
 import ru.practicum.android.diploma.common.data.network.VacanciesApi
 
 class RetrofitNetworkClient(private val vacanciesApi: VacanciesApi) : NetworkClient {
@@ -16,9 +19,11 @@ class RetrofitNetworkClient(private val vacanciesApi: VacanciesApi) : NetworkCli
             } else {
                 try {
                     val response = when (intent) {
-                        is RequestIntent.GetAreas -> vacanciesApi.getAreas()
+                        is RequestIntent.GetFilterOptions -> when (intent.request) {
+                            FilterRequest.GetAreas -> AreaResponse(vacanciesApi.getAreas())
+                            FilterRequest.GetIndustries -> IndustryResponse(vacanciesApi.getIndustries())
+                        }
                         is RequestIntent.GetFilteredVacancies -> vacanciesApi.getFilteredVacancies(intent.options)
-                        is RequestIntent.GetIndustries -> vacanciesApi.getIndustries()
                         is RequestIntent.GetVacancyById -> vacanciesApi.getVacancyById(intent.id)
                     }
 

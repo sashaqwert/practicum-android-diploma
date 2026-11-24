@@ -5,7 +5,7 @@ import ru.practicum.android.diploma.common.domain.models.FilterIndustry
 sealed interface IndustriesState {
     object Loading : IndustriesState
 
-    data class Content(val industries: List<FilterIndustry>)
+    data class Content(val industries: List<FilterIndustry>) : IndustriesState
 
-    object Error : IndustriesState
+    data class Error(val code: Int) : IndustriesState
 }

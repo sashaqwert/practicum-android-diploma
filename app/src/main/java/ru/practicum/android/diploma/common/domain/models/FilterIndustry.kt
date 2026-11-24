@@ -1,6 +1,6 @@
 package ru.practicum.android.diploma.common.domain.models
 
 data class FilterIndustry(
-    val id: String,
+    val id: Int,
     val name: String
 )
