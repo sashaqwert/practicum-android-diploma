@@ -84,14 +84,7 @@ class SearchFragment : Fragment() {
         viewBinding.vacancyList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                if (dy > 0) {
-                    val pos =
-                        (viewBinding.vacancyList.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
-                    val itemsCount = adapter.itemCount
-                    if (pos >= itemsCount - 1) {
-                        loadNextPage()
-                    }
-                }
+                if (dy >= 0) recyclerView.post { loadPageAtListEnd(recyclerView, dy > 0) }
             }
         })
 
@@ -114,15 +107,22 @@ class SearchFragment : Fragment() {
         }
     }
 
-    private fun loadNextPage() {
+    private fun loadPageAtListEnd(recyclerView: RecyclerView, scrolledDown: Boolean) {
         val currentState = viewModel.state.value as? SearchState.Content ?: return
+        if (_viewBinding?.vacancyList != recyclerView || !isAtListEnd(recyclerView, scrolledDown)) return
         if (currentState.paginationError == null) {
-            val nextPage = currentState.page + 1
-            viewModel.loadPage(nextPage)
-        } else {
+            viewModel.loadPage(currentState.page + 1)
+        } else if (scrolledDown) {
             Toast.makeText(requireContext(), R.string.no_wifi, Toast.LENGTH_LONG).show()
             viewModel.onPaginationErrorShown()
         }
+    }
+
+    private fun isAtListEnd(recyclerView: RecyclerView, scrolledDown: Boolean): Boolean {
+        if (!scrolledDown && (recyclerView.canScrollVertically(-1) || recyclerView.canScrollVertically(1))) return false
+        val manager = recyclerView.layoutManager as LinearLayoutManager
+        val lastVisible = manager.findLastVisibleItemPosition()
+        return lastVisible != RecyclerView.NO_POSITION && lastVisible == adapter.itemCount - 1
     }
 
     private fun initAdapter() {
@@ -136,11 +136,14 @@ class SearchFragment : Fragment() {
 
     private fun observeViewModelState() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
+            viewBinding.paginationProgressBar.isVisible = (state as? SearchState.Content)?.isLoadingMore == true
             when (state) {
                 is SearchState.Content -> {
-                    adapter.updateList(state.vacancies)
+                    if (vacancies !== state.vacancies) {
+                        vacancies = state.vacancies
+                        adapter.updateList(vacancies)
+                    }
                     content(state.found)
-                    viewBinding.paginationProgressBar.isVisible = state.isLoadingMore
                 }
 
                 SearchState.Default -> default()
@@ -182,28 +185,21 @@ class SearchFragment : Fragment() {
     }
 
     private fun content(found: Int) {
-        closeKeyboard()
+        if (viewBinding.progressBar.isVisible) closeKeyboard()
+        val empty = found == 0
         viewBinding.spaceForImgInSearch.apply {
-            setImageResource(R.drawable.img_empty_search_state_328)
-            isVisible = found == 0
+            if (empty) setImageResource(R.drawable.img_empty_search_state_328)
+            isVisible = empty
         }
         viewBinding.spaceForVacancyCount.apply {
-            if (found == 0) {
-                setText(R.string.empty_vacancy)
-            } else {
-                text = getString(R.string.found_vacancy, found)
-            }
+            text = if (empty) getString(R.string.empty_vacancy) else getString(R.string.found_vacancy, found)
             isVisible = true
         }
-        viewBinding.vacancyList.isVisible = found > 0
+        viewBinding.vacancyList.isVisible = !empty
         viewBinding.progressBar.isVisible = false
         viewBinding.textStateSpace.apply {
-            if (found > 0) {
-                isVisible = false
-            } else {
-                setText(R.string.vacancy_empty)
-                isVisible = true
-            }
+            isVisible = empty
+            if (empty) setText(R.string.vacancy_empty)
         }
     }
 

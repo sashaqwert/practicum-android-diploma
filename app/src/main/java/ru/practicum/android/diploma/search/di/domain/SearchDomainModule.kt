@@ -5,7 +5,7 @@ import ru.practicum.android.diploma.search.domain.usecase.SearchInteractor
 import ru.practicum.android.diploma.search.domain.usecaseimpl.SearchInteractorImpl
 
 val searchDomainModule = module {
-    single<SearchInteractor> {
-        SearchInteractorImpl(get())
+    factory<SearchInteractor> {
+        SearchInteractorImpl(get(), get())
     }
 }

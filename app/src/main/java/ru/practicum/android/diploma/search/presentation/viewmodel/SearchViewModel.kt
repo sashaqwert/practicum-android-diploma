@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import ru.practicum.android.diploma.common.domain.Resource
 import ru.practicum.android.diploma.filter.domain.model.FilterSettings
 import ru.practicum.android.diploma.filter.domain.usecase.FilterSettingsInteractor
+import ru.practicum.android.diploma.search.domain.model.SearchPage
 import ru.practicum.android.diploma.search.domain.usecase.SearchInteractor
 import ru.practicum.android.diploma.search.presentation.state.SearchState
 import java.io.IOException
@@ -26,15 +27,20 @@ class SearchViewModel(
 
     private var currentQuery = ""
     private var searchJob: Job? = null
+    private var countJob: Job? = null
     private var appliedFilters = FilterSettings()
 
     fun hasFilters(): Boolean = settingsInteractor.read().hasFilters
 
     fun retrySearch() {
         val query = currentQuery.trim()
-        if (query.isEmpty()) return
         val filters = settingsInteractor.read()
         searchJob?.cancel()
+        countJob?.cancel()
+        if (query.isEmpty() && filters.countrySearchId() == null) {
+            mutableState.value = SearchState.Default
+            return
+        }
         searchJob = viewModelScope.launch {
             searchPage(query, FIRST_PAGE, filters)
         }
@@ -56,6 +62,7 @@ class SearchViewModel(
         }
         currentQuery = query
         searchJob?.cancel()
+        countJob?.cancel()
 
         val searchQuery = query.trim()
         if (searchQuery.isEmpty()) {
@@ -77,7 +84,7 @@ class SearchViewModel(
 
     fun loadPage(page: Int) {
         val content = mutableState.value as? SearchState.Content ?: return
-        if (searchJob?.isActive == true || page != content.page + 1 || page >= content.pages) {
+        if (searchJob?.isActive == true || page != content.page + 1 || !content.hasNextPage) {
             return
         }
 
@@ -106,41 +113,68 @@ class SearchViewModel(
         mutableState.value =
             previous?.copy(isLoadingMore = true, paginationError = null) ?: SearchState.Loading
 
-        val options = buildMap {
-            put("text", query)
-            put("page", page.toString())
-            filters.filterArea?.let { put("area", it.id.toString()) }
-            filters.filterIndustry?.let { put("industry", it.id.toString()) }
-            filters.salary?.let { put("salary", it.toString()) }
-            if (filters.doNotShowWithoutSalary) put("only_with_salary", "true")
-        }
-
+        val countryId = filters.countrySearchId()
         val result = try {
-            searchInteractor.searchVacancies(options)
+            searchInteractor.searchVacancies(filters.searchOptions(query, page), countryId)
         } catch (_: IOException) {
             Resource.Error(NO_INTERNET)
         }
         currentCoroutineContext().ensureActive()
 
-        mutableState.value = when (result) {
-            is Resource.Success -> {
-                val data = result.data
-                val vacancies =
-                    (previous?.vacancies.orEmpty() + data.vacancies).distinctBy { it.id }
-                SearchState.Content(vacancies, data.found, data.page, data.pages)
-            }
+        when (result) {
+            is Resource.Success -> showPage(result.data, countryId != null)
+            is Resource.Error -> showSearchError(result.code)
+        }
+    }
 
-            is Resource.Error -> {
-                val error =
-                    if (result.code == NO_INTERNET) SearchState.Error.NoInternet else SearchState.Error.Server
-                previous?.copy(isLoadingMore = false, paginationError = error) ?: error
+    private fun showPage(page: SearchPage, isCountrySearch: Boolean) {
+        val content = mutableState.value as? SearchState.Content
+        val previousVacancies = content?.vacancies.orEmpty()
+        val vacancies = if (page.vacancies.isEmpty()) {
+            previousVacancies
+        } else {
+            (previousVacancies + page.vacancies).distinctBy { it.id }
+        }
+        val found = if (isCountrySearch) maxOf(page.found, content?.found ?: 0) else page.found
+        mutableState.value = SearchState.Content(vacancies, found, page.page, page.hasNextPage)
+        if (isCountrySearch && page.page == FIRST_PAGE && page.hasNextPage) {
+            countJob = viewModelScope.launch { updateCountryCount() }
+        }
+    }
+
+    private fun showSearchError(code: Int) {
+        val content = mutableState.value as? SearchState.Content
+        val error = if (code == NO_INTERNET) SearchState.Error.NoInternet else SearchState.Error.Server
+        mutableState.value = content?.copy(isLoadingMore = false, paginationError = error) ?: error
+    }
+
+    private suspend fun updateCountryCount() {
+        searchInteractor.countCountryVacancies().collect { found ->
+            currentCoroutineContext().ensureActive()
+            val content = mutableState.value as? SearchState.Content
+            if (content != null && found > content.found) {
+                mutableState.value = content.copy(found = found)
             }
         }
     }
 
+    private fun FilterSettings.searchOptions(query: String, page: Int): Map<String, String> = buildMap {
+        if (query.isNotEmpty()) put("text", query)
+        put("page", page.toString())
+        filterArea?.let { put("area", it.id.toString()) }
+        filterIndustry?.let { put("industry", it.id.toString()) }
+        salary?.let { put("salary", it.toString()) }
+        if (doNotShowWithoutSalary) put("only_with_salary", "true")
+    }
+
+    private fun FilterSettings.countrySearchId(): Int? = filterArea?.takeIf { area ->
+        val legacyCountry = area.countryId == null && area.name.isBlank() && !area.parentName.isNullOrBlank()
+        area.id == area.countryId || legacyCountry
+    }?.id
+
     companion object {
         private const val SEARCH_DEBOUNCE_MILLIS = 2000L
-        private const val FIRST_PAGE = 0
+        private const val FIRST_PAGE = 1
         private const val NO_INTERNET = -1
     }
 }

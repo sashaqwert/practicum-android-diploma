@@ -21,20 +21,7 @@ class SearchRepositoryImpl(
 
         return when (response.code) {
             HTTP_OK -> {
-                if ((response as VacancyResponse).found > 0) {
-                    Resource.Success(
-                        converter.convertVacancies(response)
-                    )
-                } else {
-                    Resource.Success(
-                        SearchResult(
-                            vacancies = listOf(),
-                            found = 0,
-                            page = 0,
-                            pages = 0
-                        )
-                    )
-                }
+                Resource.Success(converter.convertVacancies(response as VacancyResponse))
             }
 
             NO_INTERNET -> {
